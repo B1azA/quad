@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Quad</title>
+	<script type="module" src="/src/main.ts" defer></script>
+</head>
+
+<body class="noselect">
+	<div id="topbar">
+		<div class="dropdown">
+			<p>File</p>
+			<div class="dropdownContent">
+				<button id="fileNew">New</button>
+				<button id="fileSaveAs">Save as</button>
+				<button id="fileSave">Save</button>
+				<button id="fileLoad">Load</button>
+				<button id="fileImport">Import</button>
+			</div>
+		</div>
+		<div class="dropdown">
+			<p>Settings</p>
+			<div class="dropdownContent">
+				<button>Idk</button>
+				<button>Idk</button>
+				<button>Idk</button>
+				<button>Idk</button>
+			</div>
+		</div>
+	</div>
+
+	<ul id="toolBar">
+		<li><button id="toolPen">Pen</button></li>
+		<li><button id="toolRuler">Ruler</button></li>
+		<li><button>Circle</button></li>
+		<li><button>Erase</button></li>
+	</ul>
+	<div id="editorContainer" oncontextmenu="return false;" style="height: 100%; width: 100%;">
+		<canvas id="editor" class="noselect" oncontextmenu="return false;"></canvas>
+	</div>
+</body>
+
+</html>

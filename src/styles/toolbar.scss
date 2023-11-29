@@ -1,0 +1,16 @@
+@use "colorScheme.scss" as *;
+
+#toolBar {
+    position: absolute;
+    top: 10vh;
+    left: 0;
+    list-style-type: none;
+    background-color: blue;
+
+    li button {
+        display: block;
+        width: 92%;
+        padding: 1vh;
+        margin: 4%;
+    }
+}

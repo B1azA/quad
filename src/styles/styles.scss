@@ -1,0 +1,32 @@
+@use "colorScheme.scss" as *;
+@use "topbar.scss";
+@use "editor.scss";
+@use "toolbar.scss";
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	font-size: 100%;
+	background-color: $background;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
