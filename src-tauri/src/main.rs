@@ -8,6 +8,7 @@ struct ImageMessage {
     width: u32,
     height: u32,
     name: String,
+    path: String,
     data: Vec<u8>,
 }
 
@@ -46,6 +47,11 @@ fn load_file() -> Result<ImageMessage, String> {
         None => return Err(format!("Failed to load the file")),
     };
 
+    let path = match file.clone().into_os_string().into_string() {
+        Ok(path) => path,
+        Err(_) => return Err(format!("Failed to load the file")),
+    };
+
     // std::fs::read(file.unwrap()).unwrap()
     let file_name_str = match file.file_name() {
         Some(name) => name,
@@ -66,6 +72,7 @@ fn load_file() -> Result<ImageMessage, String> {
         width: image.width(),
         height: image.height(),
         name: file_name,
+        path: path,
         data: image.to_rgba8().into_raw(),
     };
     Ok(image_response)

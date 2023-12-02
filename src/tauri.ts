@@ -5,6 +5,7 @@ export type ImageMessage = {
     width: number,
     height: number,
     name: string,
+    path: string,
     data: number[],
 }
 

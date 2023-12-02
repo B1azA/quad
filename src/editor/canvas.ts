@@ -14,6 +14,7 @@ export class Canvas {
     color1: [number, number, number, number] = [255, 255, 255, 255];
 
     constructor(dimensions: { width: number, height: number }) {
+        this.removeLayers();
         let layer = this.createLayer();
         let ctx = layer.getContext("2d", { willReadFrequently: true })!;
         ctx
@@ -84,9 +85,17 @@ export class Canvas {
         return this.layers[0].getBoundingClientRect();
     }
 
+    // remove all layers except template
+    removeLayers() {
+        let layers = document.getElementsByClassName("editorLayer");
+        for (let layer of layers) {
+            layer.remove();
+        }
+    }
+
     createLayer() {
         let layer = document.createElement("canvas");
-        layer.id = "editorLayer";
+        layer.className = "editorLayer";
         this.editorContainer.appendChild(layer);
 
         return layer;
@@ -158,6 +167,17 @@ export class Canvas {
         }
 
         return data;
+    }
+
+    setImageData(data: Uint8ClampedArray, layer: number) {
+        let size = this.getSize();
+        let image = this.getImage(layer);
+        image.imageData.data.set(data);
+        this.setImage(image, layer);
+    }
+
+    getImageData(layer: number) {
+        return this.getImage(layer).imageData.data;
     }
 
     setImage(image: Image, layer: number) {

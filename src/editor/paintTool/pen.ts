@@ -13,8 +13,6 @@ export class Pen implements PaintTool {
     ) {
         this.drawPixel(editor, coords, color, layer);
         this.lastCoords = coords;
-
-        console.log(editor.steps);
     }
 
     onMouseUp(
@@ -23,14 +21,7 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: number,
     ) {
-        // draw line to layer
-        // this.drawLine(
-        //     editor,
-        //     coords,
-        //     this.lastCoords,
-        //     color,
-        //     layer
-        // );
+        // nothing, paints when moving
     }
 
     onMouseMove(
@@ -39,6 +30,7 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: number
     ) {
+        // |AB| = sqrt((ax - bx) ** 2 + (ay - by) ** 2)
         let distance = Math.sqrt(
             (this.lastCoords.x - coords.x) ** 2
             +
@@ -91,10 +83,6 @@ export class Pen implements PaintTool {
         layer: number,
     ) {
         let size = editor.canvas.getSize();
-        let isAOnCanvas = a.x >= 0 && a.x < size.width && a.y >= 0 && a.y < size.height;
-        let isBOnCanvas = b.x >= 0 && b.x < size.width && b.y >= 0 && b.y < size.height;
-        // return if points a and b are both not on the canvas
-        if (!isAOnCanvas && !isBOnCanvas) return;
 
         // difference
         let dx = b.x - a.x;
@@ -140,11 +128,6 @@ export class Pen implements PaintTool {
 
             x += xInc;
             y += yInc;
-
-            // break if outside of the canvas
-            if ((x >= size.width && y >= size.height) || (x < 0 && y < 0)) {
-                break;
-            };
         }
 
         editor.canvas.setImage(image, layer);

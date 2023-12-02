@@ -2,7 +2,7 @@ import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
 import { MiniStep } from "./steps";
 
-export class Ruler implements PaintTool {
+export class Compass implements PaintTool {
     lastCoords = { x: -1, y: -1 };
 
     onMouseDown(
@@ -21,7 +21,7 @@ export class Ruler implements PaintTool {
         layer: number,
     ) {
         // draw line to layer
-        this.drawLine(
+        this.drawCircle(
             editor,
             coords,
             this.lastCoords,
@@ -37,7 +37,7 @@ export class Ruler implements PaintTool {
         layer: number,
     ) {
         // draw line to template
-        this.drawLine(
+        this.drawCircle(
             editor,
             coords,
             this.lastCoords,
@@ -55,6 +55,10 @@ export class Ruler implements PaintTool {
         layer: number,
     ) {
         let size = editor.canvas.getSize();
+        let isAOnCanvas = a.x >= 0 && a.x < size.width && a.y >= 0 && a.y < size.height;
+        let isBOnCanvas = b.x >= 0 && b.x < size.width && b.y >= 0 && b.y < size.height;
+        // return if points a and b are both not on the canvas
+        if (!isAOnCanvas && !isBOnCanvas) return;
 
         // difference
         let dx = b.x - a.x;
@@ -90,9 +94,9 @@ export class Ruler implements PaintTool {
             y += yInc;
 
             // break if outside of the canvas
-            if ((x >= size.width && y >= size.height) && (x < 0 && y < 0)) {
-                break;
-            };
+            // if ((x >= size.width && y >= size.height) || (x < 0 && y < 0)) {
+            // break;
+            // };
         }
 
         editor.canvas.setImage(image, layer);
@@ -100,5 +104,46 @@ export class Ruler implements PaintTool {
         if (layer != 0) {
             editor.steps.addMiniSteps(ministeps);
         }
+    }
+
+    drawCircle(
+        editor: Editor,
+        a: { x: number, y: number },
+        b: { x: number, y: number },
+        color: [number, number, number, number],
+        layer: number,
+    ) {
+        let minX = Math.min(a.x, b.x);
+        let minY = Math.min(a.y, b.y);
+        let maxX = Math.max(a.x, b.x);
+        let maxY = Math.max(a.y, b.y);
+
+        let image = editor.canvas.getImage(layer);
+
+        let center = {
+            x: (a.x + b.x) / 2,
+            y: (a.y + b.y) / 2,
+        };
+
+        let radius = Math.sqrt(
+            (a.x - b.x) ** 2
+            +
+            (a.y - b.y) ** 2
+        );
+
+        for (let x = minX; x <= maxX; x++) {
+            for (let y = minY; y <= maxY; y++) {
+                let distanceX = center.x - x;
+                let distanceY = center.y - y;
+                let distanceSquared = distanceX ** 2 + distanceY ** 2;
+
+                if (distanceSquared <= radius) {
+                    console.log(radius, distanceSquared);
+                    image.putPixel({ x, y }, color);
+                }
+            }
+        }
+
+        editor.canvas.setImage(image, layer);
     }
 }

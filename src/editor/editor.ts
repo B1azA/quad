@@ -3,6 +3,7 @@ import { PaintTool } from "./paintTool/paintTool";
 import { Steps, MiniStep } from "./paintTool/steps";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
+import { Compass } from "./paintTool/compass";
 
 export class Editor {
     // curently selected color
@@ -38,11 +39,12 @@ export class Editor {
     paintTool: PaintTool = new Pen;
     penTool: PaintTool = new Pen;
     rulerTool: PaintTool = new Ruler;
+    compassTool: PaintTool = new Compass;
 
     ctrlPressed: boolean = false;
 
-    constructor() {
-        this.canvas = new Canvas({ width: 48, height: 32 });
+    constructor(size: { width: number, height: number }) {
+        this.canvas = new Canvas(size);
         this.steps = new Steps(1);
 
         this.rulerStartCoords = { x: -1, y: -1 };
