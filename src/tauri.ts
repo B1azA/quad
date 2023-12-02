@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import { Editor } from './editor';
+import { Editor } from './editor/editor';
 
 export type ImageMessage = {
     width: number,

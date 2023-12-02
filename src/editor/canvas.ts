@@ -1,6 +1,7 @@
 export class Canvas {
-    private canvases: HTMLCanvasElement[];
+    private layers: HTMLCanvasElement[];
     private ctxs: CanvasRenderingContext2D[];
+    private editorContainer = document.getElementById("editorContainer")!;
 
     // original width and height of the canvas
     private originalRealWidth: number;
@@ -12,16 +13,18 @@ export class Canvas {
     color0: [number, number, number, number] = [0, 0, 0, 255];
     color1: [number, number, number, number] = [255, 255, 255, 255];
 
-    constructor() {
-        let canvas = document.getElementById("editor") as HTMLCanvasElement;
-        let ctx = canvas.getContext("2d")!;
-        let template = this.createTemplate();
-        let templateCtx = template.getContext("2d")!;
+    constructor(dimensions: { width: number, height: number }) {
+        let layer = this.createLayer();
+        let ctx = layer.getContext("2d", { willReadFrequently: true })!;
+        ctx
 
-        this.canvases = [template, canvas];
+        let template = this.createTemplate();
+        let templateCtx = template.getContext("2d", { willReadFrequently: true })!;
+
+        this.layers = [template, layer];
         this.ctxs = [templateCtx, ctx];
 
-        this.setSize({ width: 48, height: 32 });
+        this.setSize(dimensions);
         let size = this.getSize();
 
         let height = (window.innerHeight / 2);
@@ -39,144 +42,82 @@ export class Canvas {
     }
 
     setSize(size: { width: number, height: number }) {
-        for (let canvas of this.canvases) {
+        for (let canvas of this.layers) {
             canvas.width = size.width;
             canvas.height = size.height;
         }
     }
 
     getSize() {
-        return { width: this.canvases[0].width, height: this.canvases[0].height };
+        return { width: this.layers[0].width, height: this.layers[0].height };
     }
 
     setRealSize(size: { width: number, height: number }) {
         let width = size.width + "px";
         let height = size.height + "px";
 
-        for (let canvas of this.canvases) {
+        for (let canvas of this.layers) {
             canvas.style.width = width;
             canvas.style.height = height;
         }
     }
 
     getRealSize() {
-        return { width: this.canvases[0].offsetWidth, height: this.canvases[0].offsetHeight };
+        return { width: this.layers[0].offsetWidth, height: this.layers[0].offsetHeight };
     }
 
     setPos(size: { x: number, y: number }) {
         let x = size.x + "px";
         let y = size.y + "px";
 
-        for (let canvas of this.canvases) {
+        for (let canvas of this.layers) {
             canvas.style.left = x;
             canvas.style.top = y;
         }
     }
 
     getPos() {
-        return { x: this.canvases[0].offsetLeft, y: this.canvases[0].offsetTop };
+        return { x: this.layers[0].offsetLeft, y: this.layers[0].offsetTop };
     }
 
     getBoundingClientRect() {
-        return this.canvases[0].getBoundingClientRect();
+        return this.layers[0].getBoundingClientRect();
+    }
+
+    createLayer() {
+        let layer = document.createElement("canvas");
+        layer.id = "editorLayer";
+        this.editorContainer.appendChild(layer);
+
+        return layer;
     }
 
     createTemplate() {
         // remove template if it already exists
         let exists = document.getElementById("editorTemplate");
         if (exists != null) {
-            document.removeChild(exists);
+            exists.remove();
         }
-
-        let editorContainer = document.getElementById("editorContainer")!;
 
         let template = document.createElement("canvas");
         template.id = "editorTemplate";
-        editorContainer.appendChild(template);
+        this.editorContainer.appendChild(template);
 
         return template;
     }
 
-    // clear canvas
+    // clear layer
     clear(layer: number) {
         let size = this.getSize();
         this.ctxs[layer].clearRect(0, 0, size.width, size.height);
     }
 
-    // clear all canvases
+    // clear all layers
     clearAll() {
         let size = this.getSize();
         for (let ctx of this.ctxs) {
             ctx.clearRect(0, 0, size.width, size.height);
         }
-    }
-
-    /// draw a pixel at the point with currentColor
-    drawPixel(point: { x: number, y: number }, layer: number) {
-        // return if outside of canvas
-        let size = this.getSize();
-        if (point.x >= size.width || point.x < 0 || point.y >= size.height || point.y < 0) return;
-
-        let imageData = this.ctxs[layer].getImageData(0, 0, size.width, size.height);
-        // 4 times to skip all color channels
-        let index = 4 * (point.x + point.y * imageData.width);
-        let pixels = imageData.data;
-        pixels[index] = this.currentColor[0];
-        pixels[index + 1] = this.currentColor[1];
-        pixels[index + 2] = this.currentColor[2];
-        pixels[index + 3] = this.currentColor[3];
-
-        this.ctxs[layer].putImageData(imageData, 0, 0);
-    }
-
-    // draw a line from the point a to the point b with currentColor
-    drawLine(a: { x: number, y: number }, b: { x: number, y: number }, layer: number) {
-        let size = this.getSize();
-        let isAOnCanvas = a.x >= 0 && a.x < size.width && a.y >= 0 && a.y < size.height;
-        let isBOnCanvas = b.x >= 0 && b.x < size.width && b.y >= 0 && b.y < size.height;
-        // return if points a and b are both not on the canvas
-        if (!isAOnCanvas && !isBOnCanvas) return;
-
-        // difference
-        let dx = b.x - a.x;
-        let dy = b.y - a.y;
-
-        // number of steps to take, use bigger step
-        let steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
-
-        // increments
-        let xInc = dx / steps;
-        let yInc = dy / steps;
-
-        let x = a.x;
-        let y = a.y;
-
-        let imageData = this.getImageData(layer);
-        let pixels = imageData.data;
-
-        for (let i = 0; i <= steps; i++) {
-            let point = { x: Math.round(x), y: Math.round(y) };
-
-            // paint only if in the canvas
-            if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
-                // 4 times to skip all color channels
-                let index = 4 * (point.x + point.y * imageData.width);
-                pixels[index] = this.currentColor[0];
-                pixels[index + 1] = this.currentColor[1];
-                pixels[index + 2] = this.currentColor[2];
-                pixels[index + 3] = this.currentColor[3];
-            }
-
-            x += xInc;
-            y += yInc;
-
-            // break if outside of the canvas
-            if ((x >= size.width && y >= size.height) || (x < 0 && y < 0)) {
-                break;
-            };
-        }
-
-        this.ctxs[layer].putImageData(imageData, 0, 0);
     }
 
     // mouse position relative to the canvas
@@ -219,10 +160,15 @@ export class Canvas {
         return data;
     }
 
-    getImageData(layer: number) {
+    setImage(image: Image, layer: number) {
+        this.ctxs[layer].putImageData(image.imageData, 0, 0);
+    }
+
+    getImage(layer: number) {
         let size = this.getSize();
         let imageData = this.ctxs[layer].getImageData(0, 0, size.width, size.height);
-        return imageData;
+        let image = new Image(imageData, size);
+        return image;
     }
 
     // center position of the canvas
@@ -242,6 +188,10 @@ export class Canvas {
         let center = this.getCenterPos();
 
         this.zoom += zoom_delta;
+        if (this.zoom < 0.1) {
+            this.zoom = 0.1;
+        }
+
         let width = this.originalRealWidth * this.zoom;
         let height = this.originalRealHeight * this.zoom;
         this.setRealSize({ width, height });
@@ -266,5 +216,48 @@ export class Canvas {
         let y = pos.y - realSize.height / 2;
 
         this.setPos({ x, y });
+    }
+}
+
+export class Image {
+    imageData: ImageData;
+    size: { width: number, height: number };
+
+    constructor(
+        imageData: ImageData,
+        size: { width: number, height: number },
+    ) {
+        this.imageData = imageData;
+        this.size = size;
+    }
+
+    // puts a pixel at the point with the selected color
+    putPixel(
+        point: { x: number, y: number },
+        color: [number, number, number, number]
+    ) {
+        // return if outside of canvas
+        if (point.x >= this.size.width || point.x < 0 || point.y >= this.size.height || point.y < 0) return;
+        // 4 times to skip all color channels
+        let index = 4 * (point.x + point.y * this.imageData.width);
+        let pixels = this.imageData.data;
+        pixels[index] = color[0];
+        pixels[index + 1] = color[1];
+        pixels[index + 2] = color[2];
+        pixels[index + 3] = color[3];
+    }
+
+    getPixel(point: { x: number, y: number }) {
+        let color: [number, number, number, number] = [0, 0, 0, 0];
+
+        // 4 times to skip all color channels
+        let index = 4 * (point.x + point.y * this.imageData.width);
+        let pixels = this.imageData.data;
+        color[0] = pixels[index];
+        color[1] = pixels[index + 1];
+        color[2] = pixels[index + 2];
+        color[3] = pixels[index + 3];
+
+        return color;
     }
 }
