@@ -1,3 +1,10 @@
+#editorContainer {
+    background-color: white;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
 .editorLayer {
     image-rendering: pixelated;
     border: 2px solid #000000;
@@ -5,8 +12,7 @@
     height: 100%;
     display: block;
     position: absolute;
-    z-index: -1;
-    background-color: red;
+    z-index: 1;
 }
 
 #editorTemplate {
@@ -16,5 +22,5 @@
     height: 100%;
     display: block;
     position: absolute;
-    z-index: -1;
+    z-index: 2;
 }

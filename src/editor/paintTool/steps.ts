@@ -1,4 +1,4 @@
-import { Canvas } from "../canvas";
+import { Canvas, Image } from "../canvas";
 
 export class MiniStep {
     coords: { x: number, y: number };
@@ -19,11 +19,6 @@ export class MiniStep {
 export class Steps {
     // an array of ministeps is one step
     steps: MiniStep[][] = [];
-    layer: number;
-
-    constructor(layer: number) {
-        this.layer = layer;
-    }
 
     newStep() {
         if (this.steps.length == 0) this.steps.push([]);
@@ -45,15 +40,21 @@ export class Steps {
     undo(canvas: Canvas) {
         // pop two times to remove empty steps
         let ministeps = this.steps.pop();
-        ministeps = this.steps.pop();
 
-        console.log(this.steps);
         if (ministeps != null) {
-            let image = canvas.getImage(this.layer);
-            for (let ministep of ministeps) {
-                image.putPixel(ministep.coords, ministep.color);
+            let layerImages: Image[] = [];
+
+            for (let i = 0; i < canvas.layers.length; i++) {
+                layerImages.push(canvas.getImage(i));
             }
-            canvas.setImage(image, this.layer);
+
+            for (let ministep of ministeps) {
+                layerImages[ministep.layer].putPixel(ministep.coords, ministep.color);
+            }
+
+            for (let i = 0; i < canvas.layers.length; i++) {
+                canvas.setImage(layerImages[i], i);
+            }
         }
     }
 }

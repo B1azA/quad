@@ -1,11 +1,9 @@
-@use "colorScheme.scss" as *;
-
-#toolBar {
+#layerBar {
     position: absolute;
     top: 6em;
-    left: 0;
+    right: 12em;
     list-style-type: none;
-    background-color: blue;
+    background-color: black;
     z-index: 6;
 
     li button {

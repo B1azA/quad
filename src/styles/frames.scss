@@ -1,0 +1,17 @@
+#frames {
+    display: block;
+    width: 8em;
+    height: 100vh;
+    background-color: blue;
+    border: solid black;
+    position: absolute;
+    right: 1em;
+    top: 4em;
+    overflow-y: scroll;
+    z-index: 6;
+}
+
+.frame {
+    width: 100%;
+    background-color: green;
+}

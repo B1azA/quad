@@ -9,6 +9,8 @@ $backgroundColor: $primary;
     left: 0;
     width: 100vw;
     background-color: $backgroundColor;
+    min-height: 10px;
+    z-index: 10;
 }
 
 .dropdown {
@@ -16,11 +18,10 @@ $backgroundColor: $primary;
     overflow: hidden;
     height: 100%;
     text-align: center;
-    min-height: 10px;
 
     p {
-        font-size: 1.2vh;
-        padding: 0.2vh 0.4vh;
+        font-size: 0.8em;
+        padding: 4px 4px;
     }
 
     :hover {

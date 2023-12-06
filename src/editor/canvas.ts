@@ -1,7 +1,12 @@
+import { Editor } from "./editor";
+
 export class Canvas {
-    private layers: HTMLCanvasElement[];
-    private ctxs: CanvasRenderingContext2D[];
+    readonly layers: HTMLCanvasElement[] = [];
+    private ctxs: CanvasRenderingContext2D[] = [];
     private editorContainer = document.getElementById("editorContainer")!;
+    private layerBar = document.getElementById("layerBar")!;
+
+    private editor: Editor;
 
     // original width and height of the canvas
     private originalRealWidth: number;
@@ -9,21 +14,14 @@ export class Canvas {
 
     private zoom: number = 1;
 
-    currentColor: [number, number, number, number] = [0, 0, 0, 255];
-    color0: [number, number, number, number] = [0, 0, 0, 255];
-    color1: [number, number, number, number] = [255, 255, 255, 255];
-
-    constructor(dimensions: { width: number, height: number }) {
+    constructor(editor: Editor, dimensions: { width: number, height: number }) {
+        this.editor = editor;
         this.removeLayers();
         let layer = this.createLayer();
-        let ctx = layer.getContext("2d", { willReadFrequently: true })!;
-        ctx
+        let template = this.createTemplate()
 
-        let template = this.createTemplate();
-        let templateCtx = template.getContext("2d", { willReadFrequently: true })!;
-
-        this.layers = [template, layer];
-        this.ctxs = [templateCtx, ctx];
+        this.addLayer(template);
+        this.addLayer(layer);
 
         this.setSize(dimensions);
         let size = this.getSize();
@@ -64,7 +62,7 @@ export class Canvas {
     }
 
     getRealSize() {
-        return { width: this.layers[0].offsetWidth, height: this.layers[0].offsetHeight };
+        return { width: this.layers[0].clientWidth, height: this.layers[0].clientHeight };
     }
 
     setPos(size: { x: number, y: number }) {
@@ -99,6 +97,49 @@ export class Canvas {
         this.editorContainer.appendChild(layer);
 
         return layer;
+    }
+
+    createLayerTransformed() {
+        let layer = this.createLayer();
+        let size = this.getSize();
+        layer.width = size.width;
+        layer.height = size.height;
+
+        let realSize = this.getRealSize();
+        layer.style.width = realSize.width + "px";
+        layer.style.height = realSize.height + "px";
+
+        let pos = this.getPos();
+        layer.style.left = pos.x + "px";
+        layer.style.top = pos.y + "px";
+
+        return layer;
+    }
+
+    addLayer(layer: HTMLCanvasElement) {
+        this.layers.push(layer);
+        this.ctxs.push(layer.getContext("2d", { willReadFrequently: true })!);
+
+        let index = this.layers.length - 1;
+        console.log(index);
+
+        if (index > 0) {
+            let li = document.createElement("li");
+            let layerButton = document.createElement("button");
+            layerButton.textContent = index.toString();
+
+            layerButton.onclick = (e) => {
+                let target = <HTMLButtonElement>e.target;
+                if (target.textContent) {
+                    let layer = parseInt(target.textContent);
+                    this.editor.layer = layer;
+                }
+            }
+
+            li.appendChild(layerButton);
+            this.layerBar.appendChild(li);
+        }
+
     }
 
     createTemplate() {
@@ -170,7 +211,6 @@ export class Canvas {
     }
 
     setImageData(data: Uint8ClampedArray, layer: number) {
-        let size = this.getSize();
         let image = this.getImage(layer);
         image.imageData.data.set(data);
         this.setImage(image, layer);

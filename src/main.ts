@@ -10,6 +10,8 @@ function run() {
 }
 
 function setup_events(editor: Editor) {
+	let editorContainer = document.getElementById("editorContainer")!;
+
 	document.getElementById("fileNew")!.onclick = () => {
 		editor.canvas.clearAll();
 		editor.steps.steps = [];
@@ -63,27 +65,27 @@ function setup_events(editor: Editor) {
 		console.log("jojo");
 	};
 
-	document.onmousedown = (e) => {
+	editorContainer.onmousedown = (e) => {
 		editor.onMouseDown(e);
 	}
 
-	document.onmouseup = (e) => {
+	editorContainer.onmouseup = (e) => {
 		editor.onMouseUp(e);
 	}
 
-	document.onmousemove = (e) => {
+	editorContainer.onmousemove = (e) => {
 		editor.onMouseMove(e);
 	}
 
-	window.onwheel = (e) => {
+	editorContainer.onwheel = (e) => {
 		editor.onWheel(e);
 	}
 
-	document.onkeydown = (e) => {
+	editorContainer.onkeydown = (e) => {
 		editor.onKeyDown(e);
 	}
 
-	document.onkeyup = (e) => {
+	editorContainer.onkeyup = (e) => {
 		editor.onKeyUp(e);
 	}
 }

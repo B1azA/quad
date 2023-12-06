@@ -11,7 +11,7 @@ export class Editor {
     // either primary or secondary
     color: [number, number, number, number] = [0, 0, 0, 255];
     primaryColor: [number, number, number, number] = [0, 0, 0, 255];
-    secondaryColor: [number, number, number, number] = [255, 255, 255, 255];
+    secondaryColor: [number, number, number, number] = [255, 0, 255, 255];
 
     templateLayer: number = 0;
     layer: number = 1;
@@ -46,11 +46,15 @@ export class Editor {
     ctrlPressed: boolean = false;
 
     constructor(size: { width: number, height: number }) {
-        this.canvas = new Canvas(size);
-        this.steps = new Steps(1);
+        this.canvas = new Canvas(this, size);
+        this.steps = new Steps();
 
         this.rulerStartCoords = { x: -1, y: -1 };
         this.rulerEndCoords = { x: -1, y: -1 };
+
+        let layer = this.canvas.createLayerTransformed();
+        this.canvas.addLayer(layer);
+        this.layer = 2;
     }
 
     onMouseDown(event: MouseEvent) {
