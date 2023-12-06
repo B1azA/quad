@@ -1,9 +1,10 @@
 import { Canvas } from "./canvas";
 import { PaintTool } from "./paintTool/paintTool";
-import { Steps, MiniStep } from "./paintTool/steps";
+import { Steps } from "./paintTool/steps";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
+import { Square } from "./paintTool/square";
 
 export class Editor {
     // curently selected color
@@ -40,6 +41,7 @@ export class Editor {
     penTool: PaintTool = new Pen;
     rulerTool: PaintTool = new Ruler;
     compassTool: PaintTool = new Compass;
+    squareTool: PaintTool = new Square;
 
     ctrlPressed: boolean = false;
 

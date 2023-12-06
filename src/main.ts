@@ -5,8 +5,6 @@ import "./styles/styles.scss"
 let editor = new Editor({ width: 32, height: 32 });
 run();
 
-let layer = 1;
-
 function run() {
 	setup_events(editor);
 }
@@ -56,6 +54,13 @@ function setup_events(editor: Editor) {
 
 	document.getElementById("compassTool")!.onclick = () => {
 		editor.paintTool = editor.compassTool;
+	};
+
+
+	document.getElementById("squareTool")!.onclick = () => {
+		console.log(editor.squareTool);
+		editor.paintTool = editor.squareTool;
+		console.log("jojo");
 	};
 
 	document.onmousedown = (e) => {
