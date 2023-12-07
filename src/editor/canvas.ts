@@ -6,16 +6,15 @@ export class Canvas {
     private editorContainer = document.getElementById("editorContainer")!;
     private layerBar = document.getElementById("layerBar")!;
 
-    private editor: Editor;
-
     // original width and height of the canvas
     private originalRealWidth: number;
     private originalRealHeight: number;
 
     private zoom: number = 1;
 
-    constructor(editor: Editor, dimensions: { width: number, height: number }) {
-        this.editor = editor;
+    private layer: number = 1;
+
+    constructor(dimensions: { width: number, height: number }) {
         this.removeLayers();
         let layer = this.createLayer();
         let template = this.createTemplate()
@@ -121,7 +120,6 @@ export class Canvas {
         this.ctxs.push(layer.getContext("2d", { willReadFrequently: true })!);
 
         let index = this.layers.length - 1;
-        console.log(index);
 
         if (index > 0) {
             let li = document.createElement("li");
@@ -132,7 +130,7 @@ export class Canvas {
                 let target = <HTMLButtonElement>e.target;
                 if (target.textContent) {
                     let layer = parseInt(target.textContent);
-                    this.editor.layer = layer;
+                    this.setLayer(layer);
                 }
             }
 
@@ -154,6 +152,32 @@ export class Canvas {
         this.editorContainer.appendChild(template);
 
         return template;
+    }
+
+    setLayer(layer: number) {
+        let length = this.layers.length;
+
+        // change layers zIndex so the template is on the current layer
+        if (length > layer) {
+            this.layer = layer;
+
+            // lower layers
+            for (let i = 1; i < layer; i++) {
+                this.layers[i].style.zIndex = "1";
+            }
+
+            // current layer
+            this.layers[layer].style.zIndex = "2";
+
+            // higher layers
+            for (let i = layer + 1; i < length; i++) {
+                this.layers[i].style.zIndex = "4";
+            }
+        }
+    }
+
+    getLayer() {
+        return this.layer;
     }
 
     // clear layer

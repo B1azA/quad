@@ -13,9 +13,6 @@ export class Editor {
     primaryColor: [number, number, number, number] = [0, 0, 0, 255];
     secondaryColor: [number, number, number, number] = [255, 0, 255, 255];
 
-    templateLayer: number = 0;
-    layer: number = 1;
-
     // pressed mouse buttons
     mouseButtons: [boolean, boolean, boolean] = [false, false, false];
 
@@ -30,9 +27,6 @@ export class Editor {
         y: number,
     } = { x: 0, y: 0 };
 
-    rulerStartCoords: { x: number, y: number };
-    rulerEndCoords: { x: number, y: number };
-
     canvas: Canvas;
 
     steps: Steps;
@@ -46,15 +40,11 @@ export class Editor {
     ctrlPressed: boolean = false;
 
     constructor(size: { width: number, height: number }) {
-        this.canvas = new Canvas(this, size);
+        this.canvas = new Canvas(size);
         this.steps = new Steps();
-
-        this.rulerStartCoords = { x: -1, y: -1 };
-        this.rulerEndCoords = { x: -1, y: -1 };
 
         let layer = this.canvas.createLayerTransformed();
         this.canvas.addLayer(layer);
-        this.layer = 2;
     }
 
     onMouseDown(event: MouseEvent) {
@@ -69,7 +59,7 @@ export class Editor {
                     this,
                     mouseCoords,
                     this.color,
-                    this.layer,
+                    this.canvas.getLayer(),
                 );
                 break;
             case 1:
@@ -83,7 +73,7 @@ export class Editor {
                     this,
                     mouseCoords,
                     this.color,
-                    this.layer,
+                    this.canvas.getLayer(),
                 );
                 break;
         }
@@ -98,7 +88,7 @@ export class Editor {
                     this,
                     mouseCoords,
                     this.color,
-                    this.layer,
+                    this.canvas.getLayer(),
                 );
                 break;
 
@@ -112,7 +102,7 @@ export class Editor {
                     this,
                     mouseCoords,
                     this.color,
-                    this.layer,
+                    this.canvas.getLayer(),
                 );
                 break;
         }
@@ -132,7 +122,7 @@ export class Editor {
                 this,
                 mouseCoords,
                 this.color,
-                this.layer,
+                this.canvas.getLayer(),
             );
         } else if (this.mouseButtons[1]) {
             let moveDelta = {

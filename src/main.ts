@@ -14,7 +14,7 @@ function setup_events(editor: Editor) {
 
 	document.getElementById("fileNew")!.onclick = () => {
 		editor.canvas.clearAll();
-		editor.steps.steps = [];
+		editor.steps.clear();
 	};
 
 	document.getElementById("fileLoad")!.onclick = () => {
@@ -43,7 +43,6 @@ function setup_events(editor: Editor) {
 	}
 
 	document.getElementById("fileImport")!.onclick = () => {
-		editor.steps.undo(editor.canvas);
 	}
 
 	document.getElementById("penTool")!.onclick = () => {
@@ -60,10 +59,16 @@ function setup_events(editor: Editor) {
 
 
 	document.getElementById("squareTool")!.onclick = () => {
-		console.log(editor.squareTool);
 		editor.paintTool = editor.squareTool;
-		console.log("jojo");
 	};
+
+	document.getElementById("undo")!.onclick = () => {
+		editor.steps.undo(editor.canvas);
+	}
+
+	document.getElementById("redo")!.onclick = () => {
+		editor.steps.redo(editor.canvas);
+	}
 
 	editorContainer.onmousedown = (e) => {
 		editor.onMouseDown(e);

@@ -140,7 +140,6 @@ export class Square implements PaintTool {
                 let distanceSquared = distanceX ** 2 + distanceY ** 2;
 
                 if (distanceSquared <= radius) {
-                    console.log(radius, distanceSquared);
                     image.putPixel({ x, y }, color);
                 }
             }
