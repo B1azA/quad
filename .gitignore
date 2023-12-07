@@ -25,3 +25,5 @@ dist-ssr
 
 target
 package-lock.json
+.vscode
+Cargo.lock

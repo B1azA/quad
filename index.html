@@ -36,7 +36,7 @@
 		<li><button id="rulerTool">Ruler</button></li>
 		<li><button id="compassTool">Compass</button></li>
 		<li><button id="squareTool">Square</button></li>
-		<li><button>Erase</button></li>
+		<li><button id="eraseTool">Erase</button></li>
 		<li><button id="undo">Undo</button></li>
 		<li><button id="redo">Redo</button></li>
 	</ul>
@@ -61,8 +61,14 @@
 		<canvas width=10 height=10 class="frame"></canvas>
 	</div>
 
-	<ul id="layerBar">
-	</ul>
+	<ul id="layerBar"></ul>
+
+	<div id="pickerContainer">
+		<li>Primary</li>
+		<li><input id="picker1" type="text"/></li>
+		<li>Secondary</li>
+		<li><input id="picker2" type="text"/></li>
+	</div>
 
 	<div id="editorContainer" oncontextmenu="return false;">
 	</div>

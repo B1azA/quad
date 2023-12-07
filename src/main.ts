@@ -1,12 +1,47 @@
+import "@melloware/coloris/dist/coloris.css";
+import "./styles/styles.scss"
 import { Editor } from "./editor/editor";
 import { ImageMessage, loadFile, saveFile } from "./tauri";
-import "./styles/styles.scss"
+
+import Coloris from "@melloware/coloris";
+import { TinyColor } from "@ctrl/tinycolor";
 
 let editor = new Editor({ width: 32, height: 32 });
 run();
 
 function run() {
 	setup_events(editor);
+
+
+	// setup coloris color pickers
+	Coloris.init();
+	Coloris({
+		el: "#picker1",
+		theme: "pill",
+		themeMode: "dark",
+		alpha: false,
+		closeButton: true,
+		formatToggle: true,
+	});
+
+	Coloris({
+		el: "#picker2",
+	});
+
+
+	Coloris.setInstance("#picker1", {
+		onChange: (color) => {
+			let col = new TinyColor(color);
+			editor.setPrimaryColor([col.r, col.g, col.b, 255]);
+		}
+	})
+
+	Coloris.setInstance("#picker2", {
+		onChange: (color) => {
+			let col = new TinyColor(color);
+			editor.setSecondaryColor([col.r, col.g, col.b, 255]);
+		}
+	})
 }
 
 function setup_events(editor: Editor) {
@@ -70,6 +105,9 @@ function setup_events(editor: Editor) {
 		editor.steps.redo(editor.canvas);
 	}
 
+	document.getElementById("eraseTool")!.onclick = () => {
+	};
+
 	editorContainer.onmousedown = (e) => {
 		editor.onMouseDown(e);
 	}
@@ -86,11 +124,11 @@ function setup_events(editor: Editor) {
 		editor.onWheel(e);
 	}
 
-	editorContainer.onkeydown = (e) => {
+	document.onkeydown = (e) => {
 		editor.onKeyDown(e);
 	}
 
-	editorContainer.onkeyup = (e) => {
+	document.onkeyup = (e) => {
 		editor.onKeyUp(e);
 	}
 }

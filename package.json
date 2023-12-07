@@ -10,6 +10,8 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@ctrl/tinycolor": "^4.0.2",
+    "@melloware/coloris": "^0.22.0",
     "@tauri-apps/api": "^1.5.1"
   },
   "devDependencies": {

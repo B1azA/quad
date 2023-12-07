@@ -18,7 +18,7 @@ export class MiniStep {
 
 export class Steps {
     // an array of ministeps is one step
-    private steps: MiniStep[][] = [];
+    steps: MiniStep[][] = [];
     private undoSteps: MiniStep[][] = [];
 
     clear() {
@@ -50,6 +50,11 @@ export class Steps {
 
     undo(canvas: Canvas) {
         let ministeps = this.steps.pop();
+
+        // if ministeps is null or empty try to pop another on
+        while ((ministeps != null && ministeps.length == 0 || ministeps == null) && this.steps.length > 0) {
+            ministeps = this.steps.pop();
+        }
 
         if (ministeps != null) {
             let layerImages: Image[] = [];

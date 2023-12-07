@@ -6,12 +6,20 @@ import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
 import { Square } from "./paintTool/square";
 
+import { fromRatio } from "@ctrl/tinycolor";
+
+export enum ColorState {
+    PRIMARY,
+    SECONDARY,
+}
+
 export class Editor {
     // curently selected color
     // either primary or secondary
-    color: [number, number, number, number] = [0, 0, 0, 255];
-    primaryColor: [number, number, number, number] = [0, 0, 0, 255];
-    secondaryColor: [number, number, number, number] = [255, 0, 255, 255];
+    private color: [number, number, number, number] = [0, 0, 0, 255];
+    private colorState: ColorState = ColorState.PRIMARY;
+    private primaryColor: [number, number, number, number] = [0, 0, 0, 255];
+    private secondaryColor: [number, number, number, number] = [255, 0, 255, 255];
 
     // pressed mouse buttons
     mouseButtons: [boolean, boolean, boolean] = [false, false, false];
@@ -39,12 +47,55 @@ export class Editor {
 
     ctrlPressed: boolean = false;
 
+    colorPicker1 = <HTMLInputElement>document.getElementById("picker1");
+    colorPicker2 = <HTMLInputElement>document.getElementById("picker2");
+
     constructor(size: { width: number, height: number }) {
         this.canvas = new Canvas(size);
         this.steps = new Steps();
 
         let layer = this.canvas.createLayerTransformed();
         this.canvas.addLayer(layer);
+
+        let col1 = fromRatio({
+            r: this.primaryColor[0],
+            g: this.primaryColor[1],
+            b: this.primaryColor[2],
+        });
+        this.colorPicker1.value = col1.toHexString();
+
+        let col2 = fromRatio({
+            r: this.secondaryColor[0],
+            g: this.secondaryColor[1],
+            b: this.secondaryColor[2],
+        });
+        this.colorPicker2.value = col2.toHexString();
+    }
+
+    getColor() {
+        return this.color;
+    }
+
+    setPrimaryColor(color: [number, number, number, number]) {
+        this.primaryColor = color;
+    }
+
+    setSecondaryColor(color: [number, number, number, number]) {
+        this.secondaryColor = color;
+    }
+
+    setColorState(state: ColorState) {
+        this.colorState = state;
+
+        if (state == ColorState.PRIMARY) {
+            this.color = this.primaryColor;
+        } else {
+            this.color = this.secondaryColor;
+        }
+    }
+
+    getColorState() {
+        return this.colorState;
     }
 
     onMouseDown(event: MouseEvent) {
@@ -52,29 +103,37 @@ export class Editor {
 
         switch (event.button) {
             case 0:
-                this.steps.newStep();
                 this.mouseButtons[0] = true;
-                this.color = this.primaryColor;
-                this.paintTool.onMouseDown(
-                    this,
-                    mouseCoords,
-                    this.color,
-                    this.canvas.getLayer(),
-                );
+
+                // if not moving with the canvas
+                if (!this.ctrlPressed) {
+                    this.steps.newStep();
+                    this.setColorState(ColorState.PRIMARY);
+                    this.paintTool.onMouseDown(
+                        this,
+                        mouseCoords,
+                        this.color,
+                        this.canvas.getLayer(),
+                    );
+                }
                 break;
             case 1:
                 this.mouseButtons[1] = true;
                 break
             case 2:
-                this.steps.newStep();
                 this.mouseButtons[2] = true;
-                this.color = this.secondaryColor;
-                this.paintTool.onMouseDown(
-                    this,
-                    mouseCoords,
-                    this.color,
-                    this.canvas.getLayer(),
-                );
+
+                // if not moving with the canvas
+                if (!this.ctrlPressed) {
+                    this.steps.newStep();
+                    this.setColorState(ColorState.SECONDARY);
+                    this.paintTool.onMouseDown(
+                        this,
+                        mouseCoords,
+                        this.color,
+                        this.canvas.getLayer(),
+                    );
+                }
                 break;
         }
     }
@@ -84,12 +143,16 @@ export class Editor {
         switch (event.button) {
             case 0:
                 this.mouseButtons[0] = false;
-                this.paintTool.onMouseUp(
-                    this,
-                    mouseCoords,
-                    this.color,
-                    this.canvas.getLayer(),
-                );
+
+                // if not moving with the canvas
+                if (!this.ctrlPressed) {
+                    this.paintTool.onMouseUp(
+                        this,
+                        mouseCoords,
+                        this.color,
+                        this.canvas.getLayer(),
+                    );
+                }
                 break;
 
             case 1:
@@ -98,16 +161,19 @@ export class Editor {
 
             case 2:
                 this.mouseButtons[2] = false;
-                this.paintTool.onMouseUp(
-                    this,
-                    mouseCoords,
-                    this.color,
-                    this.canvas.getLayer(),
-                );
+
+                // if not moving with the canvas
+                if (!this.ctrlPressed) {
+                    this.paintTool.onMouseUp(
+                        this,
+                        mouseCoords,
+                        this.color,
+                        this.canvas.getLayer(),
+                    );
+                }
                 break;
         }
     }
-
 
     onMouseMove(event: MouseEvent) {
         let mouseCoords = this.canvas.getMouseCoords(event);
@@ -118,12 +184,21 @@ export class Editor {
         this.canvas.clear(0);
 
         if (this.mouseButtons[0] || this.mouseButtons[2]) {
-            this.paintTool.onMouseMove(
-                this,
-                mouseCoords,
-                this.color,
-                this.canvas.getLayer(),
-            );
+            // if moving with the canvas
+            if (this.ctrlPressed) {
+                let moveDelta = {
+                    x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
+                    y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
+                };
+                this.canvas.move(moveDelta);
+            } else { // paint
+                this.paintTool.onMouseMove(
+                    this,
+                    mouseCoords,
+                    this.color,
+                    this.canvas.getLayer(),
+                );
+            }
         } else if (this.mouseButtons[1]) {
             let moveDelta = {
                 x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
