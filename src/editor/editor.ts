@@ -45,7 +45,7 @@ export class Editor {
     compassTool: PaintTool = new Compass;
     squareTool: PaintTool = new Square;
 
-    ctrlPressed: boolean = false;
+    drag: boolean = false;
 
     colorPicker1 = <HTMLInputElement>document.getElementById("picker1");
     colorPicker2 = <HTMLInputElement>document.getElementById("picker2");
@@ -56,6 +56,9 @@ export class Editor {
 
         let layer = this.canvas.createLayerTransformed();
         this.canvas.addLayer(layer);
+
+        let layer2 = this.canvas.createLayerTransformed();
+        this.canvas.addLayer(layer2);
 
         let col1 = fromRatio({
             r: this.primaryColor[0],
@@ -106,7 +109,7 @@ export class Editor {
                 this.mouseButtons[0] = true;
 
                 // if not moving with the canvas
-                if (!this.ctrlPressed) {
+                if (!this.drag) {
                     this.steps.newStep();
                     this.setColorState(ColorState.PRIMARY);
                     this.paintTool.onMouseDown(
@@ -124,7 +127,7 @@ export class Editor {
                 this.mouseButtons[2] = true;
 
                 // if not moving with the canvas
-                if (!this.ctrlPressed) {
+                if (!this.drag) {
                     this.steps.newStep();
                     this.setColorState(ColorState.SECONDARY);
                     this.paintTool.onMouseDown(
@@ -145,7 +148,7 @@ export class Editor {
                 this.mouseButtons[0] = false;
 
                 // if not moving with the canvas
-                if (!this.ctrlPressed) {
+                if (!this.drag) {
                     this.paintTool.onMouseUp(
                         this,
                         mouseCoords,
@@ -163,7 +166,7 @@ export class Editor {
                 this.mouseButtons[2] = false;
 
                 // if not moving with the canvas
-                if (!this.ctrlPressed) {
+                if (!this.drag) {
                     this.paintTool.onMouseUp(
                         this,
                         mouseCoords,
@@ -185,7 +188,7 @@ export class Editor {
 
         if (this.mouseButtons[0] || this.mouseButtons[2]) {
             // if moving with the canvas
-            if (this.ctrlPressed) {
+            if (this.drag) {
                 let moveDelta = {
                     x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
                     y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
@@ -223,12 +226,10 @@ export class Editor {
     }
 
     onKeyDown(event: KeyboardEvent) {
-        this.ctrlPressed = event.ctrlKey;
+        this.drag = event.ctrlKey;
     }
 
     onKeyUp(event: KeyboardEvent) {
-        if (event.ctrlKey) {
-            this.ctrlPressed = false;
-        }
+        this.drag = event.ctrlKey;
     }
 }

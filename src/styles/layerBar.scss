@@ -1,15 +1,58 @@
 #layerBar {
     position: absolute;
-    top: 6em;
+    top: 10em;
     right: 12em;
     list-style-type: none;
-    background-color: black;
     z-index: 6;
 
-    li button {
-        display: block;
-        width: 92%;
-        padding: 4px;
-        margin: 4%;
+    li {
+        height: 2em;
+
+        button {
+            width: 2em;
+            display: block;
+            padding: 4px;
+            margin: 4px;
+            margin-right: 0;
+        }
+    }
+}
+
+#currentLayerBtn {
+    background: yellow;
+}
+
+#layerRangeBar {
+    position: absolute;
+    top: 10em;
+    right: 15em;
+    list-style-type: none;
+    z-index: 6;
+
+    li {
+        height: 2em;
+        margin: 4px;
+
+        input {
+            width: 4em;
+            outline: none;
+            opacity: 0.7;
+        }
+
+        input:hover {
+            opacity: 1;
+        }
+    }
+}
+
+#layersConfig {
+    position: absolute;
+    top: 8em;
+    right: 12em;
+    display: block;
+
+    button {
+        height: 2em;
+        width: 2em;
     }
 }

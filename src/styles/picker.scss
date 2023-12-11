@@ -1,0 +1,35 @@
+#color {
+    position: absolute;
+    left: 8em;
+    top: 10em;
+    z-index: 15;
+    width: 50px;
+    height: 50px;
+}
+
+.clr-field {
+    z-index: 50;
+}
+
+.clr-picker {
+    z-index: 50;
+}
+
+#pickerContainer {
+    position: relative;
+    left: 0em;
+    top: 30em;
+}
+#pickerContainer {
+    position: absolute;
+    top: 30em;
+    left: 0;
+    list-style-type: none;
+    background-color: grey;
+    z-index: 6;
+
+    li {
+        display: block;
+        margin: 4px;
+    }
+}

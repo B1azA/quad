@@ -1,10 +1,14 @@
-import { Editor } from "./editor";
-
 export class Canvas {
     readonly layers: HTMLCanvasElement[] = [];
     private ctxs: CanvasRenderingContext2D[] = [];
     private editorContainer = document.getElementById("editorContainer")!;
     private layerBar = document.getElementById("layerBar")!;
+    private layerRangeBar = document.getElementById("layerRangeBar")!;
+
+    // there is one less element than in layers
+    // because there is no button and range for the template
+    private layerButtons: HTMLButtonElement[] = [];
+    private layerRanges: HTMLInputElement[] = [];
 
     // original width and height of the canvas
     private originalRealWidth: number;
@@ -37,6 +41,8 @@ export class Canvas {
 
         this.originalRealWidth = width;
         this.originalRealHeight = height;
+
+        this.setLayer(1);
     }
 
     setSize(size: { width: number, height: number }) {
@@ -126,8 +132,10 @@ export class Canvas {
             let layerButton = document.createElement("button");
             layerButton.textContent = index.toString();
 
+            // change the layer on click
             layerButton.onclick = (e) => {
                 let target = <HTMLButtonElement>e.target;
+                // if not null
                 if (target.textContent) {
                     let layer = parseInt(target.textContent);
                     this.setLayer(layer);
@@ -136,8 +144,45 @@ export class Canvas {
 
             li.appendChild(layerButton);
             this.layerBar.appendChild(li);
-        }
+            this.layerButtons.push(layerButton);
 
+            // set an opacity slider
+            let layerOpacityRange = document.createElement("input");
+            layerOpacityRange.type = "range";
+            layerOpacityRange.min = "0";
+            layerOpacityRange.max = "100";
+            layerOpacityRange.value = "100";
+
+            layerOpacityRange.oninput = () => {
+                // + 0.2 so it can be always seen
+                layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
+                this.layers[index].style.opacity = (parseInt(layerOpacityRange.value) / 100).toString();
+            }
+
+            let opacityLi = document.createElement("li");
+            opacityLi.appendChild(layerOpacityRange);
+            this.layerRangeBar.appendChild(opacityLi);
+            this.layerRanges.push(layerOpacityRange);
+
+            this.setLayer(index);
+        }
+    }
+
+    removeLayer() {
+        // > 2 so at least one layer and the template exists
+        if (this.layers.length > 2) {
+            if (this.getLayer() == this.layers.length - 1) {
+                this.setLayer(this.layers.length - 2);
+            }
+
+            let layer = this.layers.pop();
+            this.ctxs.pop();
+            let layerButton = this.layerButtons.pop();
+            let layerRange = this.layerRanges.pop();
+            layer?.remove();
+            layerButton?.parentElement?.remove();
+            layerRange?.parentElement?.remove();
+        }
     }
 
     createTemplate() {
@@ -173,6 +218,12 @@ export class Canvas {
             for (let i = layer + 1; i < length; i++) {
                 this.layers[i].style.zIndex = "4";
             }
+
+            // set id
+            this.layerButtons.forEach((button) => {
+                button.id = "";
+            });
+            this.layerButtons[layer - 1].id = "currentLayerBtn";
         }
     }
 

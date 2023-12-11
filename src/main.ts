@@ -108,15 +108,43 @@ function setup_events(editor: Editor) {
 	document.getElementById("eraseTool")!.onclick = () => {
 	};
 
+	document.getElementById("addLayer")!.onclick = () => {
+		let layer = editor.canvas.createLayerTransformed();
+		editor.canvas.addLayer(layer);
+	}
+
+	document.getElementById("removeLayer")!.onclick = () => {
+		editor.canvas.removeLayer();
+	}
+
+	document.getElementById("moveLayerUp")!.onclick = () => {
+	}
+
+	document.getElementById("moveLayerDown")!.onclick = () => {
+	}
+
+	let mouseOverEditorContainer = false;
+	editorContainer.onmouseenter = (e) => {
+		mouseOverEditorContainer = true;
+	}
+
+	editorContainer.onmouseleave = (e) => {
+		mouseOverEditorContainer = false;
+	}
+
 	editorContainer.onmousedown = (e) => {
-		editor.onMouseDown(e);
+		if (mouseOverEditorContainer) {
+			editor.onMouseDown(e);
+		}
 	}
 
-	editorContainer.onmouseup = (e) => {
-		editor.onMouseUp(e);
+	document.onmouseup = (e) => {
+		if (mouseOverEditorContainer) {
+			editor.onMouseUp(e);
+		}
 	}
 
-	editorContainer.onmousemove = (e) => {
+	document.onmousemove = (e) => {
 		editor.onMouseMove(e);
 	}
 
