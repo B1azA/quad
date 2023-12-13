@@ -1,5 +1,7 @@
+import { showPromptDialog } from "./dialog";
+
 export class Canvas {
-    readonly layers: HTMLCanvasElement[] = [];
+    private layers: HTMLCanvasElement[] = [];
     private ctxs: CanvasRenderingContext2D[] = [];
     private editorContainer = document.getElementById("editorContainer")!;
     private layerBar = document.getElementById("layerBar")!;
@@ -144,15 +146,12 @@ export class Canvas {
             layerButton.ondblclick = (e) => {
                 let target = <HTMLButtonElement>e.target;
                 let def = target.textContent;
-
                 if (def == null) def = "unnamed";
 
-                let name = window.prompt("Layer name", def);
-
-                // if name is not null nor empty
-                if (name != null && name.length > 0) {
+                showPromptDialog("Rename layer", def, (value) => {
+                    let name = value.length > 0 ? value : "unnamed";
                     target.textContent = name;
-                }
+                });
             }
 
             li.appendChild(layerButton);
@@ -182,20 +181,71 @@ export class Canvas {
     }
 
     removeLayer() {
+        let layer = this.layer;
+
         // > 2 so at least one layer and the template exists
-        if (this.layers.length > 2) {
-            if (this.getLayer() == this.layers.length - 1) {
-                this.setLayer(this.layers.length - 2);
+        if (layer > 0 && layer && this.layers.length > 2) {
+            // remove elements from DOM
+            let max = this.layerButtons.length;
+            for (let i = 0; i < max; i++) {
+                this.layerButtons[i].parentElement?.remove();
+                this.layerRanges[i].parentElement?.remove();
             }
 
-            let layer = this.layers.pop();
-            this.ctxs.pop();
-            let layerButton = this.layerButtons.pop();
-            let layerRange = this.layerRanges.pop();
-            layer?.remove();
-            layerButton?.parentElement?.remove();
-            layerRange?.parentElement?.remove();
+            let newLayerButtons = [];
+            let newLayerRanges = [];
+            for (let i = 0; i < max; i++) {
+                if (i < layer - 1) {
+                    let button = this.layerButtons[i];
+                    button.id = (i + 1).toString();
+                    newLayerButtons.push(button);
+
+                    let range = this.layerRanges[i];
+                    newLayerRanges.push(range);
+                } else if (i > layer - 1) {
+                    let button = this.layerButtons[i];
+                    button.id = i.toString();
+                    newLayerButtons.push(button);
+
+                    let range = this.layerRanges[i];
+                    newLayerRanges.push(range);
+                }
+            }
+
+            this.layerButtons = newLayerButtons;
+            this.layerRanges = newLayerRanges;
+
+            // remove an editor layer
+            this.layers[layer].remove();
+            this.layers.splice(layer, 1);
+            this.ctxs.splice(layer, 1);
+
+            // return elements back
+            for (let i = 0; i < this.layerButtons.length; i++) {
+                let li = document.createElement("li");
+                li.appendChild(this.layerButtons[i]);
+                this.layerBar.appendChild(li);
+
+                // change oninput event so it changes opacity of the right layer
+                this.layerRanges[i].oninput = () => {
+                    // + 0.2 so it can be always seen
+                    this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
+                    this.layers[i + 1].style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
+                }
+
+                let liRange = document.createElement("li");
+                liRange.appendChild(this.layerRanges[i]);
+                this.layerRangeBar.appendChild(liRange);
+            }
+
+            // change layer if it does not exist anymore
+            if (this.layer >= this.layers.length) {
+                this.setLayer(this.layers.length - 1);
+            } else if (this.layer <= 0) {
+                this.setLayer(1);
+            }
         }
+
     }
 
     createTemplate() {
