@@ -5,6 +5,8 @@ import { ImageMessage, loadFile, saveFile } from "./tauri";
 
 import Coloris from "@melloware/coloris";
 import { TinyColor } from "@ctrl/tinycolor";
+import { showPromptDialog } from "./editor/dialog";
+
 
 let editor = new Editor({ width: 32, height: 32 });
 run();
@@ -109,8 +111,12 @@ function setup_events(editor: Editor) {
 	};
 
 	document.getElementById("addLayer")!.onclick = () => {
-		let layer = editor.canvas.createLayerTransformed();
-		editor.canvas.addLayer(layer);
+		showPromptDialog("Add layer", "new", (value) => {
+			let layer = editor.canvas.createLayerTransformed();
+
+			let name = value.length > 0 ? value : "unnamed";
+			editor.canvas.addLayer(layer, name);
+		});
 	}
 
 	document.getElementById("removeLayer")!.onclick = () => {
@@ -123,25 +129,12 @@ function setup_events(editor: Editor) {
 	document.getElementById("moveLayerDown")!.onclick = () => {
 	}
 
-	let mouseOverEditorContainer = false;
-	editorContainer.onmouseenter = (e) => {
-		mouseOverEditorContainer = true;
-	}
-
-	editorContainer.onmouseleave = (e) => {
-		mouseOverEditorContainer = false;
-	}
-
-	editorContainer.onmousedown = (e) => {
-		if (mouseOverEditorContainer) {
-			editor.onMouseDown(e);
-		}
+	document.onmousedown = (e) => {
+		editor.onMouseDown(e);
 	}
 
 	document.onmouseup = (e) => {
-		if (mouseOverEditorContainer) {
-			editor.onMouseUp(e);
-		}
+		editor.onMouseUp(e);
 	}
 
 	document.onmousemove = (e) => {
@@ -158,5 +151,13 @@ function setup_events(editor: Editor) {
 
 	document.onkeyup = (e) => {
 		editor.onKeyUp(e);
+	}
+
+	editorContainer.onmouseenter = () => {
+		editor.onMouseEnter();
+	}
+
+	editorContainer.onmouseleave = () => {
+		editor.onMouseLeave();
 	}
 }

@@ -9,23 +9,24 @@
         height: 2em;
 
         button {
-            width: 2em;
+            width: 5em;
             display: block;
             padding: 4px;
             margin: 4px;
             margin-right: 0;
+            overflow: hidden;
         }
     }
 }
 
-#currentLayerBtn {
+.currentLayerBtn {
     background: yellow;
 }
 
 #layerRangeBar {
     position: absolute;
     top: 10em;
-    right: 15em;
+    right: 17em;
     list-style-type: none;
     z-index: 6;
 

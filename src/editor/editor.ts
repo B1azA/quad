@@ -45,6 +45,8 @@ export class Editor {
     compassTool: PaintTool = new Compass;
     squareTool: PaintTool = new Square;
 
+    private isMouseOnEditorContainer = false;
+
     drag: boolean = false;
 
     colorPicker1 = <HTMLInputElement>document.getElementById("picker1");
@@ -55,10 +57,10 @@ export class Editor {
         this.steps = new Steps();
 
         let layer = this.canvas.createLayerTransformed();
-        this.canvas.addLayer(layer);
+        this.canvas.addLayer(layer, "secondary");
 
         let layer2 = this.canvas.createLayerTransformed();
-        this.canvas.addLayer(layer2);
+        this.canvas.addLayer(layer2, "terciary");
 
         let col1 = fromRatio({
             r: this.primaryColor[0],
@@ -109,13 +111,13 @@ export class Editor {
                 this.mouseButtons[0] = true;
 
                 // if not moving with the canvas
-                if (!this.drag) {
+                if (!this.drag && this.isMouseOnEditorContainer) {
                     this.steps.newStep();
                     this.setColorState(ColorState.PRIMARY);
                     this.paintTool.onMouseDown(
                         this,
                         mouseCoords,
-                        this.color,
+                        this.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -127,13 +129,13 @@ export class Editor {
                 this.mouseButtons[2] = true;
 
                 // if not moving with the canvas
-                if (!this.drag) {
+                if (!this.drag && this.isMouseOnEditorContainer) {
                     this.steps.newStep();
                     this.setColorState(ColorState.SECONDARY);
                     this.paintTool.onMouseDown(
                         this,
                         mouseCoords,
-                        this.color,
+                        this.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -148,11 +150,11 @@ export class Editor {
                 this.mouseButtons[0] = false;
 
                 // if not moving with the canvas
-                if (!this.drag) {
+                if (!this.drag && this.isMouseOnEditorContainer) {
                     this.paintTool.onMouseUp(
                         this,
                         mouseCoords,
-                        this.color,
+                        this.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -166,11 +168,11 @@ export class Editor {
                 this.mouseButtons[2] = false;
 
                 // if not moving with the canvas
-                if (!this.drag) {
+                if (!this.drag && this.isMouseOnEditorContainer) {
                     this.paintTool.onMouseUp(
                         this,
                         mouseCoords,
-                        this.color,
+                        this.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -194,11 +196,11 @@ export class Editor {
                     y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
                 };
                 this.canvas.move(moveDelta);
-            } else { // paint
+            } else if (this.isMouseOnEditorContainer) { // paint
                 this.paintTool.onMouseMove(
                     this,
                     mouseCoords,
-                    this.color,
+                    this.getColor(),
                     this.canvas.getLayer(),
                 );
             }
@@ -212,7 +214,7 @@ export class Editor {
 
         // show current pixel
         let image = this.canvas.getImage(0);
-        image.putPixel(mouseCoords, this.color);
+        image.putPixel(mouseCoords, this.getColor());
         this.canvas.setImage(image, 0);
 
         // save mouse
@@ -223,6 +225,7 @@ export class Editor {
     onWheel(event: WheelEvent) {
         let zoom = Math.sign(-event.deltaY) * 0.1;
         this.canvas.zoomIn(zoom);
+        this.onMouseMove(event);
     }
 
     onKeyDown(event: KeyboardEvent) {
@@ -231,5 +234,13 @@ export class Editor {
 
     onKeyUp(event: KeyboardEvent) {
         this.drag = event.ctrlKey;
+    }
+
+    onMouseEnter() {
+        this.isMouseOnEditorContainer = true;
+    }
+
+    onMouseLeave() {
+        this.isMouseOnEditorContainer = false;
     }
 }

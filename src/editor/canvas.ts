@@ -23,8 +23,8 @@ export class Canvas {
         let layer = this.createLayer();
         let template = this.createTemplate()
 
-        this.addLayer(template);
-        this.addLayer(layer);
+        this.addLayer(template, "template");
+        this.addLayer(layer, "main");
 
         this.setSize(dimensions);
         let size = this.getSize();
@@ -121,7 +121,7 @@ export class Canvas {
         return layer;
     }
 
-    addLayer(layer: HTMLCanvasElement) {
+    addLayer(layer: HTMLCanvasElement, name: string) {
         this.layers.push(layer);
         this.ctxs.push(layer.getContext("2d", { willReadFrequently: true })!);
 
@@ -130,15 +130,28 @@ export class Canvas {
         if (index > 0) {
             let li = document.createElement("li");
             let layerButton = document.createElement("button");
-            layerButton.textContent = index.toString();
+            layerButton.id = index.toString();
+            layerButton.textContent = name;
 
             // change the layer on click
             layerButton.onclick = (e) => {
                 let target = <HTMLButtonElement>e.target;
-                // if not null
-                if (target.textContent) {
-                    let layer = parseInt(target.textContent);
-                    this.setLayer(layer);
+                let layer = parseInt(target.id);
+                this.setLayer(layer);
+            }
+
+            // rename on double click
+            layerButton.ondblclick = (e) => {
+                let target = <HTMLButtonElement>e.target;
+                let def = target.textContent;
+
+                if (def == null) def = "unnamed";
+
+                let name = window.prompt("Layer name", def);
+
+                // if name is not null nor empty
+                if (name != null && name.length > 0) {
+                    target.textContent = name;
                 }
             }
 
@@ -221,9 +234,9 @@ export class Canvas {
 
             // set id
             this.layerButtons.forEach((button) => {
-                button.id = "";
+                button.classList.remove("currentLayerBtn");
             });
-            this.layerButtons[layer - 1].id = "currentLayerBtn";
+            this.layerButtons[layer - 1].classList.add("currentLayerBtn");
         }
     }
 
