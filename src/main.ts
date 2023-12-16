@@ -12,152 +12,152 @@ let editor = new Editor({ width: 32, height: 32 });
 run();
 
 function run() {
-	setup_events(editor);
+    setup_events(editor);
 
+    // setup coloris color pickers
+    Coloris.init();
+    Coloris({
+        el: "#picker1",
+        theme: "pill",
+        themeMode: "dark",
+        alpha: false,
+        closeButton: true,
+        formatToggle: true,
+    });
 
-	// setup coloris color pickers
-	Coloris.init();
-	Coloris({
-		el: "#picker1",
-		theme: "pill",
-		themeMode: "dark",
-		alpha: false,
-		closeButton: true,
-		formatToggle: true,
-	});
+    Coloris({
+        el: "#picker2",
+    });
 
-	Coloris({
-		el: "#picker2",
-	});
+    Coloris.setInstance("#picker1", {
+        onChange: (color) => {
+            let col = new TinyColor(color);
+            editor.setPrimaryColor([col.r, col.g, col.b, 255]);
+        }
+    })
 
-
-	Coloris.setInstance("#picker1", {
-		onChange: (color) => {
-			let col = new TinyColor(color);
-			editor.setPrimaryColor([col.r, col.g, col.b, 255]);
-		}
-	})
-
-	Coloris.setInstance("#picker2", {
-		onChange: (color) => {
-			let col = new TinyColor(color);
-			editor.setSecondaryColor([col.r, col.g, col.b, 255]);
-		}
-	})
+    Coloris.setInstance("#picker2", {
+        onChange: (color) => {
+            let col = new TinyColor(color);
+            editor.setSecondaryColor([col.r, col.g, col.b, 255]);
+        }
+    })
 }
 
 function setup_events(editor: Editor) {
-	let editorContainer = document.getElementById("editorContainer")!;
+    let editorContainer = document.getElementById("editorContainer")!;
 
-	document.getElementById("fileNew")!.onclick = () => {
-		editor.canvas.clearAll();
-		editor.steps.clear();
-	};
+    document.getElementById("fileNew")!.onclick = () => {
+        editor.canvas.clearAll();
+        editor.steps.clear();
+    };
 
-	document.getElementById("fileLoad")!.onclick = () => {
-		loadFile()
-			.then((message) => {
-				editor.canvas.removeLayers();
-				editor = new Editor({ width: message.width, height: message.height });
-				let data = Uint8ClampedArray.from(message.data);
-				editor.canvas.setImageData(data, 1);
-			})
-			.catch((error) => console.error(error));
-	}
+    document.getElementById("fileLoad")!.onclick = () => {
+        loadFile()
+            .then((message) => {
+                editor.canvas.removeLayers();
+                editor = new Editor({ width: message.width, height: message.height });
+                let data = Uint8ClampedArray.from(message.data);
+                editor.canvas.setImageData(data, 1);
+            })
+            .catch((error) => console.error(error));
+    }
 
-	document.getElementById("fileSaveAs")!.onclick = () => {
-		let size = editor.canvas.getSize();
-		let data = Array.from(editor.canvas.getImageData(1));
+    document.getElementById("fileSaveAs")!.onclick = () => {
+        let size = editor.canvas.getSize();
+        let data = Array.from(editor.canvas.getImageData(1));
 
-		let message: ImageMessage = {
-			width: size.width,
-			height: size.height,
-			name: "image",
-			path: "",
-			data: data,
-		};
-		saveFile(message);
-	}
+        let message: ImageMessage = {
+            width: size.width,
+            height: size.height,
+            name: "image",
+            path: "",
+            data: data,
+        };
+        saveFile(message);
+    }
 
-	document.getElementById("fileImport")!.onclick = () => {
-	}
+    document.getElementById("fileImport")!.onclick = () => {
+    }
 
-	document.getElementById("penTool")!.onclick = () => {
-		editor.paintTool = editor.penTool;
-	};
+    document.getElementById("penTool")!.onclick = () => {
+        editor.paintTool = editor.penTool;
+    };
 
-	document.getElementById("rulerTool")!.onclick = () => {
-		editor.paintTool = editor.rulerTool;
-	};
+    document.getElementById("rulerTool")!.onclick = () => {
+        editor.paintTool = editor.rulerTool;
+    };
 
-	document.getElementById("compassTool")!.onclick = () => {
-		editor.paintTool = editor.compassTool;
-	};
+    document.getElementById("compassTool")!.onclick = () => {
+        editor.paintTool = editor.compassTool;
+    };
 
 
-	document.getElementById("squareTool")!.onclick = () => {
-		editor.paintTool = editor.squareTool;
-	};
+    document.getElementById("squareTool")!.onclick = () => {
+        editor.paintTool = editor.squareTool;
+    };
 
-	document.getElementById("undo")!.onclick = () => {
-		editor.steps.undo(editor.canvas);
-	}
+    document.getElementById("undo")!.onclick = () => {
+        editor.steps.undo(editor.canvas);
+    }
 
-	document.getElementById("redo")!.onclick = () => {
-		editor.steps.redo(editor.canvas);
-	}
+    document.getElementById("redo")!.onclick = () => {
+        editor.steps.redo(editor.canvas);
+    }
 
-	document.getElementById("eraseTool")!.onclick = () => {
-	};
+    document.getElementById("eraseTool")!.onclick = () => {
+    };
 
-	document.getElementById("addLayer")!.onclick = () => {
-		showPromptDialog("Add layer", "new", (value) => {
-			let layer = editor.canvas.createLayerTransformed();
+    document.getElementById("addLayer")!.onclick = () => {
+        showPromptDialog("Add layer", "new", (value) => {
+            let layer = editor.canvas.createLayerTransformed();
 
-			let name = value.length > 0 ? value : "unnamed";
-			editor.canvas.addLayer(layer, name);
-		});
-	}
+            let name = value.length > 0 ? value : "unnamed";
+            editor.canvas.addLayer(layer, name);
+        });
+    }
 
-	document.getElementById("removeLayer")!.onclick = () => {
-		editor.canvas.removeLayer();
-	}
+    document.getElementById("removeLayer")!.onclick = () => {
+        editor.canvas.removeLayer();
+    }
 
-	document.getElementById("moveLayerUp")!.onclick = () => {
-	}
+    document.getElementById("moveLayerUp")!.onclick = () => {
+        editor.canvas.moveLayerUp();
+    }
 
-	document.getElementById("moveLayerDown")!.onclick = () => {
-	}
+    document.getElementById("moveLayerDown")!.onclick = () => {
+        editor.canvas.moveLayerDown();
+    }
 
-	document.onmousedown = (e) => {
-		editor.onMouseDown(e);
-	}
+    document.onmousedown = (e) => {
+        editor.onMouseDown(e);
+    }
 
-	document.onmouseup = (e) => {
-		editor.onMouseUp(e);
-	}
+    document.onmouseup = (e) => {
+        editor.onMouseUp(e);
+    }
 
-	document.onmousemove = (e) => {
-		editor.onMouseMove(e);
-	}
+    document.onmousemove = (e) => {
+        editor.onMouseMove(e);
+    }
 
-	editorContainer.onwheel = (e) => {
-		editor.onWheel(e);
-	}
+    editorContainer.onwheel = (e) => {
+        editor.onWheel(e);
+    }
 
-	document.onkeydown = (e) => {
-		editor.onKeyDown(e);
-	}
+    document.onkeydown = (e) => {
+        editor.onKeyDown(e);
+    }
 
-	document.onkeyup = (e) => {
-		editor.onKeyUp(e);
-	}
+    document.onkeyup = (e) => {
+        editor.onKeyUp(e);
+    }
 
-	editorContainer.onmouseenter = () => {
-		editor.onMouseEnter();
-	}
+    editorContainer.onmouseenter = () => {
+        editor.onMouseEnter();
+    }
 
-	editorContainer.onmouseleave = () => {
-		editor.onMouseLeave();
-	}
+    editorContainer.onmouseleave = () => {
+        editor.onMouseLeave();
+    }
 }

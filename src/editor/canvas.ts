@@ -1,4 +1,5 @@
 import { showPromptDialog } from "./dialog";
+import { Steps } from "./steps/steps";
 
 export class Canvas {
     private layers: HTMLCanvasElement[] = [];
@@ -88,6 +89,10 @@ export class Canvas {
 
     getBoundingClientRect() {
         return this.layers[0].getBoundingClientRect();
+    }
+
+    getLayersLength() {
+        return this.layers.length;
     }
 
     // remove all layers except template
@@ -248,6 +253,139 @@ export class Canvas {
 
     }
 
+    moveLayerUp() {
+        let layer = this.layer;
+
+        // do not move if the layer is on top or it is the template
+        if (layer > 1) {
+            // remove buttons and ranges
+            for (let i = 0; i < this.layerButtons.length; i++) {
+                this.layerButtons[i].parentElement?.remove();
+                this.layerRanges[i].parentElement?.remove();
+            }
+
+            // move layer up
+            let currentIndex = layer - 1;
+            let oneUpIndex = layer - 2;
+
+            //switch buttons
+            let currentButton = this.layerButtons[currentIndex];
+            let oneUpButton = this.layerButtons[oneUpIndex];
+            let oneUpId = oneUpButton.id;
+            oneUpButton.id = currentButton.id;
+            currentButton.id = oneUpId;
+            this.layerButtons[currentIndex] = oneUpButton;
+            this.layerButtons[oneUpIndex] = currentButton;
+
+            // switch ranges
+            let currentRange = this.layerRanges[currentIndex];
+            let oneUpRange = this.layerRanges[oneUpIndex];
+            this.layerRanges[currentIndex] = oneUpRange;
+            this.layerRanges[oneUpIndex] = currentRange;
+
+            // switch layers and ctxs
+            let currentLayerIndex = currentIndex + 1;
+            let oneUpLayerIndex = oneUpIndex + 1;
+
+            let currentLayer = this.layers[currentLayerIndex];
+            let oneUpLayer = this.layers[oneUpLayerIndex];
+            this.layers[currentLayerIndex] = oneUpLayer;
+            this.layers[oneUpLayerIndex] = currentLayer;
+
+            let currentCtx = this.ctxs[currentLayerIndex];
+            let oneUpCtx = this.ctxs[oneUpLayerIndex];
+            this.ctxs[currentLayerIndex] = oneUpCtx;
+            this.ctxs[oneUpLayerIndex] = currentCtx;
+
+            // return buttons and ranges
+            for (let i = 0; i < this.layerButtons.length; i++) {
+                let li = document.createElement("li");
+                li.appendChild(this.layerButtons[i]);
+                this.layerBar.appendChild(li);
+
+                // change oninput event so it changes opacity of the right layer
+                this.layerRanges[i].oninput = () => {
+                    // + 0.2 so it can be always seen
+                    this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
+                    this.layers[i + 1].style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
+                }
+
+                let liRange = document.createElement("li");
+                liRange.appendChild(this.layerRanges[i]);
+                this.layerRangeBar.appendChild(liRange);
+            }
+
+            this.setLayer(layer - 1);
+        }
+    }
+
+    moveLayerDown() {
+        let layer = this.layer;
+
+        // do not move if the layer is on top or it is the template
+        if (layer > 0 && layer < this.layers.length - 1) {
+            // remove buttons and ranges
+            for (let i = 0; i < this.layerButtons.length; i++) {
+                this.layerButtons[i].parentElement?.remove();
+                this.layerRanges[i].parentElement?.remove();
+            }
+
+            // move layer up
+            let currentIndex = layer - 1;
+            let oneDownIndex = layer;
+
+            //switch buttons
+            let currentButton = this.layerButtons[currentIndex];
+            let oneDownButton = this.layerButtons[oneDownIndex];
+            let oneDownId = oneDownButton.id;
+            oneDownButton.id = currentButton.id;
+            currentButton.id = oneDownId;
+            this.layerButtons[currentIndex] = oneDownButton;
+            this.layerButtons[oneDownIndex] = currentButton;
+
+            // switch ranges
+            let currentRange = this.layerRanges[currentIndex];
+            let oneDownRange = this.layerRanges[oneDownIndex];
+            this.layerRanges[currentIndex] = oneDownRange;
+            this.layerRanges[oneDownIndex] = currentRange;
+
+            // switch layers and ctxs
+            let currentLayerIndex = currentIndex + 1;
+            let oneDownLayerIndex = oneDownIndex + 1;
+
+            let currentLayer = this.layers[currentLayerIndex];
+            let oneDownLayer = this.layers[oneDownLayerIndex];
+            this.layers[currentLayerIndex] = oneDownLayer;
+            this.layers[oneDownLayerIndex] = currentLayer;
+
+            let currentCtx = this.ctxs[currentLayerIndex];
+            let oneDownCtx = this.ctxs[oneDownLayerIndex];
+            this.ctxs[currentLayerIndex] = oneDownCtx;
+            this.ctxs[oneDownLayerIndex] = currentCtx;
+
+            // return buttons and ranges
+            for (let i = 0; i < this.layerButtons.length; i++) {
+                let li = document.createElement("li");
+                li.appendChild(this.layerButtons[i]);
+                this.layerBar.appendChild(li);
+
+                // change oninput event so it changes opacity of the right layer
+                this.layerRanges[i].oninput = () => {
+                    // + 0.2 so it can be always seen
+                    this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
+                    this.layers[i + 1].style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
+                }
+
+                let liRange = document.createElement("li");
+                liRange.appendChild(this.layerRanges[i]);
+                this.layerRangeBar.appendChild(liRange);
+            }
+
+            this.setLayer(layer + 1);
+        }
+
+    }
+
     createTemplate() {
         // remove template if it already exists
         let exists = document.getElementById("editorTemplate");
@@ -269,17 +407,24 @@ export class Canvas {
         if (length > layer) {
             this.layer = layer;
 
-            // lower layers
+            // higher layers
             for (let i = 1; i < layer; i++) {
-                this.layers[i].style.zIndex = "1";
+                this.layers[i].style.zIndex = "4";
             }
 
             // current layer
             this.layers[layer].style.zIndex = "2";
 
-            // higher layers
+            // lower layers
             for (let i = layer + 1; i < length; i++) {
-                this.layers[i].style.zIndex = "4";
+                this.layers[i].style.zIndex = "1";
+            }
+
+            // remove and add layers so they are in corect order and therefor display correctly
+            for (let i = length - 1; i > 0; i--) {
+                let l = this.layers[i];
+                l.remove();
+                this.editorContainer.appendChild(l);
             }
 
             // set id

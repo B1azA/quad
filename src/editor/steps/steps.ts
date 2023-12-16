@@ -61,7 +61,7 @@ export class Steps {
 
             let undoMinisteps = [];
 
-            for (let i = 0; i < canvas.layers.length; i++) {
+            for (let i = 0; i < canvas.getLayersLength(); i++) {
                 layerImages.push(canvas.getImage(i));
             }
 
@@ -72,7 +72,7 @@ export class Steps {
                 layerImages[ministep.layer].putPixel(ministep.coords, ministep.color);
             }
 
-            for (let i = 0; i < canvas.layers.length; i++) {
+            for (let i = 0; i < canvas.getLayersLength(); i++) {
                 canvas.setImage(layerImages[i], i);
             }
 
@@ -88,7 +88,7 @@ export class Steps {
 
             let ministeps = [];
 
-            for (let i = 0; i < canvas.layers.length; i++) {
+            for (let i = 0; i < canvas.getLayersLength(); i++) {
                 layerImages.push(canvas.getImage(i));
             }
 
@@ -99,7 +99,7 @@ export class Steps {
                 layerImages[undoMinistep.layer].putPixel(undoMinistep.coords, undoMinistep.color);
             }
 
-            for (let i = 0; i < canvas.layers.length; i++) {
+            for (let i = 0; i < canvas.getLayersLength(); i++) {
                 canvas.setImage(layerImages[i], i);
             }
 

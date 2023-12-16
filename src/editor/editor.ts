@@ -1,6 +1,6 @@
 import { Canvas } from "./canvas";
 import { PaintTool } from "./paintTool/paintTool";
-import { Steps } from "./paintTool/steps";
+import { Steps } from "./steps/steps";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";

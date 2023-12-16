@@ -1,6 +1,6 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { MiniStep } from "./steps";
+import { MiniStep } from "../steps/steps";
 
 export class Compass implements PaintTool {
     lastCoords = { x: -1, y: -1 };
@@ -61,7 +61,7 @@ export class Compass implements PaintTool {
         let ministeps: MiniStep[] = [];
         for (let x = center.x - radius; x <= center.x + radius; x++) {
             for (let y = center.y - radius; y <= center.y + radius; y++) {
-                let point = {x, y};
+                let point = { x, y };
                 let distance = Math.sqrt((center.x - point.x) ** 2 + (center.y - point.y) ** 2);
 
                 // add 0.5 so the circle is nicer looking
@@ -73,7 +73,7 @@ export class Compass implements PaintTool {
 
                         image.putPixel(point, color);
                     }
-                    image.putPixel({x, y}, color);
+                    image.putPixel({ x, y }, color);
                 }
             }
         }

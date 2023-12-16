@@ -1,6 +1,6 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { Steps, MiniStep } from "./steps";
+import { Steps, MiniStep } from "../steps/steps";
 
 export class Pen implements PaintTool {
     lastCoords = { x: -1, y: -1 };

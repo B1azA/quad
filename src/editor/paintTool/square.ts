@@ -1,6 +1,6 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { MiniStep } from "./steps";
+import { MiniStep } from "../steps/steps";
 
 export class Square implements PaintTool {
     lastCoords = { x: -1, y: -1 };
