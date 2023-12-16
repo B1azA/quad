@@ -14,7 +14,7 @@ run();
 function run() {
     setup_events(editor);
 
-    // setup coloris color pickers
+    // init coloris
     Coloris.init();
     Coloris({
         el: "#picker1",
@@ -32,16 +32,16 @@ function run() {
     Coloris.setInstance("#picker1", {
         onChange: (color) => {
             let col = new TinyColor(color);
-            editor.setPrimaryColor([col.r, col.g, col.b, 255]);
+            editor.palette.setPrimaryColor([col.r, col.g, col.b, 255]);
         }
-    })
+    });
 
     Coloris.setInstance("#picker2", {
         onChange: (color) => {
             let col = new TinyColor(color);
-            editor.setSecondaryColor([col.r, col.g, col.b, 255]);
+            editor.palette.setSecondaryColor([col.r, col.g, col.b, 255]);
         }
-    })
+    });
 }
 
 function setup_events(editor: Editor) {
@@ -129,6 +129,14 @@ function setup_events(editor: Editor) {
 
     document.getElementById("moveLayerDown")!.onclick = () => {
         editor.canvas.moveLayerDown();
+    }
+
+    document.getElementById("addColor")!.onclick = () => {
+        editor.palette.addColorButton();
+    }
+
+    document.getElementById("removeColor")!.onclick = () => {
+        editor.palette.removeColorButton();
     }
 
     document.onmousedown = (e) => {

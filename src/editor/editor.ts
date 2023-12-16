@@ -1,4 +1,5 @@
 import { Canvas } from "./canvas";
+import { Palette } from "./palette";
 import { PaintTool } from "./paintTool/paintTool";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
@@ -13,13 +14,6 @@ export enum ColorState {
 }
 
 export class Editor {
-    // curently selected color
-    // either primary or secondary
-    private color: [number, number, number, number] = [0, 0, 0, 255];
-    private colorState: ColorState = ColorState.PRIMARY;
-    private primaryColor: [number, number, number, number] = [0, 0, 0, 255];
-    private secondaryColor: [number, number, number, number] = [255, 0, 255, 255];
-
     // pressed mouse buttons
     mouseButtons: [boolean, boolean, boolean] = [false, false, false];
 
@@ -46,8 +40,7 @@ export class Editor {
 
     drag: boolean = false;
 
-    colorPicker1 = <HTMLInputElement>document.getElementById("picker1");
-    colorPicker2 = <HTMLInputElement>document.getElementById("picker2");
+    palette: Palette;
 
     constructor(size: { width: number, height: number }) {
         this.canvas = new Canvas(size);
@@ -58,45 +51,24 @@ export class Editor {
         let layer2 = this.canvas.createLayerTransformed();
         this.canvas.addLayer(layer2, "terciary");
 
-        let col1 = fromRatio({
-            r: this.primaryColor[0],
-            g: this.primaryColor[1],
-            b: this.primaryColor[2],
-        });
-        this.colorPicker1.value = col1.toHexString();
-
-        let col2 = fromRatio({
-            r: this.secondaryColor[0],
-            g: this.secondaryColor[1],
-            b: this.secondaryColor[2],
-        });
-        this.colorPicker2.value = col2.toHexString();
-    }
-
-    getColor() {
-        return this.color;
-    }
-
-    setPrimaryColor(color: [number, number, number, number]) {
-        this.primaryColor = color;
-    }
-
-    setSecondaryColor(color: [number, number, number, number]) {
-        this.secondaryColor = color;
-    }
-
-    setColorState(state: ColorState) {
-        this.colorState = state;
-
-        if (state == ColorState.PRIMARY) {
-            this.color = this.primaryColor;
-        } else {
-            this.color = this.secondaryColor;
-        }
-    }
-
-    getColorState() {
-        return this.colorState;
+        let colors: [number, number, number, number][] = [
+            [128, 255, 255, 255],
+            [128, 128, 255, 255],
+            [128, 255, 128, 255],
+            [128, 128, 128, 255],
+            [255, 255, 255, 255],
+            [128, 255, 255, 255],
+            [128, 128, 255, 255],
+            [128, 255, 128, 255],
+            [128, 128, 128, 255],
+            [255, 255, 255, 255],
+            [128, 255, 255, 255],
+            [128, 128, 255, 255],
+            [128, 255, 128, 255],
+            [128, 128, 128, 255],
+            [255, 255, 255, 255],
+        ];
+        this.palette = new Palette(this, colors);
     }
 
     onMouseDown(event: MouseEvent) {
@@ -105,14 +77,14 @@ export class Editor {
         switch (event.button) {
             case 0:
                 this.mouseButtons[0] = true;
+                this.palette.setColorToPrimary();
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.setColorState(ColorState.PRIMARY);
                     this.paintTool.onMouseDown(
                         this,
                         mouseCoords,
-                        this.getColor(),
+                        this.palette.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -122,14 +94,14 @@ export class Editor {
                 break
             case 2:
                 this.mouseButtons[2] = true;
+                this.palette.setColorToSecondary();
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.setColorState(ColorState.SECONDARY);
                     this.paintTool.onMouseDown(
                         this,
                         mouseCoords,
-                        this.getColor(),
+                        this.palette.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -142,13 +114,14 @@ export class Editor {
         switch (event.button) {
             case 0:
                 this.mouseButtons[0] = false;
+                this.palette.setColorToPrimary();
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
                     this.paintTool.onMouseUp(
                         this,
                         mouseCoords,
-                        this.getColor(),
+                        this.palette.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -160,13 +133,14 @@ export class Editor {
 
             case 2:
                 this.mouseButtons[2] = false;
+                this.palette.setColorToSecondary();
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
                     this.paintTool.onMouseUp(
                         this,
                         mouseCoords,
-                        this.getColor(),
+                        this.palette.getColor(),
                         this.canvas.getLayer(),
                     );
                 }
@@ -194,7 +168,7 @@ export class Editor {
                 this.paintTool.onMouseMove(
                     this,
                     mouseCoords,
-                    this.getColor(),
+                    this.palette.getColor(),
                     this.canvas.getLayer(),
                 );
             }
@@ -208,7 +182,7 @@ export class Editor {
 
         // show current pixel
         let image = this.canvas.getImage(0);
-        image.putPixel(mouseCoords, this.getColor());
+        image.putPixel(mouseCoords, this.palette.getColor());
         this.canvas.setImage(image, 0);
 
         // save mouse

@@ -1,17 +1,31 @@
 #frames {
     display: block;
+    position: absolute;
     width: 8em;
     height: 100vh;
-    background-color: blue;
-    border: solid black;
-    position: absolute;
     right: 1em;
-    top: 4em;
+    top: 13em;
     overflow-y: scroll;
     z-index: 6;
 }
 
 .frame {
-    width: 100%;
+    position: relative;
+    width: 90%;
+    left: 5%;
     background-color: green;
+    border: solid black;
+    border-radius: 5px;
+}
+
+#animationFrame {
+    position: absolute;
+    z-index: 55;
+    width: 10em;
+    height: 10em;
+    right: 8px;
+    top: 1.9em;
+    background-color: white;
+    border: solid black;
+    border-radius: 5px;
 }

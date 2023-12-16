@@ -42,24 +42,26 @@
 	</ul>
 
 	<div id="frames">
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
-		<canvas width=10 height=10 class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
+		<canvas class="frame"></canvas>
 	</div>
+
+    <canvas id="animationFrame"></canvas>
 
 	<div id="layersConfig">
 		<button id="moveLayerUp">↑</button>
@@ -77,6 +79,13 @@
 		<li>Secondary</li>
 		<li><input id="picker2" type="text"/></li>
 	</div>
+
+    <div id="paletteConfig">
+		<button id="addColor">+</button>
+		<button id="removeColor">-</button>
+    </div>
+
+    <table id="paletteTable" oncontextmenu="return false;"></table>
 
 	<div id="editorContainer" oncontextmenu="return false;">
 	</div>

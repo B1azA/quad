@@ -1,6 +1,6 @@
 #layerBar {
     position: absolute;
-    top: 10em;
+    top: 15em;
     right: 12em;
     list-style-type: none;
     z-index: 6;
@@ -25,7 +25,7 @@
 
 #layerRangeBar {
     position: absolute;
-    top: 10em;
+    top: 15em;
     right: 17em;
     list-style-type: none;
     z-index: 6;
@@ -48,9 +48,10 @@
 
 #layersConfig {
     position: absolute;
-    top: 8em;
+    top: 13em;
     right: 12em;
     display: block;
+    z-index: 6;
 
     button {
         height: 2em;
