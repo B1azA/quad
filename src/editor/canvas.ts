@@ -20,6 +20,9 @@ export class Canvas {
     private zoom: number = 1;
 
     private layer: number = 1;
+    private maxLayerID: number = 0;
+
+    steps: Steps = new Steps();
 
     constructor(dimensions: { width: number, height: number }) {
         this.removeLayers();
@@ -107,6 +110,9 @@ export class Canvas {
         let layer = document.createElement("canvas");
         layer.className = "editorLayer";
         this.editorContainer.appendChild(layer);
+        // set id for the steps to recognize the layer
+        this.maxLayerID += 1;
+        layer.id = this.maxLayerID.toString();
 
         return layer;
     }
@@ -183,6 +189,26 @@ export class Canvas {
 
             this.setLayer(index);
         }
+    }
+
+    getLayerID(layer: number) {
+        if (layer > 0 && layer < this.layers.length) {
+            return this.layers[layer].id;
+        }
+        else {
+            return "";
+        }
+    }
+
+    getLayerByID(id: string) {
+        for (let i = 1; i < this.layers.length; i++) {
+            let layerID = this.layers[i].id;
+            if (layerID == id) {
+                return i;
+            }
+        }
+
+        return null;
     }
 
     removeLayer() {

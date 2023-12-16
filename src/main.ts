@@ -49,7 +49,7 @@ function setup_events(editor: Editor) {
 
     document.getElementById("fileNew")!.onclick = () => {
         editor.canvas.clearAll();
-        editor.steps.clear();
+        editor.canvas.steps.clear();
     };
 
     document.getElementById("fileLoad")!.onclick = () => {
@@ -98,11 +98,13 @@ function setup_events(editor: Editor) {
     };
 
     document.getElementById("undo")!.onclick = () => {
-        editor.steps.undo(editor.canvas);
+        // editor.steps.undo(editor.canvas);
+        editor.canvas.steps.undoStep(editor.canvas);
     }
 
     document.getElementById("redo")!.onclick = () => {
-        editor.steps.redo(editor.canvas);
+        // editor.steps.redo(editor.canvas);
+        editor.canvas.steps.redoStep(editor.canvas);
     }
 
     document.getElementById("eraseTool")!.onclick = () => {

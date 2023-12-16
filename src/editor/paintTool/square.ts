@@ -1,6 +1,5 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { MiniStep } from "../steps/steps";
 
 export class Square implements PaintTool {
     lastCoords = { x: -1, y: -1 };
@@ -76,7 +75,6 @@ export class Square implements PaintTool {
 
         let image = editor.canvas.getImage(layer);
 
-        let ministeps: MiniStep[] = [];
 
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
@@ -84,8 +82,6 @@ export class Square implements PaintTool {
             // paint only if in the canvas
             if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
                 let pixel_color = image.getPixel(point);
-                let ministep = new MiniStep(point, pixel_color, layer);
-                ministeps.push(ministep);
 
                 image.putPixel(point, color);
             }
@@ -100,10 +96,6 @@ export class Square implements PaintTool {
         }
 
         editor.canvas.setImage(image, layer);
-
-        if (layer != 0) {
-            editor.steps.addMiniSteps(ministeps);
-        }
     }
 
     drawCircle(

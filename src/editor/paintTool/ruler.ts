@@ -1,9 +1,10 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { MiniStep } from "../steps/steps";
+import { PaintStep, PaintMiniStep } from "../steps/paintStep";
 
 export class Ruler implements PaintTool {
     lastCoords = { x: -1, y: -1 };
+    step: PaintStep | null = null;
 
     onMouseDown(
         editor: Editor,
@@ -11,6 +12,9 @@ export class Ruler implements PaintTool {
         color: [number, number, number, number],
         layer: number,
     ) {
+        let layerID = editor.canvas.getLayerID(layer);
+        this.step = new PaintStep(layerID);
+
         this.lastCoords = coords;
     }
 
@@ -28,6 +32,10 @@ export class Ruler implements PaintTool {
             color,
             layer,
         );
+
+        if (this.step != null && !this.step.isEmpty()) {
+            editor.canvas.steps.addStep(this.step);
+        }
     }
 
     onMouseMove(
@@ -72,16 +80,17 @@ export class Ruler implements PaintTool {
 
         let image = editor.canvas.getImage(layer);
 
-        let ministeps: MiniStep[] = [];
-
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
 
             // paint only if in the canvas
             if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
-                let pixel_color = image.getPixel(point);
-                let ministep = new MiniStep(point, pixel_color, layer);
-                ministeps.push(ministep);
+                let pixelColor = image.getPixel(point);
+
+                if (layer != 0) {
+                    let paintMinistep = new PaintMiniStep(point, pixelColor);
+                    this.step?.addMiniStep(paintMinistep)
+                }
 
                 image.putPixel(point, color);
             }
@@ -96,9 +105,5 @@ export class Ruler implements PaintTool {
         }
 
         editor.canvas.setImage(image, layer);
-
-        if (layer != 0) {
-            editor.steps.addMiniSteps(ministeps);
-        }
     }
 }

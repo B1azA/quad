@@ -1,6 +1,5 @@
 import { Canvas } from "./canvas";
 import { PaintTool } from "./paintTool/paintTool";
-import { Steps } from "./steps/steps";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
@@ -37,8 +36,6 @@ export class Editor {
 
     canvas: Canvas;
 
-    steps: Steps;
-
     paintTool: PaintTool = new Pen;
     penTool: PaintTool = new Pen;
     rulerTool: PaintTool = new Ruler;
@@ -54,7 +51,6 @@ export class Editor {
 
     constructor(size: { width: number, height: number }) {
         this.canvas = new Canvas(size);
-        this.steps = new Steps();
 
         let layer = this.canvas.createLayerTransformed();
         this.canvas.addLayer(layer, "secondary");
@@ -112,7 +108,6 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.steps.newStep();
                     this.setColorState(ColorState.PRIMARY);
                     this.paintTool.onMouseDown(
                         this,
@@ -130,7 +125,6 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.steps.newStep();
                     this.setColorState(ColorState.SECONDARY);
                     this.paintTool.onMouseDown(
                         this,

@@ -1,9 +1,10 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { MiniStep } from "../steps/steps";
+import { PaintStep, PaintMiniStep } from "../steps/paintStep";
 
 export class Compass implements PaintTool {
     lastCoords = { x: -1, y: -1 };
+    step: PaintStep | null = null;
 
     onMouseDown(
         editor: Editor,
@@ -11,6 +12,9 @@ export class Compass implements PaintTool {
         color: [number, number, number, number],
         layer: number,
     ) {
+        let layerID = editor.canvas.getLayerID(layer);
+        this.step = new PaintStep(layerID);
+
         this.lastCoords = coords;
     }
 
@@ -28,6 +32,10 @@ export class Compass implements PaintTool {
             color,
             layer,
         );
+
+        if (this.step != null && !this.step.isEmpty()) {
+            editor.canvas.steps.addStep(this.step);
+        }
     }
 
     onMouseMove(
@@ -58,7 +66,6 @@ export class Compass implements PaintTool {
 
         let radius = Math.round(Math.sqrt((center.x - a.x) ** 2 + (center.y - a.y) ** 2));
 
-        let ministeps: MiniStep[] = [];
         for (let x = center.x - radius; x <= center.x + radius; x++) {
             for (let y = center.y - radius; y <= center.y + radius; y++) {
                 let point = { x, y };
@@ -67,20 +74,19 @@ export class Compass implements PaintTool {
                 // add 0.5 so the circle is nicer looking
                 if (distance <= radius + 0.5) {
                     if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
-                        let pixel_color = image.getPixel(point);
-                        let ministep = new MiniStep(point, pixel_color, layer);
-                        ministeps.push(ministep);
+                        let pixelColor = image.getPixel(point);
+
+                        if (layer != 0) {
+                            let paintMinistep = new PaintMiniStep(point, pixelColor);
+                            this.step?.addMiniStep(paintMinistep)
+                        }
 
                         image.putPixel(point, color);
                     }
-                    image.putPixel({ x, y }, color);
                 }
             }
         }
 
         editor.canvas.setImage(image, layer);
-        if (layer != 0) {
-            editor.steps.addMiniSteps(ministeps);
-        }
     }
 }

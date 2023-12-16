@@ -1,9 +1,10 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
-import { Steps, MiniStep } from "../steps/steps";
+import { PaintStep, PaintMiniStep } from "../steps/paintStep";
 
 export class Pen implements PaintTool {
     lastCoords = { x: -1, y: -1 };
+    step: PaintStep | null = null;
 
     onMouseDown(
         editor: Editor,
@@ -11,6 +12,9 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: number,
     ) {
+        let layerID = editor.canvas.getLayerID(layer);
+        this.step = new PaintStep(layerID);
+
         this.drawPixel(editor, coords, color, layer);
         this.lastCoords = coords;
     }
@@ -21,7 +25,9 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: number,
     ) {
-        // nothing, paints when moving
+        if (this.step != null && !this.step.isEmpty()) {
+            editor.canvas.steps.addStep(this.step);
+        }
     }
 
     onMouseMove(
@@ -64,9 +70,10 @@ export class Pen implements PaintTool {
         let image = editor.canvas.getImage(layer);
 
         if (layer != 0) {
-            let pixel_color = image.getPixel(point);
-            let ministep = new MiniStep(point, pixel_color, layer);
-            editor.steps.addMiniStep(ministep);
+            let pixelColor = image.getPixel(point);
+
+            let paintMinistep = new PaintMiniStep(point, pixelColor);
+            this.step?.addMiniStep(paintMinistep)
         }
 
         image.putPixel(point, color);
@@ -100,28 +107,20 @@ export class Pen implements PaintTool {
 
         let image = editor.canvas.getImage(layer);
 
-        let ministeps: MiniStep[] = [];
-
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
 
-            // check if this step is already in the steps
-            let exists = false;
-            let index = editor.steps.steps.length - 1;
-            if (index >= 0) {
-                for (let ministep of editor.steps.steps[index]) {
-                    if (ministep.coords.x == point.x && ministep.coords.y == point.y) {
-                        exists = true;
-                        break;
-                    }
-                }
-            }
+            // check if this step already exists
+            let exists = this.step?.contains(point);
 
             // paint only if in the canvas and the step is not already in the steps
             if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0 && !exists) {
-                let pixel_color = image.getPixel(point);
-                let ministep = new MiniStep(point, pixel_color, layer);
-                ministeps.push(ministep);
+                let pixelColor = image.getPixel(point);
+
+                if (layer != 0) {
+                    let paintMinistep = new PaintMiniStep(point, pixelColor);
+                    this.step?.addMiniStep(paintMinistep)
+                }
 
                 image.putPixel(point, color);
             }
@@ -131,9 +130,5 @@ export class Pen implements PaintTool {
         }
 
         editor.canvas.setImage(image, layer);
-
-        if (layer != 0) {
-            editor.steps.addMiniSteps(ministeps);
-        }
     }
 }
