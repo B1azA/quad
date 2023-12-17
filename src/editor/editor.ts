@@ -1,12 +1,10 @@
-import { Canvas } from "./canvas";
+import { Canvas } from "./canvas/canvas";
 import { Palette } from "./palette";
 import { PaintTool } from "./paintTool/paintTool";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
 import { Square } from "./paintTool/square";
-
-import { fromRatio } from "@ctrl/tinycolor";
 
 export enum ColorState {
     PRIMARY,
@@ -45,23 +43,11 @@ export class Editor {
     constructor(size: { width: number, height: number }) {
         this.canvas = new Canvas(size);
 
-        let layer = this.canvas.createLayerTransformed();
-        this.canvas.addLayer(layer, "secondary");
+        this.canvas.addLayer("secondary");
 
-        let layer2 = this.canvas.createLayerTransformed();
-        this.canvas.addLayer(layer2, "terciary");
+        this.canvas.addLayer("terciary");
 
         let colors: [number, number, number, number][] = [
-            [128, 255, 255, 255],
-            [128, 128, 255, 255],
-            [128, 255, 128, 255],
-            [128, 128, 128, 255],
-            [255, 255, 255, 255],
-            [128, 255, 255, 255],
-            [128, 128, 255, 255],
-            [128, 255, 128, 255],
-            [128, 128, 128, 255],
-            [255, 255, 255, 255],
             [128, 255, 255, 255],
             [128, 128, 255, 255],
             [128, 255, 128, 255],
@@ -85,7 +71,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getLayer(),
+                        this.canvas.getCurrentLayer(),
                     );
                 }
                 break;
@@ -102,7 +88,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getLayer(),
+                        this.canvas.getCurrentLayer(),
                     );
                 }
                 break;
@@ -122,7 +108,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getLayer(),
+                        this.canvas.getCurrentLayer(),
                     );
                 }
                 break;
@@ -141,7 +127,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getLayer(),
+                        this.canvas.getCurrentLayer(),
                     );
                 }
                 break;
@@ -154,7 +140,7 @@ export class Editor {
         let mouseGlobalPos = { x: event.clientX, y: event.clientY };
 
         // clear template layer
-        this.canvas.clear(0);
+        this.canvas.getTemplate().clear();
 
         if (this.mouseButtons[0] || this.mouseButtons[2]) {
             // if moving with the canvas
@@ -169,7 +155,7 @@ export class Editor {
                     this,
                     mouseCoords,
                     this.palette.getColor(),
-                    this.canvas.getLayer(),
+                    this.canvas.getCurrentLayer(),
                 );
             }
         } else if (this.mouseButtons[1]) {
@@ -181,9 +167,9 @@ export class Editor {
         }
 
         // show current pixel
-        let image = this.canvas.getImage(0);
+        let image = this.canvas.getTemplate().getImage();
         image.putPixel(mouseCoords, this.palette.getColor());
-        this.canvas.setImage(image, 0);
+        this.canvas.getTemplate().setImage(image);
 
         // save mouse
         this.lastMouseCoords = mouseCoords;

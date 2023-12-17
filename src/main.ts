@@ -58,14 +58,14 @@ function setup_events(editor: Editor) {
                 editor.canvas.removeLayers();
                 editor = new Editor({ width: message.width, height: message.height });
                 let data = Uint8ClampedArray.from(message.data);
-                editor.canvas.setImageData(data, 1);
+                editor.canvas.getCurrentLayer().setImageData(data);
             })
             .catch((error) => console.error(error));
     }
 
     document.getElementById("fileSaveAs")!.onclick = () => {
         let size = editor.canvas.getSize();
-        let data = Array.from(editor.canvas.getImageData(1));
+        let data = Array.from(editor.canvas.getCurrentLayer().getImageData());
 
         let message: ImageMessage = {
             width: size.width,
@@ -112,10 +112,8 @@ function setup_events(editor: Editor) {
 
     document.getElementById("addLayer")!.onclick = () => {
         showPromptDialog("Add layer", "new", (value) => {
-            let layer = editor.canvas.createLayerTransformed();
-
             let name = value.length > 0 ? value : "unnamed";
-            editor.canvas.addLayer(layer, name);
+            editor.canvas.addLayer(name);
         });
     }
 

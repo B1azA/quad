@@ -1,6 +1,7 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
 import { PaintStep, PaintMiniStep } from "../steps/paintStep";
+import { Layer } from "../canvas/layer";
 
 export class Compass implements PaintTool {
     lastCoords = { x: -1, y: -1 };
@@ -10,9 +11,9 @@ export class Compass implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
-        let layerID = editor.canvas.getLayerID(layer);
+        let layerID = layer.getID();
         this.step = new PaintStep(layerID);
 
         this.lastCoords = coords;
@@ -22,7 +23,7 @@ export class Compass implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // draw line to layer
         this.drawCircle(
@@ -42,7 +43,7 @@ export class Compass implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // draw line to template
         this.drawCircle(
@@ -50,7 +51,7 @@ export class Compass implements PaintTool {
             this.lastCoords,
             coords,
             color,
-            0,
+            editor.canvas.getTemplate(),
         );
     }
 
@@ -59,9 +60,9 @@ export class Compass implements PaintTool {
         center: { x: number, y: number },
         a: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
-        let image = editor.canvas.getImage(layer);
+        let image = layer.getImage();
         let size = image.size;
 
         let radius = Math.round(Math.sqrt((center.x - a.x) ** 2 + (center.y - a.y) ** 2));
@@ -76,7 +77,7 @@ export class Compass implements PaintTool {
                     if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
                         let pixelColor = image.getPixel(point);
 
-                        if (layer != 0) {
+                        if (!layer.isTemplate()) {
                             let paintMinistep = new PaintMiniStep(point, pixelColor);
                             this.step?.addMiniStep(paintMinistep)
                         }
@@ -87,6 +88,6 @@ export class Compass implements PaintTool {
             }
         }
 
-        editor.canvas.setImage(image, layer);
+        layer.setImage(image);
     }
 }

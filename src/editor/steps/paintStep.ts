@@ -1,4 +1,4 @@
-import { Canvas } from "../canvas";
+import { Canvas } from "../canvas/canvas";
 import { Step } from "./step";
 
 export class PaintMiniStep {
@@ -46,8 +46,10 @@ export class PaintStep implements Step {
 
     undo(canvas: Canvas) {
         let layer = canvas.getLayerByID(this.layerID);
+        let layerIndex = canvas.getLayerIndexByID(this.layerID);
+
         if (layer != null) {
-            let image = canvas.getImage(layer);
+            let image = layer?.getImage();
             let redoStep = new PaintStep(this.layerID);
 
             for (let ministep of this.ministeps) {
@@ -56,8 +58,9 @@ export class PaintStep implements Step {
                 image.putPixel(ministep.coords, ministep.color);
             }
 
-            canvas.setImage(image, layer);
-            canvas.setLayer(layer);
+            layer.setImage(image);
+            if (layerIndex != null)
+                canvas.setLayer(layerIndex);
 
             return redoStep;
         }

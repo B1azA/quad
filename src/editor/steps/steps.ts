@@ -1,4 +1,4 @@
-import { Canvas, Image } from "../canvas";
+import { Canvas } from "../canvas/canvas";
 import { Step } from "./step";
 
 export class Steps {

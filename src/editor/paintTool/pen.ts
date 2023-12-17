@@ -1,6 +1,7 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
 import { PaintStep, PaintMiniStep } from "../steps/paintStep";
+import { Layer } from "../canvas/layer";
 
 export class Pen implements PaintTool {
     lastCoords = { x: -1, y: -1 };
@@ -10,9 +11,9 @@ export class Pen implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
-        let layerID = editor.canvas.getLayerID(layer);
+        let layerID = layer.getID();
         this.step = new PaintStep(layerID);
 
         this.drawPixel(editor, coords, color, layer);
@@ -23,7 +24,7 @@ export class Pen implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         if (this.step != null && !this.step.isEmpty()) {
             editor.canvas.steps.addStep(this.step);
@@ -34,7 +35,7 @@ export class Pen implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number
+        layer: Layer,
     ) {
         // |AB| = sqrt((ax - bx) ** 2 + (ay - by) ** 2)
         let distance = Math.sqrt(
@@ -61,15 +62,15 @@ export class Pen implements PaintTool {
         editor: Editor,
         point: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // return if outside of canvas
         let size = editor.canvas.getSize();
         if (point.x >= size.width || point.x < 0 || point.y >= size.height || point.y < 0) return;
 
-        let image = editor.canvas.getImage(layer);
+        let image = layer.getImage();
 
-        if (layer != 0) {
+        if (!layer.isTemplate()) {
             let pixelColor = image.getPixel(point);
 
             let paintMinistep = new PaintMiniStep(point, pixelColor);
@@ -78,7 +79,7 @@ export class Pen implements PaintTool {
 
         image.putPixel(point, color);
 
-        editor.canvas.setImage(image, layer);
+        layer.setImage(image);
     }
 
     // draw a line from the point a to the point b
@@ -87,7 +88,7 @@ export class Pen implements PaintTool {
         a: { x: number, y: number },
         b: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         let size = editor.canvas.getSize();
 
@@ -105,7 +106,7 @@ export class Pen implements PaintTool {
         let x = a.x;
         let y = a.y;
 
-        let image = editor.canvas.getImage(layer);
+        let image = layer.getImage();
 
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
@@ -117,7 +118,7 @@ export class Pen implements PaintTool {
             if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0 && !exists) {
                 let pixelColor = image.getPixel(point);
 
-                if (layer != 0) {
+                if (!layer.isTemplate()) {
                     let paintMinistep = new PaintMiniStep(point, pixelColor);
                     this.step?.addMiniStep(paintMinistep)
                 }
@@ -129,6 +130,6 @@ export class Pen implements PaintTool {
             y += yInc;
         }
 
-        editor.canvas.setImage(image, layer);
+        layer.setImage(image);
     }
 }

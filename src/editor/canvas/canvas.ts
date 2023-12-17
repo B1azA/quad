@@ -1,14 +1,14 @@
-import { showPromptDialog } from "./dialog";
-import { Steps } from "./steps/steps";
+import { showPromptDialog } from "../dialog";
+import { Steps } from "../steps/steps";
+import { Layer } from "./layer";
 
 export class Canvas {
-    private layers: HTMLCanvasElement[] = [];
-    private ctxs: CanvasRenderingContext2D[] = [];
+    private layers: Layer[] = [];
     private editorContainer = document.getElementById("editorContainer")!;
     private layerBar = document.getElementById("layerBar")!;
     private layerRangeBar = document.getElementById("layerRangeBar")!;
 
-    // there is one less element than in layers
+    // there is one less element than in the layers
     // because there is no button and range for the template
     private layerButtons: HTMLButtonElement[] = [];
     private layerRanges: HTMLInputElement[] = [];
@@ -20,30 +20,22 @@ export class Canvas {
     private zoom: number = 1;
 
     private layer: number = 1;
-    private maxLayerID: number = 0;
 
     steps: Steps = new Steps();
 
-    constructor(dimensions: { width: number, height: number }) {
+    constructor(size: { width: number, height: number }) {
         this.removeLayers();
-        let layer = this.createLayer();
-        let template = this.createTemplate()
-
-        this.addLayer(template, "template");
-        this.addLayer(layer, "main");
-
-        this.setSize(dimensions);
-        let size = this.getSize();
 
         let height = (window.innerHeight / 2);
         let width = height * size.width / size.height;
-        this.setRealSize({ width, height });
-
+        let realSize = { width, height };
         let pos = {
             x: window.innerWidth / 2 - width / 2,
             y: window.innerHeight / 2 - height / 2
         };
-        this.setPos(pos);
+
+        this.addTemplate(size, realSize, pos)
+        this.addLayer("main");
 
         this.originalRealWidth = width;
         this.originalRealHeight = height;
@@ -52,46 +44,57 @@ export class Canvas {
     }
 
     setSize(size: { width: number, height: number }) {
-        for (let canvas of this.layers) {
-            canvas.width = size.width;
-            canvas.height = size.height;
+        for (let layer of this.layers) {
+            layer.setSize(size);
         }
     }
 
     getSize() {
-        return { width: this.layers[0].width, height: this.layers[0].height };
+        return this.layers[0].getSize();
     }
 
     setRealSize(size: { width: number, height: number }) {
-        let width = size.width + "px";
-        let height = size.height + "px";
-
-        for (let canvas of this.layers) {
-            canvas.style.width = width;
-            canvas.style.height = height;
+        for (let layer of this.layers) {
+            layer.setRealSize(size);
         }
     }
 
     getRealSize() {
-        return { width: this.layers[0].clientWidth, height: this.layers[0].clientHeight };
+        return this.layers[0].getRealSize();
     }
 
-    setPos(size: { x: number, y: number }) {
-        let x = size.x + "px";
-        let y = size.y + "px";
-
-        for (let canvas of this.layers) {
-            canvas.style.left = x;
-            canvas.style.top = y;
+    setPos(pos: { x: number, y: number }) {
+        for (let layer of this.layers) {
+            layer.setPos(pos);
         }
     }
 
     getPos() {
-        return { x: this.layers[0].offsetLeft, y: this.layers[0].offsetTop };
+        return this.layers[0].getPos();
     }
 
     getBoundingClientRect() {
         return this.layers[0].getBoundingClientRect();
+    }
+
+    getCurrentLayerIndex() {
+        return this.layer;
+    }
+
+    getLayer(index: number) {
+        if (index < this.getLayersLength()) {
+            return this.layers[index];
+        } else {
+            return null;
+        }
+    }
+
+    getTemplate() {
+        return this.layers[0];
+    }
+
+    getCurrentLayer() {
+        return this.layers[this.layer];
     }
 
     getLayersLength() {
@@ -106,37 +109,28 @@ export class Canvas {
         }
     }
 
-    createLayer() {
-        let layer = document.createElement("canvas");
-        layer.className = "editorLayer";
-        this.editorContainer.appendChild(layer);
-        // set id for the steps to recognize the layer
-        this.maxLayerID += 1;
-        layer.id = this.maxLayerID.toString();
-
-        return layer;
+    addTemplate(
+        size: { width: number, height: number },
+        realSize: { width: number, height: number },
+        pos: { x: number, y: number },
+    ) {
+        this.layers.push(new Layer(
+            this.editorContainer,
+            size,
+            realSize,
+            pos,
+            true
+        ));
     }
 
-    createLayerTransformed() {
-        let layer = this.createLayer();
-        let size = this.getSize();
-        layer.width = size.width;
-        layer.height = size.height;
-
-        let realSize = this.getRealSize();
-        layer.style.width = realSize.width + "px";
-        layer.style.height = realSize.height + "px";
-
-        let pos = this.getPos();
-        layer.style.left = pos.x + "px";
-        layer.style.top = pos.y + "px";
-
-        return layer;
-    }
-
-    addLayer(layer: HTMLCanvasElement, name: string) {
-        this.layers.push(layer);
-        this.ctxs.push(layer.getContext("2d", { willReadFrequently: true })!);
+    addLayer(name: string) {
+        this.layers.push(new Layer(
+            this.editorContainer,
+            this.getSize(),
+            this.getRealSize(),
+            this.getPos(),
+            false
+        ));
 
         let index = this.layers.length - 1;
 
@@ -179,7 +173,7 @@ export class Canvas {
             layerOpacityRange.oninput = () => {
                 // + 0.2 so it can be always seen
                 layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
-                this.layers[index].style.opacity = (parseInt(layerOpacityRange.value) / 100).toString();
+                this.layers[index].getCanvasElement().style.opacity = (parseInt(layerOpacityRange.value) / 100).toString();
             }
 
             let opacityLi = document.createElement("li");
@@ -191,18 +185,20 @@ export class Canvas {
         }
     }
 
-    getLayerID(layer: number) {
-        if (layer > 0 && layer < this.layers.length) {
-            return this.layers[layer].id;
-        }
-        else {
-            return "";
-        }
-    }
-
     getLayerByID(id: string) {
         for (let i = 1; i < this.layers.length; i++) {
-            let layerID = this.layers[i].id;
+            let layerID = this.layers[i].getCanvasElement().id;
+            if (layerID == id) {
+                return this.layers[i];
+            }
+        }
+
+        return null;
+    }
+
+    getLayerIndexByID(id: string) {
+        for (let i = 1; i < this.layers.length; i++) {
+            let layerID = this.layers[i].getCanvasElement().id;
             if (layerID == id) {
                 return i;
             }
@@ -247,9 +243,8 @@ export class Canvas {
             this.layerRanges = newLayerRanges;
 
             // remove an editor layer
-            this.layers[layer].remove();
+            this.layers[layer].getCanvasElement().remove();
             this.layers.splice(layer, 1);
-            this.ctxs.splice(layer, 1);
 
             // return elements back
             for (let i = 0; i < this.layerButtons.length; i++) {
@@ -261,7 +256,7 @@ export class Canvas {
                 this.layerRanges[i].oninput = () => {
                     // + 0.2 so it can be always seen
                     this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
-                    this.layers[i + 1].style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
+                    this.layers[i + 1].getCanvasElement().style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
                 }
 
                 let liRange = document.createElement("li");
@@ -272,7 +267,7 @@ export class Canvas {
             // change layer if it does not exist anymore
             if (this.layer >= this.layers.length) {
                 this.setLayer(this.layers.length - 1);
-            } else if (this.layer <= 0) {
+            } else if (this.layer <= 1) {
                 this.setLayer(1);
             }
         }
@@ -318,11 +313,6 @@ export class Canvas {
             this.layers[currentLayerIndex] = oneUpLayer;
             this.layers[oneUpLayerIndex] = currentLayer;
 
-            let currentCtx = this.ctxs[currentLayerIndex];
-            let oneUpCtx = this.ctxs[oneUpLayerIndex];
-            this.ctxs[currentLayerIndex] = oneUpCtx;
-            this.ctxs[oneUpLayerIndex] = currentCtx;
-
             // return buttons and ranges
             for (let i = 0; i < this.layerButtons.length; i++) {
                 let li = document.createElement("li");
@@ -333,7 +323,7 @@ export class Canvas {
                 this.layerRanges[i].oninput = () => {
                     // + 0.2 so it can be always seen
                     this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
-                    this.layers[i + 1].style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
+                    this.layers[i + 1].getCanvasElement().style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
                 }
 
                 let liRange = document.createElement("li");
@@ -384,11 +374,6 @@ export class Canvas {
             this.layers[currentLayerIndex] = oneDownLayer;
             this.layers[oneDownLayerIndex] = currentLayer;
 
-            let currentCtx = this.ctxs[currentLayerIndex];
-            let oneDownCtx = this.ctxs[oneDownLayerIndex];
-            this.ctxs[currentLayerIndex] = oneDownCtx;
-            this.ctxs[oneDownLayerIndex] = currentCtx;
-
             // return buttons and ranges
             for (let i = 0; i < this.layerButtons.length; i++) {
                 let li = document.createElement("li");
@@ -399,7 +384,7 @@ export class Canvas {
                 this.layerRanges[i].oninput = () => {
                     // + 0.2 so it can be always seen
                     this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
-                    this.layers[i + 1].style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
+                    this.layers[i + 1].getCanvasElement().style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
                 }
 
                 let liRange = document.createElement("li");
@@ -412,20 +397,6 @@ export class Canvas {
 
     }
 
-    createTemplate() {
-        // remove template if it already exists
-        let exists = document.getElementById("editorTemplate");
-        if (exists != null) {
-            exists.remove();
-        }
-
-        let template = document.createElement("canvas");
-        template.id = "editorTemplate";
-        this.editorContainer.appendChild(template);
-
-        return template;
-    }
-
     setLayer(layer: number) {
         let length = this.layers.length;
 
@@ -435,22 +406,22 @@ export class Canvas {
 
             // higher layers
             for (let i = 1; i < layer; i++) {
-                this.layers[i].style.zIndex = "4";
+                this.layers[i].getCanvasElement().style.zIndex = "4";
             }
 
             // current layer
-            this.layers[layer].style.zIndex = "2";
+            this.layers[layer].getCanvasElement().style.zIndex = "2";
 
             // lower layers
             for (let i = layer + 1; i < length; i++) {
-                this.layers[i].style.zIndex = "1";
+                this.layers[i].getCanvasElement().style.zIndex = "1";
             }
 
             // remove and add layers so they are in corect order and therefor display correctly
             for (let i = length - 1; i > 0; i--) {
                 let l = this.layers[i];
-                l.remove();
-                this.editorContainer.appendChild(l);
+                l.getCanvasElement().remove();
+                this.editorContainer.appendChild(l.getCanvasElement());
             }
 
             // set id
@@ -461,21 +432,10 @@ export class Canvas {
         }
     }
 
-    getLayer() {
-        return this.layer;
-    }
-
-    // clear layer
-    clear(layer: number) {
-        let size = this.getSize();
-        this.ctxs[layer].clearRect(0, 0, size.width, size.height);
-    }
-
     // clear all layers
     clearAll() {
-        let size = this.getSize();
-        for (let ctx of this.ctxs) {
-            ctx.clearRect(0, 0, size.width, size.height);
+        for (let layer of this.layers) {
+            layer.clear();
         }
     }
 
@@ -509,7 +469,7 @@ export class Canvas {
     getLayerBytes(layer: number) {
         let size = this.getSize();
 
-        let imageData = this.ctxs[layer].getImageData(0, 0, size.width, size.height);
+        let imageData = this.layers[layer].getCtx().getImageData(0, 0, size.width, size.height);
         let data: number[] = new Array(imageData.data.length);
 
         for (let i = 0; i < imageData.data.length; i++) {
@@ -519,26 +479,15 @@ export class Canvas {
         return data;
     }
 
-    setImageData(data: Uint8ClampedArray, layer: number) {
-        let image = this.getImage(layer);
-        image.imageData.data.set(data);
-        this.setImage(image, layer);
-    }
-
-    getImageData(layer: number) {
-        return this.getImage(layer).imageData.data;
-    }
-
-    setImage(image: Image, layer: number) {
-        this.ctxs[layer].putImageData(image.imageData, 0, 0);
-    }
-
-    getImage(layer: number) {
-        let size = this.getSize();
-        let imageData = this.ctxs[layer].getImageData(0, 0, size.width, size.height);
-        let image = new Image(imageData, size);
-        return image;
-    }
+    // setImageData(data: Uint8ClampedArray, layer: number) {
+    //     let image = this.getImage(layer);
+    //     image.imageData.data.set(data);
+    //     this.setImage(image, layer);
+    // }
+    //
+    // getImageData(layer: number) {
+    //     return this.getImage(layer).imageData.data;
+    // }
 
     // center position of the canvas
     getCenterPos() {
@@ -585,48 +534,5 @@ export class Canvas {
         let y = pos.y - realSize.height / 2;
 
         this.setPos({ x, y });
-    }
-}
-
-export class Image {
-    imageData: ImageData;
-    size: { width: number, height: number };
-
-    constructor(
-        imageData: ImageData,
-        size: { width: number, height: number },
-    ) {
-        this.imageData = imageData;
-        this.size = size;
-    }
-
-    // puts a pixel at the point with the selected color
-    putPixel(
-        point: { x: number, y: number },
-        color: [number, number, number, number]
-    ) {
-        // return if outside of canvas
-        if (point.x >= this.size.width || point.x < 0 || point.y >= this.size.height || point.y < 0) return;
-        // 4 times to skip all color channels
-        let index = 4 * (point.x + point.y * this.imageData.width);
-        let pixels = this.imageData.data;
-        pixels[index] = color[0];
-        pixels[index + 1] = color[1];
-        pixels[index + 2] = color[2];
-        pixels[index + 3] = color[3];
-    }
-
-    getPixel(point: { x: number, y: number }) {
-        let color: [number, number, number, number] = [0, 0, 0, 0];
-
-        // 4 times to skip all color channels
-        let index = 4 * (point.x + point.y * this.imageData.width);
-        let pixels = this.imageData.data;
-        color[0] = pixels[index];
-        color[1] = pixels[index + 1];
-        color[2] = pixels[index + 2];
-        color[3] = pixels[index + 3];
-
-        return color;
     }
 }

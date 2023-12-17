@@ -1,6 +1,7 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
 import { PaintStep, PaintMiniStep } from "../steps/paintStep";
+import { Layer } from "../canvas/layer";
 
 export class Ruler implements PaintTool {
     lastCoords = { x: -1, y: -1 };
@@ -10,9 +11,9 @@ export class Ruler implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
-        let layerID = editor.canvas.getLayerID(layer);
+        let layerID = layer.getID();
         this.step = new PaintStep(layerID);
 
         this.lastCoords = coords;
@@ -22,7 +23,7 @@ export class Ruler implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // draw line to layer
         this.drawLine(
@@ -42,7 +43,7 @@ export class Ruler implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // draw line to template
         this.drawLine(
@@ -50,7 +51,7 @@ export class Ruler implements PaintTool {
             coords,
             this.lastCoords,
             color,
-            0,
+            editor.canvas.getTemplate(),
         );
     }
 
@@ -60,7 +61,7 @@ export class Ruler implements PaintTool {
         a: { x: number, y: number },
         b: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         let size = editor.canvas.getSize();
 
@@ -78,7 +79,7 @@ export class Ruler implements PaintTool {
         let x = a.x;
         let y = a.y;
 
-        let image = editor.canvas.getImage(layer);
+        let image = layer.getImage();
 
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
@@ -87,7 +88,7 @@ export class Ruler implements PaintTool {
             if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
                 let pixelColor = image.getPixel(point);
 
-                if (layer != 0) {
+                if (!layer.isTemplate()) {
                     let paintMinistep = new PaintMiniStep(point, pixelColor);
                     this.step?.addMiniStep(paintMinistep)
                 }
@@ -104,6 +105,6 @@ export class Ruler implements PaintTool {
             };
         }
 
-        editor.canvas.setImage(image, layer);
+        layer.setImage(image);
     }
 }

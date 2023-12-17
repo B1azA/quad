@@ -1,5 +1,6 @@
 import { PaintTool } from "./paintTool";
 import { Editor } from "../editor";
+import { Layer } from "../canvas/layer";
 
 export class Square implements PaintTool {
     lastCoords = { x: -1, y: -1 };
@@ -8,7 +9,7 @@ export class Square implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         this.lastCoords = coords;
     }
@@ -17,7 +18,7 @@ export class Square implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // draw line to layer
         this.drawCircle(
@@ -33,7 +34,7 @@ export class Square implements PaintTool {
         editor: Editor,
         coords: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         // draw line to template
         this.drawCircle(
@@ -41,7 +42,7 @@ export class Square implements PaintTool {
             coords,
             this.lastCoords,
             color,
-            0,
+            editor.canvas.getTemplate(),
         );
     }
 
@@ -51,7 +52,7 @@ export class Square implements PaintTool {
         a: { x: number, y: number },
         b: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         let size = editor.canvas.getSize();
         let isAOnCanvas = a.x >= 0 && a.x < size.width && a.y >= 0 && a.y < size.height;
@@ -73,7 +74,7 @@ export class Square implements PaintTool {
         let x = a.x;
         let y = a.y;
 
-        let image = editor.canvas.getImage(layer);
+        let image = layer.getImage();
 
 
         for (let i = 0; i <= steps; i++) {
@@ -95,7 +96,7 @@ export class Square implements PaintTool {
             // };
         }
 
-        editor.canvas.setImage(image, layer);
+        layer.setImage(image);
     }
 
     drawCircle(
@@ -103,7 +104,7 @@ export class Square implements PaintTool {
         a: { x: number, y: number },
         b: { x: number, y: number },
         color: [number, number, number, number],
-        layer: number,
+        layer: Layer,
     ) {
         let minX = Math.min(a.x, b.x);
         let minY = Math.min(a.y, b.y);
@@ -112,7 +113,7 @@ export class Square implements PaintTool {
 
         let max = Math.min(maxX, maxY);
 
-        let image = editor.canvas.getImage(layer);
+        let image = layer.getImage();
 
         let center = {
             x: (minX + minX + max) / 2,
@@ -137,6 +138,6 @@ export class Square implements PaintTool {
             }
         }
 
-        editor.canvas.setImage(image, layer);
+        layer.setImage(image);
     }
 }
