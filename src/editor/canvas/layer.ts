@@ -5,14 +5,18 @@ export class Layer {
     private ctx: CanvasRenderingContext2D;
     private static maxLayerID = 0;
     private template: boolean = false;
+    private name: string;
 
     constructor(
+        name: string,
+        opacity: number,
         editorContainer: HTMLElement,
         size: { width: number, height: number },
         realSize: { width: number, height: number },
         pos: { x: number, y: number },
         template: boolean,
     ) {
+        this.name = name;
         // create a canvas element
         let canvasElement = document.createElement("canvas");
 
@@ -47,6 +51,16 @@ export class Layer {
 
         this.canvasElement = canvasElement;
         this.ctx = canvasElement.getContext("2d", { willReadFrequently: true })!;
+
+        this.setOpacity(opacity);
+    }
+
+    getName() {
+        return this.name;
+    }
+
+    setName(name: string) {
+        this.name = name;
     }
 
     setSize(size: { width: number, height: number }) {
@@ -126,5 +140,13 @@ export class Layer {
     clear() {
         let size = this.getSize();
         this.ctx.clearRect(0, 0, size.width, size.height);
+    }
+
+    getOpacity() {
+        return Math.round(parseFloat(this.canvasElement.style.opacity) * 100);
+    }
+
+    setOpacity(opacity: number) {
+        this.canvasElement.style.opacity = (opacity / 100).toString();
     }
 }

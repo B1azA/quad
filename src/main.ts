@@ -6,6 +6,7 @@ import { ImageMessage, loadFile, saveFile } from "./tauri";
 import Coloris from "@melloware/coloris";
 import { TinyColor } from "@ctrl/tinycolor";
 import { showPromptDialog } from "./editor/dialog";
+import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 
 
 let editor = new Editor({ width: 32, height: 32 });
@@ -114,19 +115,32 @@ function setup_events(editor: Editor) {
         showPromptDialog("Add layer", "new", (value) => {
             let name = value.length > 0 ? value : "unnamed";
             editor.canvas.addLayer(name);
+
+            let layer = editor.canvas.getCurrentLayer();
+            let step = new LayerAddedStep(layer);
+            editor.canvas.steps.addStep(step);
         });
     }
 
     document.getElementById("removeLayer")!.onclick = () => {
-        editor.canvas.removeLayer();
+        let layer = editor.canvas.getCurrentLayer();
+        let step = new LayerRemovedStep(layer, editor.canvas.getCurrentLayerIndex());
+        editor.canvas.steps.addStep(step);
+        editor.canvas.removeCurrentLayer();
     }
 
     document.getElementById("moveLayerUp")!.onclick = () => {
-        editor.canvas.moveLayerUp();
+        if (editor.canvas.moveLayerUp()) {
+            let step = new LayerMovedUpStep(editor.canvas.getCurrentLayerIndex());
+            editor.canvas.steps.addStep(step);
+        }
     }
 
     document.getElementById("moveLayerDown")!.onclick = () => {
-        editor.canvas.moveLayerDown();
+        if (editor.canvas.moveLayerDown()) {
+            let step = new LayerMovedDownStep(editor.canvas.getCurrentLayerIndex());
+            editor.canvas.steps.addStep(step);
+        }
     }
 
     document.getElementById("addColor")!.onclick = () => {

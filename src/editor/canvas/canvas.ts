@@ -1,6 +1,7 @@
 import { showPromptDialog } from "../dialog";
 import { Steps } from "../steps/steps";
 import { Layer } from "./layer";
+import { Image } from "./image";
 
 export class Canvas {
     private layers: Layer[] = [];
@@ -115,6 +116,8 @@ export class Canvas {
         pos: { x: number, y: number },
     ) {
         this.layers.push(new Layer(
+            "template",
+            100,
             this.editorContainer,
             size,
             realSize,
@@ -124,21 +127,28 @@ export class Canvas {
     }
 
     addLayer(name: string) {
-        this.layers.push(new Layer(
+        let layer = new Layer(
+            name,
+            100,
             this.editorContainer,
             this.getSize(),
             this.getRealSize(),
             this.getPos(),
             false
-        ));
+        );
+        this.addCustomLayer(layer)
+    }
 
-        let index = this.layers.length - 1;
+    addCustomLayer(layer: Layer) {
+        if (this.getLayersLength() > 0) {
+            this.layers.push(layer);
 
-        if (index > 0) {
+            let index = this.layers.length - 1;
+
             let li = document.createElement("li");
             let layerButton = document.createElement("button");
             layerButton.id = index.toString();
-            layerButton.textContent = name;
+            layerButton.textContent = layer.getName();
 
             // change the layer on click
             layerButton.onclick = (e) => {
@@ -156,6 +166,7 @@ export class Canvas {
                 showPromptDialog("Rename layer", def, (value) => {
                     let name = value.length > 0 ? value : "unnamed";
                     target.textContent = name;
+                    layer.setName(name);
                 });
             }
 
@@ -168,12 +179,12 @@ export class Canvas {
             layerOpacityRange.type = "range";
             layerOpacityRange.min = "0";
             layerOpacityRange.max = "100";
-            layerOpacityRange.value = "100";
+            layerOpacityRange.value = layer.getOpacity().toString();
 
             layerOpacityRange.oninput = () => {
                 // + 0.2 so it can be always seen
                 layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
-                this.layers[index].getCanvasElement().style.opacity = (parseInt(layerOpacityRange.value) / 100).toString();
+                layer.setOpacity(parseInt(layerOpacityRange.value));
             }
 
             let opacityLi = document.createElement("li");
@@ -182,6 +193,16 @@ export class Canvas {
             this.layerRanges.push(layerOpacityRange);
 
             this.setLayer(index);
+        }
+    }
+
+    addCustomLayerAtIndex(layer: Layer, layerIndex: number) {
+        this.addCustomLayer(layer);
+
+        let index = this.getLayersLength() - 1;
+        while (index != layerIndex) {
+            this.moveLayerUp();
+            index--;
         }
     }
 
@@ -196,6 +217,23 @@ export class Canvas {
         return null;
     }
 
+    getLayerByName(name: string) {
+        for (let i = 1; i < this.layers.length; i++) {
+            if (this.layers[i].getName() == name) {
+                return this.layers[i];
+            }
+        }
+
+        return null;
+    }
+
+    getLayerByIndex(layerIndex: number) {
+        if (layerIndex > 0 && layerIndex < this.layers.length) {
+            return this.layers[layerIndex];
+        }
+        return null;
+    }
+
     getLayerIndexByID(id: string) {
         for (let i = 1; i < this.layers.length; i++) {
             let layerID = this.layers[i].getCanvasElement().id;
@@ -207,8 +245,8 @@ export class Canvas {
         return null;
     }
 
-    removeLayer() {
-        let layer = this.layer;
+    removeLayer(layerIndex: number) {
+        let layer = layerIndex;
 
         // > 2 so at least one layer and the template exists
         if (layer > 0 && layer && this.layers.length > 2) {
@@ -252,13 +290,6 @@ export class Canvas {
                 li.appendChild(this.layerButtons[i]);
                 this.layerBar.appendChild(li);
 
-                // change oninput event so it changes opacity of the right layer
-                this.layerRanges[i].oninput = () => {
-                    // + 0.2 so it can be always seen
-                    this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
-                    this.layers[i + 1].getCanvasElement().style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
-                }
-
                 let liRange = document.createElement("li");
                 liRange.appendChild(this.layerRanges[i]);
                 this.layerRangeBar.appendChild(liRange);
@@ -271,7 +302,10 @@ export class Canvas {
                 this.setLayer(1);
             }
         }
+    }
 
+    removeCurrentLayer() {
+        this.removeLayer(this.layer);
     }
 
     moveLayerUp() {
@@ -332,7 +366,11 @@ export class Canvas {
             }
 
             this.setLayer(layer - 1);
+
+            return true;
         }
+
+        return false;
     }
 
     moveLayerDown() {
@@ -393,8 +431,11 @@ export class Canvas {
             }
 
             this.setLayer(layer + 1);
+
+            return true;
         }
 
+        return false;
     }
 
     setLayer(layer: number) {
@@ -478,16 +519,6 @@ export class Canvas {
 
         return data;
     }
-
-    // setImageData(data: Uint8ClampedArray, layer: number) {
-    //     let image = this.getImage(layer);
-    //     image.imageData.data.set(data);
-    //     this.setImage(image, layer);
-    // }
-    //
-    // getImageData(layer: number) {
-    //     return this.getImage(layer).imageData.data;
-    // }
 
     // center position of the canvas
     getCenterPos() {
