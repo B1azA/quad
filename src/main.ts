@@ -7,6 +7,7 @@ import Coloris from "@melloware/coloris";
 import { TinyColor } from "@ctrl/tinycolor";
 import { showPromptDialog } from "./editor/dialog";
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
+import { Image } from "./editor/canvas/image";
 
 
 let editor = new Editor({ width: 32, height: 32 });
@@ -49,24 +50,29 @@ function setup_events(editor: Editor) {
     let editorContainer = document.getElementById("editorContainer")!;
 
     document.getElementById("fileNew")!.onclick = () => {
-        editor.canvas.clearAll();
-        editor.canvas.steps.clear();
+        editor.getCurrentCanvas().clearAll();
+        editor.getCurrentCanvas().steps.clear();
     };
 
     document.getElementById("fileLoad")!.onclick = () => {
         loadFile()
             .then((message) => {
-                editor.canvas.removeLayers();
-                editor = new Editor({ width: message.width, height: message.height });
+                // editor.getCurrentCanvas().removeLayers();
+                // editor = new Editor({ width: message.width, height: message.height });
                 let data = Uint8ClampedArray.from(message.data);
-                editor.canvas.getCurrentLayer().setImageData(data);
+                // editor.getCurrentCanvas().getCurrentLayer().setImageData(data);
+                // console.log(editor.getCurrentCanvas().getCurrentLayer().getImage());
+                let imageData = new ImageData(32, 32);
+                imageData.data.set(data);
+                let image = new Image(imageData, { width: 32, height: 32 });
+                editor.getCurrentCanvas().getCurrentLayer().setImage(image);
             })
             .catch((error) => console.error(error));
     }
 
     document.getElementById("fileSaveAs")!.onclick = () => {
-        let size = editor.canvas.getSize();
-        let data = Array.from(editor.canvas.getCurrentLayer().getImageData());
+        let size = editor.getCurrentCanvas().getSize();
+        let data = Array.from(editor.getCurrentCanvas().getCurrentLayer().getImageData());
 
         let message: ImageMessage = {
             width: size.width,
@@ -99,13 +105,13 @@ function setup_events(editor: Editor) {
     };
 
     document.getElementById("undo")!.onclick = () => {
-        // editor.steps.undo(editor.canvas);
-        editor.canvas.steps.undoStep(editor.canvas);
+        // editor.steps.undo(editor.getCurrentCanvas());
+        editor.getCurrentCanvas().steps.undoStep(editor.getCurrentCanvas());
     }
 
     document.getElementById("redo")!.onclick = () => {
-        // editor.steps.redo(editor.canvas);
-        editor.canvas.steps.redoStep(editor.canvas);
+        // editor.steps.redo(editor.getCurrentCanvas());
+        editor.getCurrentCanvas().steps.redoStep(editor.getCurrentCanvas());
     }
 
     document.getElementById("eraseTool")!.onclick = () => {
@@ -114,32 +120,32 @@ function setup_events(editor: Editor) {
     document.getElementById("addLayer")!.onclick = () => {
         showPromptDialog("Add layer", "new", (value) => {
             let name = value.length > 0 ? value : "unnamed";
-            editor.canvas.addLayer(name);
+            editor.getCurrentCanvas().addLayer(name);
 
-            let layer = editor.canvas.getCurrentLayer();
+            let layer = editor.getCurrentCanvas().getCurrentLayer();
             let step = new LayerAddedStep(layer);
-            editor.canvas.steps.addStep(step);
+            editor.getCurrentCanvas().steps.addStep(step);
         });
     }
 
     document.getElementById("removeLayer")!.onclick = () => {
-        let layer = editor.canvas.getCurrentLayer();
-        let step = new LayerRemovedStep(layer, editor.canvas.getCurrentLayerIndex());
-        editor.canvas.steps.addStep(step);
-        editor.canvas.removeCurrentLayer();
+        let layer = editor.getCurrentCanvas().getCurrentLayer();
+        let step = new LayerRemovedStep(layer, editor.getCurrentCanvas().getCurrentLayerIndex());
+        editor.getCurrentCanvas().steps.addStep(step);
+        editor.getCurrentCanvas().removeCurrentLayer();
     }
 
     document.getElementById("moveLayerUp")!.onclick = () => {
-        if (editor.canvas.moveLayerUp()) {
-            let step = new LayerMovedUpStep(editor.canvas.getCurrentLayerIndex());
-            editor.canvas.steps.addStep(step);
+        if (editor.getCurrentCanvas().moveLayerUp()) {
+            let step = new LayerMovedUpStep(editor.getCurrentCanvas().getCurrentLayerIndex());
+            editor.getCurrentCanvas().steps.addStep(step);
         }
     }
 
     document.getElementById("moveLayerDown")!.onclick = () => {
-        if (editor.canvas.moveLayerDown()) {
-            let step = new LayerMovedDownStep(editor.canvas.getCurrentLayerIndex());
-            editor.canvas.steps.addStep(step);
+        if (editor.getCurrentCanvas().moveLayerDown()) {
+            let step = new LayerMovedDownStep(editor.getCurrentCanvas().getCurrentLayerIndex());
+            editor.getCurrentCanvas().steps.addStep(step);
         }
     }
 
@@ -149,6 +155,10 @@ function setup_events(editor: Editor) {
 
     document.getElementById("removeColor")!.onclick = () => {
         editor.palette.removeColorButton();
+    }
+
+    document.getElementById("addFrame")!.onclick = () => {
+        editor.addFrame(editor.getCurrentCanvas().getTemplate());
     }
 
     document.onmousedown = (e) => {

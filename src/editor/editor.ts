@@ -5,6 +5,7 @@ import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
 import { Square } from "./paintTool/square";
+import { Layer } from "./canvas/layer";
 
 export enum ColorState {
     PRIMARY,
@@ -13,20 +14,25 @@ export enum ColorState {
 
 export class Editor {
     // pressed mouse buttons
-    mouseButtons: [boolean, boolean, boolean] = [false, false, false];
+    private mouseButtons: [boolean, boolean, boolean] = [false, false, false];
 
     // last coordinates of the mouse
-    lastMouseCoords: {
+    private lastMouseCoords: {
         x: number,
         y: number,
     } = { x: 0, y: 0 };
 
-    lastMouseGlobalPos: {
+    private lastMouseGlobalPos: {
         x: number,
         y: number,
     } = { x: 0, y: 0 };
 
-    canvas: Canvas;
+    private canvas: Canvas;
+
+    private canvases: Canvas[] = [];
+    private framesContainer = document.getElementById("frames")!;
+    private editorContainer = document.getElementById("editorContainer")!;
+    private originalRealSize = { width: 0, height: 0 };
 
     paintTool: PaintTool = new Pen;
     penTool: PaintTool = new Pen;
@@ -41,11 +47,23 @@ export class Editor {
     palette: Palette;
 
     constructor(size: { width: number, height: number }) {
-        this.canvas = new Canvas(size);
+        let height = (window.innerHeight / 2);
+        let width = height * size.width / size.height;
+        let realSize = { width, height };
+        let pos = {
+            x: window.innerWidth / 2 - width / 2,
+            y: window.innerHeight / 2 - height / 2
+        };
 
-        this.canvas.addLayer("secondary");
+        this.originalRealSize = realSize;
 
-        this.canvas.addLayer("terciary");
+        let template = new Layer("template", 100, size, realSize, pos, true);
+        template.init(this.editorContainer);
+
+        let canvas = this.addFrame(template);
+        canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
+        canvas.getFrame().id = "currentFrame";
+        this.canvas = canvas;
 
         let colors: [number, number, number, number][] = [
             [128, 255, 255, 255],
@@ -55,6 +73,30 @@ export class Editor {
             [255, 255, 255, 255],
         ];
         this.palette = new Palette(this, colors);
+    }
+
+    addFrame(template: Layer) {
+        let canvas = new Canvas(this.framesContainer, template.getSize());
+        this.canvases.push(canvas);
+
+        let frame = canvas.getFrame();
+        frame.onclick = () => {
+            if (this.canvas != canvas) {
+                this.canvas.getFrame().id = "normalFrame";
+                this.canvas.remove();
+
+                canvas.getFrame().id = "currentFrame";
+                canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
+
+                this.canvas = canvas;
+            }
+        };
+
+        return canvas;
+    }
+
+    getCurrentCanvas() {
+        return this.canvas;
     }
 
     onMouseDown(event: MouseEvent) {

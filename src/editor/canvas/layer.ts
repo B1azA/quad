@@ -10,7 +10,6 @@ export class Layer {
     constructor(
         name: string,
         opacity: number,
-        editorContainer: HTMLElement,
         size: { width: number, height: number },
         realSize: { width: number, height: number },
         pos: { x: number, y: number },
@@ -21,11 +20,6 @@ export class Layer {
         let canvasElement = document.createElement("canvas");
 
         if (template) {
-            // remove template if it exists
-            let exists = document.getElementById("editorTemplate");
-            if (exists != null) {
-                exists.remove();
-            }
             canvasElement.id = "editorTemplate";
 
             this.template = true;
@@ -36,8 +30,6 @@ export class Layer {
         }
 
         canvasElement.className = "editorLayer";
-
-        editorContainer.appendChild(canvasElement);
 
         // transform the canvas element
         canvasElement.width = size.width;
@@ -53,6 +45,11 @@ export class Layer {
         this.ctx = canvasElement.getContext("2d", { willReadFrequently: true })!;
 
         this.setOpacity(opacity);
+    }
+
+    init(editorContainer: HTMLElement) {
+        editorContainer.appendChild(this.canvasElement);
+        this.ctx = this.canvasElement.getContext("2d")!;
     }
 
     getName() {

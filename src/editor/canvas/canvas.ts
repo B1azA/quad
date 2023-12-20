@@ -1,7 +1,7 @@
 import { showPromptDialog } from "../dialog";
 import { Steps } from "../steps/steps";
-import { Layer } from "./layer";
 import { Image } from "./image";
+import { Layer } from "./layer";
 
 export class Canvas {
     private layers: Layer[] = [];
@@ -24,9 +24,11 @@ export class Canvas {
 
     steps: Steps = new Steps();
 
-    constructor(size: { width: number, height: number }) {
-        this.removeLayers();
+    private frame: HTMLCanvasElement;
 
+    private layerImagesSave: Image[] = [];
+
+    constructor(frameContainer: HTMLElement, size: { width: number, height: number }) {
         let height = (window.innerHeight / 2);
         let width = height * size.width / size.height;
         let realSize = { width, height };
@@ -35,13 +37,76 @@ export class Canvas {
             y: window.innerHeight / 2 - height / 2
         };
 
-        this.addTemplate(size, realSize, pos)
-        this.addLayer("main");
-
         this.originalRealWidth = width;
         this.originalRealHeight = height;
 
         this.setLayer(1);
+
+        let frame = document.createElement("canvas");
+        frame.width = width;
+        frame.height = height;
+        frame.className = "normalFrame";
+        this.frame = frame;
+        frameContainer.appendChild(frame);
+    }
+
+    init(
+        template: Layer,
+        originalRealWidth: number,
+        originalRealHeight: number,
+    ) {
+        this.originalRealWidth = originalRealWidth;
+        this.originalRealHeight = originalRealHeight;
+
+        if (this.layers.length <= 0) {
+            this.layers.push(template);
+        }
+
+        this.setSize(template.getSize());
+        this.setRealSize(template.getRealSize());
+        this.setPos(template.getPos());
+
+        // create a new layer if there is not one
+        // else add old layers and set saves to them
+        if (this.layers.length == 1) {
+            this.addLayer("main");
+        } else {
+            for (let i = 1; i < this.layers.length; i++) {
+                this.initLayer(i);
+                let image = this.layerImagesSave[i - 1];
+                if (image != undefined && image != null) {
+                    this.layers[i].setImage(image);
+                }
+            }
+        }
+
+        this.setLayer(this.layer);
+    }
+
+    remove() {
+        this.layerImagesSave = [];
+        for (let i = 1; i < this.layers.length; i++) {
+            // save data of layers
+            this.layerImagesSave.push(this.layers[i].getImage());
+
+            this.layers[i].getCanvasElement().remove();
+            this.layerButtons[i - 1].parentElement?.remove();
+            this.layerRanges[i - 1].parentElement?.remove();
+        }
+
+        return this.getTemplate();
+    }
+
+    getFrame() {
+        return this.frame;
+    }
+
+    getOriginalRealWidth() {
+        return this.originalRealWidth;
+    }
+
+    getOriginalRealHeight() {
+        return this.originalRealHeight;
     }
 
     setSize(size: { width: number, height: number }) {
@@ -102,14 +167,6 @@ export class Canvas {
         return this.layers.length;
     }
 
-    // remove all layers except template
-    removeLayers() {
-        let layers = document.getElementsByClassName("editorLayer");
-        for (let layer of layers) {
-            layer.remove();
-        }
-    }
-
     addTemplate(
         size: { width: number, height: number },
         realSize: { width: number, height: number },
@@ -118,7 +175,6 @@ export class Canvas {
         this.layers.push(new Layer(
             "template",
             100,
-            this.editorContainer,
             size,
             realSize,
             pos,
@@ -130,7 +186,6 @@ export class Canvas {
         let layer = new Layer(
             name,
             100,
-            this.editorContainer,
             this.getSize(),
             this.getRealSize(),
             this.getPos(),
@@ -193,7 +248,80 @@ export class Canvas {
             this.layerRanges.push(layerOpacityRange);
 
             this.setLayer(index);
+
+            layer.init(this.editorContainer);
         }
+    }
+
+    initLayer(layerIndex: number) {
+        if (layerIndex > 0) {
+            this.layers[layerIndex].init(this.editorContainer);
+
+            let li = document.createElement("li");
+            li.appendChild(this.layerButtons[layerIndex - 1]);
+            this.layerBar.appendChild(li);
+
+            let opacityLi = document.createElement("li");
+            opacityLi.appendChild(this.layerRanges[layerIndex - 1]);
+            this.layerRangeBar.appendChild(opacityLi);
+        }
+
+
+
+
+
+        // if (this.getLayersLength() > 0) {
+        //     let index = this.layers.length - 1;
+        //
+        //     let li = document.createElement("li");
+        //     let layerButton = document.createElement("button");
+        //     layerButton.id = index.toString();
+        //     layerButton.textContent = layer.getName();
+        //
+        //     // change the layer on click
+        //     layerButton.onclick = (e) => {
+        //         let target = <HTMLButtonElement>e.target;
+        //         let layer = parseInt(target.id);
+        //         this.setLayer(layer);
+        //     }
+        //
+        //     // rename on double click
+        //     layerButton.ondblclick = (e) => {
+        //         let target = <HTMLButtonElement>e.target;
+        //         let def = target.textContent;
+        //         if (def == null) def = "unnamed";
+        //
+        //         showPromptDialog("Rename layer", def, (value) => {
+        //             let name = value.length > 0 ? value : "unnamed";
+        //             target.textContent = name;
+        //             layer.setName(name);
+        //         });
+        //     }
+        //
+        //     li.appendChild(layerButton);
+        //     this.layerBar.appendChild(li);
+        //     this.layerButtons.push(layerButton);
+        //
+        //     // set an opacity slider
+        //     let layerOpacityRange = document.createElement("input");
+        //     layerOpacityRange.type = "range";
+        //     layerOpacityRange.min = "0";
+        //     layerOpacityRange.max = "100";
+        //     layerOpacityRange.value = layer.getOpacity().toString();
+        //
+        //     layerOpacityRange.oninput = () => {
+        //         // + 0.2 so it can be always seen
+        //         layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
+        //         layer.setOpacity(parseInt(layerOpacityRange.value));
+        //     }
+        //
+        //     let opacityLi = document.createElement("li");
+        //     opacityLi.appendChild(layerOpacityRange);
+        //     this.layerRangeBar.appendChild(opacityLi);
+        //     this.layerRanges.push(layerOpacityRange);
+        //
+        //     layer.init(this.editorContainer);
+        // }
     }
 
     addCustomLayerAtIndex(layer: Layer, layerIndex: number) {

@@ -1,15 +1,15 @@
 #frames {
     display: block;
     position: absolute;
-    width: 8em;
-    height: 100vh;
+    bottom: 0;
     right: 1em;
-    top: 13em;
+    width: 8em;
+    height: calc(100vh - 18em);
     overflow-y: scroll;
     z-index: 6;
 }
 
-.frame {
+.normalFrame {
     position: relative;
     width: 90%;
     left: 5%;
@@ -18,9 +18,13 @@
     border-radius: 5px;
 }
 
+#currentFrame {
+    border: solid blue;
+}
+
 #animationFrame {
     position: absolute;
-    z-index: 55;
+    z-index: 6;
     width: 10em;
     height: 10em;
     right: 8px;
@@ -28,4 +32,20 @@
     background-color: white;
     border: solid black;
     border-radius: 5px;
+}
+
+#framesConfig {
+    position: absolute;
+    top: 2em;
+    right: 12em;
+    list-style-type: none;
+    z-index: 6;
+
+    li button {
+        display: block;
+        width: 2em;
+        height: 2em;
+        padding: 4px;
+        margin: 4%;
+    }
 }

@@ -35,7 +35,7 @@ export class Compass implements PaintTool {
         );
 
         if (this.step != null && !this.step.isEmpty()) {
-            editor.canvas.steps.addStep(this.step);
+            editor.getCurrentCanvas().steps.addStep(this.step);
         }
     }
 
@@ -51,7 +51,7 @@ export class Compass implements PaintTool {
             this.lastCoords,
             coords,
             color,
-            editor.canvas.getTemplate(),
+            editor.getCurrentCanvas().getTemplate(),
         );
     }
 

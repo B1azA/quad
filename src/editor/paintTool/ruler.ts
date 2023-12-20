@@ -35,7 +35,7 @@ export class Ruler implements PaintTool {
         );
 
         if (this.step != null && !this.step.isEmpty()) {
-            editor.canvas.steps.addStep(this.step);
+            editor.getCurrentCanvas().steps.addStep(this.step);
         }
     }
 
@@ -51,7 +51,7 @@ export class Ruler implements PaintTool {
             coords,
             this.lastCoords,
             color,
-            editor.canvas.getTemplate(),
+            editor.getCurrentCanvas().getTemplate(),
         );
     }
 
@@ -63,7 +63,7 @@ export class Ruler implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        let size = editor.canvas.getSize();
+        let size = editor.getCurrentCanvas().getSize();
 
         // difference
         let dx = b.x - a.x;

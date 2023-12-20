@@ -42,7 +42,7 @@ export class Square implements PaintTool {
             coords,
             this.lastCoords,
             color,
-            editor.canvas.getTemplate(),
+            editor.getCurrentCanvas().getTemplate(),
         );
     }
 
@@ -54,7 +54,7 @@ export class Square implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        let size = editor.canvas.getSize();
+        let size = editor.getCurrentCanvas().getSize();
         let isAOnCanvas = a.x >= 0 && a.x < size.width && a.y >= 0 && a.y < size.height;
         let isBOnCanvas = b.x >= 0 && b.x < size.width && b.y >= 0 && b.y < size.height;
         // return if points a and b are both not on the canvas

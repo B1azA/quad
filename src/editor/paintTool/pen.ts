@@ -27,7 +27,7 @@ export class Pen implements PaintTool {
         layer: Layer,
     ) {
         if (this.step != null && !this.step.isEmpty()) {
-            editor.canvas.steps.addStep(this.step);
+            editor.getCurrentCanvas().steps.addStep(this.step);
         }
     }
 
@@ -65,7 +65,7 @@ export class Pen implements PaintTool {
         layer: Layer,
     ) {
         // return if outside of canvas
-        let size = editor.canvas.getSize();
+        let size = editor.getCurrentCanvas().getSize();
         if (point.x >= size.width || point.x < 0 || point.y >= size.height || point.y < 0) return;
 
         let image = layer.getImage();
@@ -90,7 +90,7 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        let size = editor.canvas.getSize();
+        let size = editor.getCurrentCanvas().getSize();
 
         // difference
         let dx = b.x - a.x;
