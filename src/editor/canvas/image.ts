@@ -4,10 +4,9 @@ export class Image {
 
     constructor(
         imageData: ImageData,
-        size: { width: number, height: number },
     ) {
         this.imageData = imageData;
-        this.size = size;
+        this.size = { width: this.imageData.width, height: this.imageData.height };
     }
 
     // puts a pixel at the point with the selected color

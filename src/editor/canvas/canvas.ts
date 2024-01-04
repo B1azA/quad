@@ -25,29 +25,32 @@ export class Canvas {
     steps: Steps = new Steps();
 
     private frame: HTMLCanvasElement;
+    private frameCtx: CanvasRenderingContext2D;
 
     private layerImagesSave: Image[] = [];
 
     constructor(frameContainer: HTMLElement, size: { width: number, height: number }) {
-        let height = (window.innerHeight / 2);
-        let width = height * size.width / size.height;
-        let realSize = { width, height };
+        let realHeight = (window.innerHeight / 2);
+        let realWidth = realHeight * size.width / size.height;
+        let realSize = { width: realWidth, height: realHeight };
         let pos = {
-            x: window.innerWidth / 2 - width / 2,
-            y: window.innerHeight / 2 - height / 2
+            x: window.innerWidth / 2 - realWidth / 2,
+            y: window.innerHeight / 2 - realHeight / 2
         };
 
-        this.originalRealWidth = width;
-        this.originalRealHeight = height;
+        this.originalRealWidth = realWidth;
+        this.originalRealHeight = realHeight;
 
         this.setLayer(1);
 
         let frame = document.createElement("canvas");
-        frame.width = width;
-        frame.height = height;
+        frame.width = size.width;
+        frame.height = size.height;
         frame.className = "normalFrame";
         this.frame = frame;
         frameContainer.appendChild(frame);
+
+        this.frameCtx = frame.getContext("2d", { willReadFrequently: true })!;
     }
 
     init(
@@ -99,6 +102,34 @@ export class Canvas {
 
     getFrame() {
         return this.frame;
+    }
+
+    getFrameCtx() {
+        return this.frameCtx;
+    }
+
+    getLayersImageCombined() {
+        let size = this.getSize();
+        let id = new ImageData(size.width, size.height);
+        let newImage = new Image(id);
+
+        for (let i = 1; i < this.layers.length; i++) {
+            let layer = this.layers[this.layers.length - i];
+            let image = layer.getImage();
+
+            for (let x = 0; x < size.width; x++) {
+                for (let y = 0; y < size.height; y++) {
+                    let point = { x, y };
+                    let color = image.getPixel(point);
+
+                    if (color[3] != 0) {
+                        newImage.putPixel(point, color);
+                    }
+                }
+            }
+        }
+
+        return newImage;
     }
 
     getOriginalRealWidth() {

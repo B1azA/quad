@@ -116,7 +116,7 @@ export class Layer {
     getImage() {
         let size = this.getSize();
         let imageData = this.ctx.getImageData(0, 0, size.width, size.height);
-        let image = new Image(imageData, size);
+        let image = new Image(imageData);
         return image;
     }
 

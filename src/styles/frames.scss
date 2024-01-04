@@ -7,13 +7,16 @@
     height: calc(100vh - 18em);
     overflow-y: scroll;
     z-index: 6;
+
+    canvas {
+        image-rendering: pixelated;
+    }
 }
 
 .normalFrame {
     position: relative;
     width: 90%;
     left: 5%;
-    background-color: green;
     border: solid black;
     border-radius: 5px;
 }
@@ -32,6 +35,7 @@
     background-color: white;
     border: solid black;
     border-radius: 5px;
+    image-rendering: pixelated;
 }
 
 #framesConfig {

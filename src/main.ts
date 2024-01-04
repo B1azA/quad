@@ -1,5 +1,5 @@
 import "@melloware/coloris/dist/coloris.css";
-import "./styles/styles.scss"
+import "./styles/styles.scss";
 import { Editor } from "./editor/editor";
 import { ImageMessage, loadFile, saveFile } from "./tauri";
 
@@ -64,7 +64,7 @@ function setup_events(editor: Editor) {
                 // console.log(editor.getCurrentCanvas().getCurrentLayer().getImage());
                 let imageData = new ImageData(32, 32);
                 imageData.data.set(data);
-                let image = new Image(imageData, { width: 32, height: 32 });
+                let image = new Image(imageData);
                 editor.getCurrentCanvas().getCurrentLayer().setImage(image);
             })
             .catch((error) => console.error(error));

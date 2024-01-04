@@ -46,6 +46,9 @@ export class Editor {
 
     palette: Palette;
 
+    private animationFrame: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("animationFrame");
+    private animationFrameCtx = this.animationFrame.getContext("2d", { willReadFrequently: true })!
+
     constructor(size: { width: number, height: number }) {
         let height = (window.innerHeight / 2);
         let width = height * size.width / size.height;
@@ -73,6 +76,9 @@ export class Editor {
             [255, 255, 255, 255],
         ];
         this.palette = new Palette(this, colors);
+
+        this.animationFrame.width = size.width;
+        this.animationFrame.height = size.height;
     }
 
     addFrame(template: Layer) {
@@ -97,6 +103,14 @@ export class Editor {
 
     getCurrentCanvas() {
         return this.canvas;
+    }
+
+    updateFrameAndAnimationFrame() {
+        let frameCtx = this.canvas.getFrameCtx();
+        let image = this.canvas.getLayersImageCombined();
+
+        frameCtx.putImageData(image.imageData, 0, 0);
+        this.animationFrameCtx.putImageData(image.imageData, 0, 0);
     }
 
     onMouseDown(event: MouseEvent) {
@@ -152,6 +166,8 @@ export class Editor {
                         this.palette.getColor(),
                         this.canvas.getCurrentLayer(),
                     );
+
+                    this.updateFrameAndAnimationFrame();
                 }
                 break;
 
@@ -171,6 +187,8 @@ export class Editor {
                         this.palette.getColor(),
                         this.canvas.getCurrentLayer(),
                     );
+
+                    this.updateFrameAndAnimationFrame();
                 }
                 break;
         }
@@ -225,11 +243,23 @@ export class Editor {
     }
 
     onKeyDown(event: KeyboardEvent) {
-        this.drag = event.ctrlKey;
+        let key = event.key;
+
+        switch (key) {
+            case "Control":
+                this.drag = true;
+                break;
+        }
     }
 
     onKeyUp(event: KeyboardEvent) {
-        this.drag = event.ctrlKey;
+        let key = event.key;
+
+        switch (key) {
+            case "Control":
+                this.drag = false;
+                break;
+        }
     }
 
     onMouseEnter() {
