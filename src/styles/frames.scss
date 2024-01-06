@@ -53,3 +53,30 @@
         margin: 4%;
     }
 }
+
+#fpsContainer {
+    position: absolute;
+    top: 13em;
+    right: 2em;
+    wdith: 100%;
+    display: block;
+    z-index: 6;
+
+    input {
+        width: 4em;
+        outline: none;
+        opacity: 0.7;
+    }
+
+    input:hover {
+        opacity: 1;
+    }
+
+    label {
+        top: 0;
+    }
+
+    #fpsValue {
+        margin: 4px;
+    }
+}

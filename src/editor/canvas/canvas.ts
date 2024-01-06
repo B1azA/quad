@@ -32,16 +32,8 @@ export class Canvas {
     constructor(frameContainer: HTMLElement, size: { width: number, height: number }) {
         let realHeight = (window.innerHeight / 2);
         let realWidth = realHeight * size.width / size.height;
-        let realSize = { width: realWidth, height: realHeight };
-        let pos = {
-            x: window.innerWidth / 2 - realWidth / 2,
-            y: window.innerHeight / 2 - realHeight / 2
-        };
-
         this.originalRealWidth = realWidth;
         this.originalRealHeight = realHeight;
-
-        this.setLayer(1);
 
         let frame = document.createElement("canvas");
         frame.width = size.width;
@@ -53,6 +45,7 @@ export class Canvas {
         this.frameCtx = frame.getContext("2d", { willReadFrequently: true })!;
     }
 
+    // init the canvas after it was remove from the DOM
     init(
         template: Layer,
         originalRealWidth: number,
@@ -86,6 +79,7 @@ export class Canvas {
         this.setLayer(this.layer);
     }
 
+    // remove itself from the DOM
     remove() {
         this.layerImagesSave = [];
         for (let i = 1; i < this.layers.length; i++) {
@@ -296,63 +290,6 @@ export class Canvas {
             opacityLi.appendChild(this.layerRanges[layerIndex - 1]);
             this.layerRangeBar.appendChild(opacityLi);
         }
-
-
-
-
-
-        // if (this.getLayersLength() > 0) {
-        //     let index = this.layers.length - 1;
-        //
-        //     let li = document.createElement("li");
-        //     let layerButton = document.createElement("button");
-        //     layerButton.id = index.toString();
-        //     layerButton.textContent = layer.getName();
-        //
-        //     // change the layer on click
-        //     layerButton.onclick = (e) => {
-        //         let target = <HTMLButtonElement>e.target;
-        //         let layer = parseInt(target.id);
-        //         this.setLayer(layer);
-        //     }
-        //
-        //     // rename on double click
-        //     layerButton.ondblclick = (e) => {
-        //         let target = <HTMLButtonElement>e.target;
-        //         let def = target.textContent;
-        //         if (def == null) def = "unnamed";
-        //
-        //         showPromptDialog("Rename layer", def, (value) => {
-        //             let name = value.length > 0 ? value : "unnamed";
-        //             target.textContent = name;
-        //             layer.setName(name);
-        //         });
-        //     }
-        //
-        //     li.appendChild(layerButton);
-        //     this.layerBar.appendChild(li);
-        //     this.layerButtons.push(layerButton);
-        //
-        //     // set an opacity slider
-        //     let layerOpacityRange = document.createElement("input");
-        //     layerOpacityRange.type = "range";
-        //     layerOpacityRange.min = "0";
-        //     layerOpacityRange.max = "100";
-        //     layerOpacityRange.value = layer.getOpacity().toString();
-        //
-        //     layerOpacityRange.oninput = () => {
-        //         // + 0.2 so it can be always seen
-        //         layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
-        //         layer.setOpacity(parseInt(layerOpacityRange.value));
-        //     }
-        //
-        //     let opacityLi = document.createElement("li");
-        //     opacityLi.appendChild(layerOpacityRange);
-        //     this.layerRangeBar.appendChild(opacityLi);
-        //     this.layerRanges.push(layerOpacityRange);
-        //
-        //     layer.init(this.editorContainer);
-        // }
     }
 
     addCustomLayerAtIndex(layer: Layer, layerIndex: number) {

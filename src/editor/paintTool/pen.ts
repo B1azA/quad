@@ -64,13 +64,9 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // return if outside of canvas
-        let size = editor.getCurrentCanvas().getSize();
-        if (point.x >= size.width || point.x < 0 || point.y >= size.height || point.y < 0) return;
-
         let image = layer.getImage();
-
-        if (!layer.isTemplate()) {
+        let size = editor.getCurrentCanvas().getSize();
+        if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0 && !layer.isTemplate()) {
             let pixelColor = image.getPixel(point);
 
             let paintMinistep = new PaintMiniStep(point, pixelColor);

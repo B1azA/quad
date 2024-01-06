@@ -49,6 +49,12 @@ export class Editor {
     private animationFrame: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("animationFrame");
     private animationFrameCtx = this.animationFrame.getContext("2d", { willReadFrequently: true })!
 
+    private fpsRange = <HTMLInputElement>document.getElementById("fpsRange");
+    private fpsValue = <HTMLLabelElement>document.getElementById("fpsValue");
+    private fps = 0;
+    private animationInterval = null;
+    private animationFrameIndex = 0;
+
     constructor(size: { width: number, height: number }) {
         let height = (window.innerHeight / 2);
         let width = height * size.width / size.height;
@@ -79,8 +85,30 @@ export class Editor {
 
         this.animationFrame.width = size.width;
         this.animationFrame.height = size.height;
+
+        this.fpsRange.oninput = () => {
+            this.fpsValue.textContent = this.fpsRange.value;
+            this.fps = parseInt(this.fpsRange.value);
+
+            // clear animationInterval before creating another
+            clearInterval(this.animationInterval);
+
+            if (this.fps != 0) {
+                this.animationInterval = setInterval(() => {
+                    this.setAnimationFrame(this.animationFrameIndex);
+                    this.animationFrameIndex += 1;
+
+                    if (this.animationFrameIndex >= this.canvases.length) {
+                        this.animationFrameIndex = 0;
+                    }
+                }, 1 / this.fps * 1000);
+            } else {
+                this.updateFrameAndAnimationFrame();
+            }
+        }
     }
 
+    // add a frame to the editor and focus it, return it
     addFrame(template: Layer) {
         let canvas = new Canvas(this.framesContainer, template.getSize());
         this.canvases.push(canvas);
@@ -98,23 +126,74 @@ export class Editor {
             }
         };
 
-        return canvas;
+
+        this.canvases.forEach((cnvs) => {
+            cnvs.getFrame().id = "normalFrame";
+        });
+
+        if (this.canvas != null) {
+            this.canvas.remove();
+        }
+
+        canvas.getFrame().id = "currentFrame";
+        canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
+
+        this.canvas = canvas;
+
+        return this.canvas;
     }
 
     getCurrentCanvas() {
         return this.canvas;
     }
 
+    // update the current frame and the animation frame if fps is 0
     updateFrameAndAnimationFrame() {
         let frameCtx = this.canvas.getFrameCtx();
         let image = this.canvas.getLayersImageCombined();
 
         frameCtx.putImageData(image.imageData, 0, 0);
+
+        if (this.fps == 0) {
+            this.animationFrameCtx.putImageData(image.imageData, 0, 0);
+        }
+    }
+
+    updateFrame() {
+        let frameCtx = this.canvas.getFrameCtx();
+        let image = this.canvas.getLayersImageCombined();
+
+        frameCtx.putImageData(image.imageData, 0, 0);
+    }
+
+    // set the animation frame image to the image of the current frame
+    setAnimationFrame(frameIndex: number) {
+        let canvas = this.canvases[frameIndex];
+        let image = canvas.getLayersImageCombined();
+
         this.animationFrameCtx.putImageData(image.imageData, 0, 0);
+    }
+
+    undoStepOnCanvas() {
+        let canvas = this.getCurrentCanvas();
+        canvas.steps.undoStep(canvas);
+
+        this.updateFrameAndAnimationFrame();
+    }
+
+    redoStepOnCanvas() {
+        let canvas = this.getCurrentCanvas();
+        canvas.steps.redoStep(canvas);
+
+        this.updateFrameAndAnimationFrame();
     }
 
     onMouseDown(event: MouseEvent) {
         let mouseCoords = this.canvas.getMouseCoords(event);
+
+        // clear template layer
+        this.canvas.getTemplate().clear();
+        this.updateFrameAndAnimationFrame();
 
         switch (event.button) {
             case 0:

@@ -105,13 +105,11 @@ function setup_events(editor: Editor) {
     };
 
     document.getElementById("undo")!.onclick = () => {
-        // editor.steps.undo(editor.getCurrentCanvas());
-        editor.getCurrentCanvas().steps.undoStep(editor.getCurrentCanvas());
+        editor.undoStepOnCanvas();
     }
 
     document.getElementById("redo")!.onclick = () => {
-        // editor.steps.redo(editor.getCurrentCanvas());
-        editor.getCurrentCanvas().steps.redoStep(editor.getCurrentCanvas());
+        editor.redoStepOnCanvas();
     }
 
     document.getElementById("eraseTool")!.onclick = () => {
