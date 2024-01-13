@@ -21,7 +21,8 @@ export class Editor {
         y: number,
     } = { x: 0, y: 0 };
 
-    private canvas: number = 0;
+    // index of the current canvas in the canvases
+    private canvasIndex: number = 0;
 
     private canvases: Canvas[] = [];
     private framesContainer = document.getElementById("frames")!;
@@ -113,14 +114,17 @@ export class Editor {
             this.getCurrentCanvas().remove();
 
             this.setCurrentCanvas(index, template);
+            this.updateFrameAndAnimationFrame();
         };
 
 
-        if (this.canvas != null) {
+        if (this.canvasIndex != null) {
             this.getCurrentCanvas().remove();
         }
-        this.canvas = this.canvases.length - 1;
-        this.setCurrentCanvas(this.canvas, template);
+        this.canvasIndex = this.canvases.length - 1;
+        this.setCurrentCanvas(this.canvasIndex, template);
+
+        return canvas;
     }
 
     removeFrame() {
@@ -129,13 +133,13 @@ export class Editor {
             let template = this.getCurrentCanvas().getTemplate();
             this.getCurrentCanvas().remove();
             this.getCurrentCanvas().getFrame().remove();
-            this.canvases.splice(this.canvas, 1);
+            this.canvases.splice(this.canvasIndex, 1);
 
             // set the new current canvas
-            if (this.canvas < this.canvases.length)
-                this.setCurrentCanvas(this.canvas, template);
+            if (this.canvasIndex < this.canvases.length)
+                this.setCurrentCanvas(this.canvasIndex, template);
             else
-                this.setCurrentCanvas(this.canvas - 1, template);
+                this.setCurrentCanvas(this.canvasIndex - 1, template);
 
             // set new indexes for each canvas
             for (let i = 0; i < this.canvases.length; i++) {
@@ -146,15 +150,115 @@ export class Editor {
                     this.setCurrentCanvas(i, template);
                 }
             }
+            this.updateFrameAndAnimationFrame();
+        }
+    }
+
+    duplicateFrame() {
+        let canvas = this.getCurrentCanvas();
+        let newCanvas = this.addFrame(canvas.getTemplate());
+        let layersLength = canvas.getLayersLength();
+
+        let firstLayer = canvas.getLayer(1);
+        let newFirstLayer = newCanvas.getLayer(1);
+
+        if (firstLayer != null && newFirstLayer != null) {
+            newFirstLayer.setName(firstLayer.getName());
+            newFirstLayer.setImage(firstLayer.getImage());
+        }
+
+        for (let i = 2; i < layersLength; i++) {
+            let layer = canvas.getLayer(i);
+            if (layer != null) {
+                newCanvas.addLayer(layer.getName());
+                let newLayer = newCanvas.getLayer(i);
+                if (newLayer != null) {
+                    newLayer.setImage(layer.getImage());
+                }
+            }
+
+        }
+
+        this.updateFrameAndAnimationFrame();
+    }
+
+    moveFrameUp() {
+        if (this.canvasIndex > 0) {
+            // remove the old canvas
+            this.getCurrentCanvas().remove();
+            // switch frames
+            let a = this.canvases[this.canvasIndex];
+            let b = this.canvases[this.canvasIndex - 1];
+            this.canvases[this.canvasIndex] = b;
+            this.canvases[this.canvasIndex - 1] = a;
+
+            // remove all frames
+            for (let canvas of this.canvases) {
+                canvas.getFrame().remove();
+            }
+
+            // add frames
+            for (let i = 0; i < this.canvases.length; i++) {
+                let frame = this.canvases[i].getFrame();
+
+                frame.onclick = () => {
+                    this.getCurrentCanvas().getFrame().id = "normalFrame";
+                    this.getCurrentCanvas().remove();
+
+                    this.setCurrentCanvas(i, this.getCurrentCanvas().getTemplate());
+                }
+
+                this.framesContainer.appendChild(frame);
+            }
+
+            this.setCurrentCanvas(this.canvasIndex - 1, this.getCurrentCanvas().getTemplate());
+
+            this.updateFrameAndAnimationFrame();
+        }
+    }
+
+    moveFrameDown() {
+        let length = this.canvases.length;
+        if (this.canvasIndex < length - 1) {
+            // remove the old canvas
+            this.getCurrentCanvas().remove();
+            // switch frames
+            let a = this.canvases[length - 1];
+            let b = this.canvases[length - 2];
+            this.canvases[length - 1] = b;
+            this.canvases[length - 2] = a;
+
+            // remove all frames
+            for (let canvas of this.canvases) {
+                canvas.getFrame().remove();
+            }
+
+            // add frames
+            for (let i = 0; i < this.canvases.length; i++) {
+                let frame = this.canvases[i].getFrame();
+
+                frame.onclick = () => {
+                    this.getCurrentCanvas().getFrame().id = "normalFrame";
+                    this.getCurrentCanvas().remove();
+
+                    this.setCurrentCanvas(i, this.getCurrentCanvas().getTemplate());
+                }
+
+                this.framesContainer.appendChild(frame);
+            }
+
+            this.setCurrentCanvas(this.canvasIndex + 1, this.getCurrentCanvas().getTemplate());
+
+            this.updateFrameAndAnimationFrame();
         }
     }
 
     getCurrentCanvas() {
-        return this.canvases[this.canvas];
+        return this.canvases[this.canvasIndex];
     }
 
     setCurrentCanvas(canvasIndex: number, template: Layer) {
-        this.canvas = canvasIndex;
+        this.canvasIndex = canvasIndex;
         this.canvases.forEach((cnvs) => {
             cnvs.getFrame().id = "normalFrame";
         });
@@ -184,7 +288,7 @@ export class Editor {
         frameCtx.putImageData(image.imageData, 0, 0);
     }
 
-    // set the animation frame image to the image of the current frame
+    // set the animation frame image to the image of the frame
     setAnimationFrame(frameIndex: number) {
         let canvas = this.canvases[frameIndex];
         let image = canvas.getLayersImageCombined();

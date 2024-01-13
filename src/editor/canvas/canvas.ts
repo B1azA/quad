@@ -185,6 +185,20 @@ export class Canvas {
         }
     }
 
+    getLayersButtonsRanges(): [Layer[], HTMLButtonElement[], HTMLInputElement[]] {
+        let layers = this.layers;
+        let layerButtons = this.layerButtons;
+        let layerRanges = this.layerRanges;
+
+        return [layers, layerButtons, layerRanges];
+    }
+
+    setLayersButtonsRanges(layersButtonsRanges: [Layer[], HTMLButtonElement[], HTMLInputElement[]]) {
+        this.layers = layersButtonsRanges[0];
+        this.layerButtons = layersButtonsRanges[1];
+        this.layerRanges = layersButtonsRanges[2];
+    }
+
     getTemplate() {
         return this.layers[0];
     }

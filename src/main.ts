@@ -163,6 +163,18 @@ function setup_events(editor: Editor) {
         editor.removeFrame();
     }
 
+    document.getElementById("duplicateFrame")!.onclick = () => {
+        editor.duplicateFrame();
+    }
+
+    document.getElementById("moveFrameUp")!.onclick = () => {
+        editor.moveFrameUp();
+    }
+
+    document.getElementById("moveFrameDown")!.onclick = () => {
+        editor.moveFrameDown();
+    }
+
     document.onmousedown = (e) => {
         editor.onMouseDown(e);
     }
