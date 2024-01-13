@@ -148,11 +148,23 @@ function setup_events(editor: Editor) {
     }
 
     document.getElementById("addColor")!.onclick = () => {
-        editor.palette.addColorButton();
+        editor.palette.addColor();
     }
 
     document.getElementById("removeColor")!.onclick = () => {
-        editor.palette.removeColorButton();
+        editor.palette.removeColor();
+    }
+
+    document.getElementById("duplicateColor")!.onclick = () => {
+        editor.palette.duplicateColor();
+    }
+
+    document.getElementById("moveColorLeft")!.onclick = () => {
+        editor.palette.moveColorLeft();
+    }
+
+    document.getElementById("moveColorRight")!.onclick = () => {
+        editor.palette.moveColorRight();
     }
 
     document.getElementById("addFrame")!.onclick = () => {

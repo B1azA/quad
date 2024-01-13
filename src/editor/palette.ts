@@ -1,5 +1,4 @@
 import { TinyColor, fromRatio } from "@ctrl/tinycolor";
-import Coloris from "@melloware/coloris";
 import { Editor } from "./editor";
 
 export class Palette {
@@ -12,8 +11,9 @@ export class Palette {
     private color: [number, number, number, number] = [0, 0, 0, 255];
     private buttons: HTMLButtonElement[] = [];
     private rows: HTMLTableRowElement[] = [];
-    private primaryButton: HTMLButtonElement;
-    private secondaryButton: HTMLButtonElement;
+    private primaryButton: number = 0;
+    private secondaryButton: number = 1;
+    private isColorPrimary: boolean = true;
 
     constructor(editor: Editor, colors: [number, number, number, number][]) {
         this.colors = colors;
@@ -62,40 +62,19 @@ export class Palette {
         }
 
         // add color buttons
-        let i = Math.ceil(colors.length / 5);
-        for (let y = 0; y < i; y++) {
-            let tr = <HTMLTableRowElement>document.createElement("tr");
-            for (let x = 0; x < 5; x++) {
-                let td = <HTMLTableDataCellElement>document.createElement("td");
-                let button = <HTMLButtonElement>document.createElement("button");
-                button.id = "normalColorButton";
-                this.buttons.push(button);
-                let color = new TinyColor();
+        this.recreateButtonsTable();
+    }
 
-                let index = y * 5 + x;
-                if (index >= colors.length) break;
+    getButton(index: number) {
+        return this.buttons[index];
+    }
 
-                color.r = colors[index][0];
-                color.g = colors[index][1];
-                color.b = colors[index][2];
+    getPrimaryButton() {
+        return this.getButton(this.primaryButton);
+    }
 
-                button.style.backgroundColor = color.toRgbString();
-
-                let clr: [number, number, number, number] = [color.r, color.g, color.b, 255];
-                button.onmousedown = (event) => this.colorButtonOnMouseDown(event, button, clr);
-
-                td.appendChild(button);
-                tr.appendChild(td);
-            }
-
-            this.rows.push(tr);
-            this.table.appendChild(tr);
-        }
-
-        this.buttons[0].id = "primaryColorButton";
-        this.buttons[1].id = "secondaryColorButton";
-        this.primaryButton = this.buttons[0];
-        this.secondaryButton = this.buttons[1];
+    getSecondaryButton() {
+        return this.getButton(this.secondaryButton);
     }
 
     setPrimaryColor(color: [number, number, number, number]) {
@@ -112,7 +91,7 @@ export class Palette {
             button.style.color = clr;
         }
 
-        this.primaryButton.style.backgroundColor = clr;
+        this.getPrimaryButton().style.backgroundColor = clr;
     }
 
     setSecondaryColor(color: [number, number, number, number]) {
@@ -129,71 +108,166 @@ export class Palette {
             button.style.color = clr;
         }
 
-        this.secondaryButton.style.backgroundColor = clr;
+        this.getSecondaryButton().style.backgroundColor = clr;
     }
 
     setColorToPrimary() {
         this.color = this.primaryColor;
+        this.isColorPrimary = true;
     }
 
     setColorToSecondary() {
         this.color = this.secondaryColor;
+        this.isColorPrimary = false;
     }
 
     getColor() {
         return this.color;
     }
 
-    addColorButton() {
-        let td = <HTMLTableDataCellElement>document.createElement("td");
-        let button = <HTMLButtonElement>document.createElement("button");
-
-        let clr: [number, number, number, number] = this.primaryColor;
-        this.colors.push(clr);
-        let color = fromRatio({
-            r: clr[0],
-            g: clr[1],
-            b: clr[2],
-        });
-
-        button.style.backgroundColor = color.toHexString();
-        button.id = "normalColorButton";
-
-        button.onmousedown = (event) => this.colorButtonOnMouseDown(event, button, clr);
-
-        if (this.buttons.length % 5 == 0) {
+    // remove buttons and table children from DOM, then recreate them and set primary, secondary button
+    recreateButtonsTable() {
+        this.buttons = [];
+        this.rows.forEach((row) => { row.remove(); })
+        let rows = Math.ceil(this.colors.length / 5);
+        for (let y = 0; y < rows; y++) {
             let tr = <HTMLTableRowElement>document.createElement("tr");
-            this.rows.push(tr);
-            td.appendChild(button);
-            tr.appendChild(td);
-            this.table.appendChild(tr);
-        } else {
-            td.appendChild(button);
-            if (this.rows.length > 0) {
-                this.rows[this.rows.length - 1].appendChild(td);
+            for (let x = 0; x < 5; x++) {
+                let index = y * 5 + x;
+                if (index >= this.colors.length) break;
+
+                let td = <HTMLTableCellElement>document.createElement("td");
+                let button = <HTMLButtonElement>document.createElement("button");
+                button.id = "normalColorButton";
+                this.buttons.push(button);
+                let color = new TinyColor();
+
+
+                color.r = this.colors[index][0];
+                color.g = this.colors[index][1];
+                color.b = this.colors[index][2];
+
+                button.style.backgroundColor = color.toRgbString();
+
+                let clr: [number, number, number, number] = [color.r, color.g, color.b, 255];
+                button.onmousedown = (event) => this.colorButtonOnMouseDown(event, button, clr, x + y * 5);
+
+                td.appendChild(button);
+                tr.appendChild(td);
             }
+
+            this.rows.push(tr);
+            this.table.appendChild(tr);
         }
 
-        this.buttons.push(button);
+        this.getSecondaryButton().id = "secondaryColorButton";
+        this.getPrimaryButton().id = "primaryColorButton";
     }
 
-    removeColorButton() {
-        console.log(this.buttons.length);
-
-        // if it exists, remove row additional row
-        if (this.buttons.length % 5 == 1) {
-            let row = this.rows.pop();
-            row?.remove();
-        }
-        this.colors.pop();
-
-        let button = this.buttons.pop();
-        if (button != null) {
-            button.parentElement?.remove();
+    // update color pickers colors and the current color
+    updateColors() {
+        let primary = new TinyColor(this.getPrimaryButton().style.backgroundColor);
+        this.setPrimaryColor([primary.r, primary.g, primary.b, 255]);
+        let secondary = new TinyColor(this.getSecondaryButton().style.backgroundColor);
+        this.setSecondaryColor([secondary.r, secondary.g, secondary.b, 255]);
+        if (this.isColorPrimary) {
+            this.color = this.primaryColor;
+        } else {
+            this.color = this.secondaryColor;
         }
     }
 
-    private colorButtonOnMouseDown(event: MouseEvent, button: HTMLButtonElement, color: [number, number, number, number]) {
+    addColor() {
+        this.colors.splice(this.primaryButton + 1, 0, [255, 255, 255, 255]);
+
+        // move the secondary button index so it is on the same color
+        if (this.secondaryButton > this.primaryButton && this.secondaryButton) {
+            this.secondaryButton += 1;
+        }
+
+        this.recreateButtonsTable();
+    }
+
+    removeColor() {
+        let length = this.buttons.length;
+
+        if (length > 2) {
+            this.colors.splice(this.primaryButton, 1,);
+
+            // move with buttons if they are out of bounds or they overlap
+            if (this.primaryButton == length - 1) {
+                this.primaryButton -= 1;
+            }
+
+            if (this.secondaryButton == length - 1) {
+                this.secondaryButton -= 1;
+            } else if (this.secondaryButton > 0) {
+                this.secondaryButton -= 1;
+            }
+
+            if (this.primaryButton == this.secondaryButton) {
+                if (this.primaryButton < length - 2) {
+                    this.primaryButton += 1;
+                } else if (this.primaryButton > 0) {
+                    this.primaryButton -= 1;
+                }
+            }
+
+            this.recreateButtonsTable();
+            this.updateColors();
+        }
+    }
+
+    duplicateColor() {
+        this.colors.splice(this.primaryButton + 1, 0, this.primaryColor);
+
+        // move the secondary button index so it is on the same color
+        if (this.secondaryButton > this.primaryButton && this.secondaryButton) {
+            this.secondaryButton += 1;
+        }
+
+        this.recreateButtonsTable();
+    }
+
+    moveColorLeft() {
+        if (this.primaryButton > 0) {
+            // switch colors
+            let a = this.colors[this.primaryButton];
+            let b = this.colors[this.primaryButton - 1];
+            this.colors[this.primaryButton - 1] = a;
+            this.colors[this.primaryButton] = b;
+
+            this.primaryButton -= 1;
+            // move the secondary button
+            if (this.secondaryButton == this.primaryButton && this.secondaryButton < this.buttons.length - 1) {
+                this.secondaryButton += 1;
+            }
+
+            this.recreateButtonsTable();
+            this.updateColors();
+        }
+    }
+
+    moveColorRight() {
+        if (this.primaryButton < this.buttons.length - 1) {
+            // switch colors
+            let a = this.colors[this.primaryButton];
+            let b = this.colors[this.primaryButton + 1];
+            this.colors[this.primaryButton + 1] = a;
+            this.colors[this.primaryButton] = b;
+
+            this.primaryButton += 1;
+            // move the secondary button
+            if (this.secondaryButton == this.primaryButton && this.secondaryButton > 0) {
+                this.secondaryButton -= 1;
+            }
+
+            this.recreateButtonsTable();
+            this.updateColors();
+        }
+    }
+
+    private colorButtonOnMouseDown(event: MouseEvent, button: HTMLButtonElement, color: [number, number, number, number], index: number) {
         if (event.button == 0) {
             if (button.id != "secondaryColorButton") {
                 for (let button of this.buttons) {
@@ -201,7 +275,7 @@ export class Palette {
                         button.id = "normalColorButton";
                 }
                 button.id = "primaryColorButton";
-                this.primaryButton = button;
+                this.primaryButton = index;
                 this.setPrimaryColor(color);
             }
         } else if (event.button == 2) {
@@ -211,7 +285,7 @@ export class Palette {
                         button.id = "normalColorButton";
                 }
                 button.id = "secondaryColorButton";
-                this.secondaryButton = button;
+                this.secondaryButton = index;
                 this.setSecondaryColor(color);
             }
         }
