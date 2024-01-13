@@ -16,18 +16,12 @@ export class Editor {
     // pressed mouse buttons
     private mouseButtons: [boolean, boolean, boolean] = [false, false, false];
 
-    // last coordinates of the mouse
-    private lastMouseCoords: {
-        x: number,
-        y: number,
-    } = { x: 0, y: 0 };
-
     private lastMouseGlobalPos: {
         x: number,
         y: number,
     } = { x: 0, y: 0 };
 
-    private canvas: Canvas;
+    private canvas: number = 0;
 
     private canvases: Canvas[] = [];
     private framesContainer = document.getElementById("frames")!;
@@ -52,7 +46,7 @@ export class Editor {
     private fpsRange = <HTMLInputElement>document.getElementById("fpsRange");
     private fpsValue = <HTMLLabelElement>document.getElementById("fpsValue");
     private fps = 0;
-    private animationInterval = null;
+    private animationInterval: NodeJS.Timeout | null = null;
     private animationFrameIndex = 0;
 
     constructor(size: { width: number, height: number }) {
@@ -69,10 +63,8 @@ export class Editor {
         let template = new Layer("template", 100, size, realSize, pos, true);
         template.init(this.editorContainer);
 
-        let canvas = this.addFrame(template);
-        canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
-        canvas.getFrame().id = "currentFrame";
-        this.canvas = canvas;
+        // add the first frame
+        this.addFrame(template);
 
         let colors: [number, number, number, number][] = [
             [128, 255, 255, 255],
@@ -91,7 +83,8 @@ export class Editor {
             this.fps = parseInt(this.fpsRange.value);
 
             // clear animationInterval before creating another
-            clearInterval(this.animationInterval);
+            if (this.animationInterval != null)
+                clearInterval(this.animationInterval);
 
             if (this.fps != 0) {
                 this.animationInterval = setInterval(() => {
@@ -108,49 +101,74 @@ export class Editor {
         }
     }
 
-    // add a frame to the editor and focus it, return it
+    /// add a frame to the editor and focus it, return it
     addFrame(template: Layer) {
         let canvas = new Canvas(this.framesContainer, template.getSize());
         this.canvases.push(canvas);
 
         let frame = canvas.getFrame();
+        let index = this.canvases.length - 1;
         frame.onclick = () => {
-            if (this.canvas != canvas) {
-                this.canvas.getFrame().id = "normalFrame";
-                this.canvas.remove();
+            this.getCurrentCanvas().getFrame().id = "normalFrame";
+            this.getCurrentCanvas().remove();
 
-                canvas.getFrame().id = "currentFrame";
-                canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
-
-                this.canvas = canvas;
-            }
+            this.setCurrentCanvas(index, template);
         };
 
 
+        if (this.canvas != null) {
+            this.getCurrentCanvas().remove();
+        }
+        this.canvas = this.canvases.length - 1;
+        this.setCurrentCanvas(this.canvas, template);
+    }
+
+    removeFrame() {
+        if (this.canvases.length >= 2) {
+            // remove the current canvas from the canvases
+            let template = this.getCurrentCanvas().getTemplate();
+            this.getCurrentCanvas().remove();
+            this.getCurrentCanvas().getFrame().remove();
+            this.canvases.splice(this.canvas, 1);
+
+            // set the new current canvas
+            if (this.canvas < this.canvases.length)
+                this.setCurrentCanvas(this.canvas, template);
+            else
+                this.setCurrentCanvas(this.canvas - 1, template);
+
+            // set new indexes for each canvas
+            for (let i = 0; i < this.canvases.length; i++) {
+                this.canvases[i].getFrame().onclick = () => {
+                    this.getCurrentCanvas().getFrame().id = "normalFrame";
+                    this.getCurrentCanvas().remove();
+
+                    this.setCurrentCanvas(i, template);
+                }
+            }
+        }
+    }
+
+    getCurrentCanvas() {
+        return this.canvases[this.canvas];
+    }
+
+    setCurrentCanvas(canvasIndex: number, template: Layer) {
+        this.canvas = canvasIndex;
         this.canvases.forEach((cnvs) => {
             cnvs.getFrame().id = "normalFrame";
         });
 
-        if (this.canvas != null) {
-            this.canvas.remove();
-        }
+        let canvas = this.getCurrentCanvas();
 
         canvas.getFrame().id = "currentFrame";
         canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
-
-        this.canvas = canvas;
-
-        return this.canvas;
-    }
-
-    getCurrentCanvas() {
-        return this.canvas;
     }
 
     // update the current frame and the animation frame if fps is 0
     updateFrameAndAnimationFrame() {
-        let frameCtx = this.canvas.getFrameCtx();
-        let image = this.canvas.getLayersImageCombined();
+        let frameCtx = this.getCurrentCanvas().getFrameCtx();
+        let image = this.getCurrentCanvas().getLayersImageCombined();
 
         frameCtx.putImageData(image.imageData, 0, 0);
 
@@ -160,8 +178,8 @@ export class Editor {
     }
 
     updateFrame() {
-        let frameCtx = this.canvas.getFrameCtx();
-        let image = this.canvas.getLayersImageCombined();
+        let frameCtx = this.getCurrentCanvas().getFrameCtx();
+        let image = this.getCurrentCanvas().getLayersImageCombined();
 
         frameCtx.putImageData(image.imageData, 0, 0);
     }
@@ -189,10 +207,10 @@ export class Editor {
     }
 
     onMouseDown(event: MouseEvent) {
-        let mouseCoords = this.canvas.getMouseCoords(event);
+        let mouseCoords = this.getCurrentCanvas().getMouseCoords(event);
 
         // clear template layer
-        this.canvas.getTemplate().clear();
+        this.getCurrentCanvas().getTemplate().clear();
         this.updateFrameAndAnimationFrame();
 
         switch (event.button) {
@@ -206,7 +224,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getCurrentLayer(),
+                        this.getCurrentCanvas().getCurrentLayer(),
                     );
                 }
                 break;
@@ -223,7 +241,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getCurrentLayer(),
+                        this.getCurrentCanvas().getCurrentLayer(),
                     );
                 }
                 break;
@@ -231,7 +249,7 @@ export class Editor {
     }
 
     onMouseUp(event: MouseEvent) {
-        let mouseCoords = this.canvas.getMouseCoords(event);
+        let mouseCoords = this.getCurrentCanvas().getMouseCoords(event);
         switch (event.button) {
             case 0:
                 this.mouseButtons[0] = false;
@@ -243,7 +261,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getCurrentLayer(),
+                        this.getCurrentCanvas().getCurrentLayer(),
                     );
 
                     this.updateFrameAndAnimationFrame();
@@ -264,7 +282,7 @@ export class Editor {
                         this,
                         mouseCoords,
                         this.palette.getColor(),
-                        this.canvas.getCurrentLayer(),
+                        this.getCurrentCanvas().getCurrentLayer(),
                     );
 
                     this.updateFrameAndAnimationFrame();
@@ -274,12 +292,12 @@ export class Editor {
     }
 
     onMouseMove(event: MouseEvent) {
-        let mouseCoords = this.canvas.getMouseCoords(event);
+        let mouseCoords = this.getCurrentCanvas().getMouseCoords(event);
         // mouse position realative to vieport, not the this
         let mouseGlobalPos = { x: event.clientX, y: event.clientY };
 
         // clear template layer
-        this.canvas.getTemplate().clear();
+        this.getCurrentCanvas().getTemplate().clear();
 
         if (this.mouseButtons[0] || this.mouseButtons[2]) {
             // if moving with the canvas
@@ -288,13 +306,13 @@ export class Editor {
                     x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
                     y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
                 };
-                this.canvas.move(moveDelta);
+                this.getCurrentCanvas().move(moveDelta);
             } else if (this.isMouseOnEditorContainer) { // paint
                 this.paintTool.onMouseMove(
                     this,
                     mouseCoords,
                     this.palette.getColor(),
-                    this.canvas.getCurrentLayer(),
+                    this.getCurrentCanvas().getCurrentLayer(),
                 );
             }
         } else if (this.mouseButtons[1]) {
@@ -302,22 +320,21 @@ export class Editor {
                 x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
                 y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
             };
-            this.canvas.move(moveDelta);
+            this.getCurrentCanvas().move(moveDelta);
         }
 
         // show current pixel
-        let image = this.canvas.getTemplate().getImage();
+        let image = this.getCurrentCanvas().getTemplate().getImage();
         image.putPixel(mouseCoords, this.palette.getColor());
-        this.canvas.getTemplate().setImage(image);
+        this.getCurrentCanvas().getTemplate().setImage(image);
 
         // save mouse
-        this.lastMouseCoords = mouseCoords;
         this.lastMouseGlobalPos = mouseGlobalPos;
     }
 
     onWheel(event: WheelEvent) {
         let zoom = Math.sign(-event.deltaY) * 0.1;
-        this.canvas.zoomIn(zoom);
+        this.getCurrentCanvas().zoomIn(zoom);
         this.onMouseMove(event);
     }
 

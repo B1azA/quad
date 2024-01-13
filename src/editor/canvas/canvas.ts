@@ -80,7 +80,12 @@ export class Canvas {
     }
 
     // remove itself from the DOM
+    /**
+    * remove itself from the DOM
+    * remove everything except the frame
+    **/
     remove() {
+
         this.layerImagesSave = [];
         for (let i = 1; i < this.layers.length; i++) {
             // save data of layers

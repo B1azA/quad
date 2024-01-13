@@ -159,6 +159,10 @@ function setup_events(editor: Editor) {
         editor.addFrame(editor.getCurrentCanvas().getTemplate());
     }
 
+    document.getElementById("removeFrame")!.onclick = () => {
+        editor.removeFrame();
+    }
+
     document.onmousedown = (e) => {
         editor.onMouseDown(e);
     }
