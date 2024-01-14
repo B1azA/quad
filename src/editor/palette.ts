@@ -11,8 +11,8 @@ export class Palette {
     private color: [number, number, number, number] = [0, 0, 0, 255];
     private buttons: HTMLButtonElement[] = [];
     private rows: HTMLTableRowElement[] = [];
-    private primaryButton: number = 0;
-    private secondaryButton: number = 1;
+    private primaryButtonIndex: number = 0;
+    private secondaryButtonIndex: number = 1;
     private isColorPrimary: boolean = true;
 
     constructor(editor: Editor, colors: [number, number, number, number][]) {
@@ -70,11 +70,11 @@ export class Palette {
     }
 
     getPrimaryButton() {
-        return this.getButton(this.primaryButton);
+        return this.getButton(this.primaryButtonIndex);
     }
 
     getSecondaryButton() {
-        return this.getButton(this.secondaryButton);
+        return this.getButton(this.secondaryButtonIndex);
     }
 
     setPrimaryColor(color: [number, number, number, number]) {
@@ -178,11 +178,11 @@ export class Palette {
     }
 
     addColor() {
-        this.colors.splice(this.primaryButton + 1, 0, [255, 255, 255, 255]);
+        this.colors.splice(this.primaryButtonIndex + 1, 0, [255, 255, 255, 255]);
 
         // move the secondary button index so it is on the same color
-        if (this.secondaryButton > this.primaryButton && this.secondaryButton) {
-            this.secondaryButton += 1;
+        if (this.secondaryButtonIndex > this.primaryButtonIndex && this.secondaryButtonIndex) {
+            this.secondaryButtonIndex += 1;
         }
 
         this.recreateButtonsTable();
@@ -192,24 +192,24 @@ export class Palette {
         let length = this.buttons.length;
 
         if (length > 2) {
-            this.colors.splice(this.primaryButton, 1,);
+            this.colors.splice(this.primaryButtonIndex, 1,);
 
             // move with buttons if they are out of bounds or they overlap
-            if (this.primaryButton == length - 1) {
-                this.primaryButton -= 1;
+            if (this.primaryButtonIndex == length - 1) {
+                this.primaryButtonIndex -= 1;
             }
 
-            if (this.secondaryButton == length - 1) {
-                this.secondaryButton -= 1;
-            } else if (this.secondaryButton > 0) {
-                this.secondaryButton -= 1;
+            if (this.secondaryButtonIndex == length - 1) {
+                this.secondaryButtonIndex -= 1;
+            } else if (this.secondaryButtonIndex > 0) {
+                this.secondaryButtonIndex -= 1;
             }
 
-            if (this.primaryButton == this.secondaryButton) {
-                if (this.primaryButton < length - 2) {
-                    this.primaryButton += 1;
-                } else if (this.primaryButton > 0) {
-                    this.primaryButton -= 1;
+            if (this.primaryButtonIndex == this.secondaryButtonIndex) {
+                if (this.primaryButtonIndex < length - 2) {
+                    this.primaryButtonIndex += 1;
+                } else if (this.primaryButtonIndex > 0) {
+                    this.primaryButtonIndex -= 1;
                 }
             }
 
@@ -219,28 +219,28 @@ export class Palette {
     }
 
     duplicateColor() {
-        this.colors.splice(this.primaryButton + 1, 0, this.primaryColor);
+        this.colors.splice(this.primaryButtonIndex + 1, 0, this.primaryColor);
 
         // move the secondary button index so it is on the same color
-        if (this.secondaryButton > this.primaryButton && this.secondaryButton) {
-            this.secondaryButton += 1;
+        if (this.secondaryButtonIndex > this.primaryButtonIndex && this.secondaryButtonIndex) {
+            this.secondaryButtonIndex += 1;
         }
 
         this.recreateButtonsTable();
     }
 
     moveColorLeft() {
-        if (this.primaryButton > 0) {
+        if (this.primaryButtonIndex > 0) {
             // switch colors
-            let a = this.colors[this.primaryButton];
-            let b = this.colors[this.primaryButton - 1];
-            this.colors[this.primaryButton - 1] = a;
-            this.colors[this.primaryButton] = b;
+            let a = this.colors[this.primaryButtonIndex];
+            let b = this.colors[this.primaryButtonIndex - 1];
+            this.colors[this.primaryButtonIndex - 1] = a;
+            this.colors[this.primaryButtonIndex] = b;
 
-            this.primaryButton -= 1;
+            this.primaryButtonIndex -= 1;
             // move the secondary button
-            if (this.secondaryButton == this.primaryButton && this.secondaryButton < this.buttons.length - 1) {
-                this.secondaryButton += 1;
+            if (this.secondaryButtonIndex == this.primaryButtonIndex && this.secondaryButtonIndex < this.buttons.length - 1) {
+                this.secondaryButtonIndex += 1;
             }
 
             this.recreateButtonsTable();
@@ -249,17 +249,17 @@ export class Palette {
     }
 
     moveColorRight() {
-        if (this.primaryButton < this.buttons.length - 1) {
+        if (this.primaryButtonIndex < this.buttons.length - 1) {
             // switch colors
-            let a = this.colors[this.primaryButton];
-            let b = this.colors[this.primaryButton + 1];
-            this.colors[this.primaryButton + 1] = a;
-            this.colors[this.primaryButton] = b;
+            let a = this.colors[this.primaryButtonIndex];
+            let b = this.colors[this.primaryButtonIndex + 1];
+            this.colors[this.primaryButtonIndex + 1] = a;
+            this.colors[this.primaryButtonIndex] = b;
 
-            this.primaryButton += 1;
+            this.primaryButtonIndex += 1;
             // move the secondary button
-            if (this.secondaryButton == this.primaryButton && this.secondaryButton > 0) {
-                this.secondaryButton -= 1;
+            if (this.secondaryButtonIndex == this.primaryButtonIndex && this.secondaryButtonIndex > 0) {
+                this.secondaryButtonIndex -= 1;
             }
 
             this.recreateButtonsTable();
@@ -275,7 +275,7 @@ export class Palette {
                         button.id = "normalColorButton";
                 }
                 button.id = "primaryColorButton";
-                this.primaryButton = index;
+                this.primaryButtonIndex = index;
                 this.setPrimaryColor(color);
             }
         } else if (event.button == 2) {
@@ -285,7 +285,7 @@ export class Palette {
                         button.id = "normalColorButton";
                 }
                 button.id = "secondaryColorButton";
-                this.secondaryButton = index;
+                this.secondaryButtonIndex = index;
                 this.setSecondaryColor(color);
             }
         }

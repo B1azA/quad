@@ -107,6 +107,8 @@ export class Editor {
         let canvas = new Canvas(this.framesContainer, template.getSize());
         this.canvases.push(canvas);
 
+        let oldCanvasIndex = this.canvasIndex;
+
         let frame = canvas.getFrame();
         let index = this.canvases.length - 1;
         frame.onclick = () => {
@@ -123,6 +125,11 @@ export class Editor {
         }
         this.canvasIndex = this.canvases.length - 1;
         this.setCurrentCanvas(this.canvasIndex, template);
+
+        let moveUp = this.canvasIndex - oldCanvasIndex - 1;
+        for (let i = 0; i < moveUp; i++) {
+            this.moveFrameUp();
+        }
 
         return canvas;
     }
