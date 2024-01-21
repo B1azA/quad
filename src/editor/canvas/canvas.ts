@@ -85,7 +85,7 @@ export class Canvas {
     * remove everything except the frame
     **/
     remove() {
-
+        // save layer images
         this.layerImagesSave = [];
         for (let i = 1; i < this.layers.length; i++) {
             // save data of layers

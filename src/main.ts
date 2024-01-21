@@ -1,16 +1,41 @@
 import "@melloware/coloris/dist/coloris.css";
 import "./styles/styles.scss";
 import { Editor } from "./editor/editor";
-import { ImageMessage, loadFile, saveFile } from "./tauri";
+import {
+    ExportMessage,
+    fileImport,
+    fileExport,
+    ProjectMessage,
+    FrameMessage,
+    LayerMessage,
+    projectSave,
+    projectLoad,
+} from "./tauri";
 
 import Coloris from "@melloware/coloris";
 import { TinyColor } from "@ctrl/tinycolor";
-import { showPromptDialog } from "./editor/dialog";
+import { showPromptDialog, showConfirmDialog } from "./editor/dialog";
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
 
 
-let editor = new Editor({ width: 32, height: 32 });
+
+let frame1: FrameMessage = {
+    layers: [],
+};
+
+let frame2: FrameMessage = {
+    layers: [],
+};
+
+let projectMessage: ProjectMessage = {
+    name: "Project",
+    width: 32,
+    height: 32,
+    frames: [frame1, frame2, frame1],
+};
+
+let editor = new Editor(projectMessage);
 run();
 
 function run() {
@@ -55,36 +80,66 @@ function setup_events(editor: Editor) {
     };
 
     document.getElementById("fileLoad")!.onclick = () => {
-        loadFile()
+        projectLoad()
             .then((message) => {
-                // editor.getCurrentCanvas().removeLayers();
-                // editor = new Editor({ width: message.width, height: message.height });
-                let data = Uint8ClampedArray.from(message.data);
-                // editor.getCurrentCanvas().getCurrentLayer().setImageData(data);
-                // console.log(editor.getCurrentCanvas().getCurrentLayer().getImage());
-                let imageData = new ImageData(32, 32);
-                imageData.data.set(data);
-                let image = new Image(imageData);
-                editor.getCurrentCanvas().getCurrentLayer().setImage(image);
+                console.log(message.name);
             })
             .catch((error) => console.error(error));
     }
 
     document.getElementById("fileSaveAs")!.onclick = () => {
-        let size = editor.getCurrentCanvas().getSize();
         let data = Array.from(editor.getCurrentCanvas().getCurrentLayer().getImageData());
 
-        let message: ImageMessage = {
-            width: size.width,
-            height: size.height,
-            name: "image",
-            path: "",
+        let layer: LayerMessage = {
+            name: "VRSTVA",
             data: data,
+        }
+
+        let frame: FrameMessage = {
+            layers: [layer],
+        }
+
+        let projectMessage: ProjectMessage = {
+            name: "JMENO",
+            width: 32,
+            height: 32,
+            frames: [frame],
         };
-        saveFile(message);
+
+        projectSave(projectMessage);
     }
 
     document.getElementById("fileImport")!.onclick = () => {
+        fileImport()
+            .then((message) => {
+                showConfirmDialog("Are you sure? It will erase the current layer.", (confirmed) => {
+                    if (confirmed) {
+                        // editor.getCurrentCanvas().removeLayers();
+                        // editor = new Editor({ width: message.width, height: message.height });
+                        let data = Uint8ClampedArray.from(message.data);
+                        // editor.getCurrentCanvas().getCurrentLayer().setImageData(data);
+                        // console.log(editor.getCurrentCanvas().getCurrentLayer().getImage());
+                        let imageData = new ImageData(32, 32);
+                        imageData.data.set(data);
+                        let image = new Image(imageData);
+                        editor.getCurrentCanvas().getCurrentLayer().setImage(image);
+                    }
+                });
+            })
+            .catch((error) => console.error(error));
+    }
+
+    document.getElementById("fileExport")!.onclick = () => {
+        let size = editor.getCurrentCanvas().getSize();
+        let data = Array.from(editor.getCurrentCanvas().getCurrentLayer().getImageData());
+
+        let exportMessage: ExportMessage = {
+            width: size.width,
+            height: size.height,
+            name: "image",
+            data: data,
+        };
+        fileExport(exportMessage);
     }
 
     document.getElementById("penTool")!.onclick = () => {

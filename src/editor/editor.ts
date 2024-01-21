@@ -6,6 +6,7 @@ import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
 import { Square } from "./paintTool/square";
 import { Layer } from "./canvas/layer";
+import { ProjectMessage } from "../tauri";
 
 export enum ColorState {
     PRIMARY,
@@ -50,7 +51,8 @@ export class Editor {
     private animationInterval: NodeJS.Timeout | null = null;
     private animationFrameIndex = 0;
 
-    constructor(size: { width: number, height: number }) {
+    constructor(projectMessage: ProjectMessage) {
+        let size = { width: projectMessage.width, height: projectMessage.height };
         let height = (window.innerHeight / 2);
         let width = height * size.width / size.height;
         let realSize = { width, height };
@@ -64,8 +66,14 @@ export class Editor {
         let template = new Layer("template", 100, size, realSize, pos, true);
         template.init(this.editorContainer);
 
-        // add the first frame
-        this.addFrame(template);
+        // add frames
+        if (projectMessage.frames.length != 0) {
+            for (let frame of projectMessage.frames) {
+                this.addFrame(template);
+            }
+        } else { // add frame if there is none
+            this.addFrame(template);
+        }
 
         let colors: [number, number, number, number][] = [
             [128, 255, 255, 255],
