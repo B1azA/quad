@@ -19,9 +19,13 @@ import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep 
 import { Image } from "./editor/canvas/image";
 
 
+let layer: LayerMessage = {
+    name: "VRSTVA",
+    data: [],
+};
 
 let frame1: FrameMessage = {
-    layers: [],
+    layers: [layer],
 };
 
 let frame2: FrameMessage = {
@@ -35,10 +39,15 @@ let projectMessage: ProjectMessage = {
     frames: [frame1, frame2, frame1],
 };
 
-let editor = new Editor(projectMessage);
-run();
+projectLoad()
+    .then((message) => {
+        console.log(message);
+        let editor = new Editor(message);
+        run(editor);
+    })
+    .catch((error) => console.error(error));
 
-function run() {
+function run(editor: Editor) {
     setup_events(editor);
 
     // init coloris
@@ -106,7 +115,7 @@ function setup_events(editor: Editor) {
             frames: [frame],
         };
 
-        projectSave(projectMessage);
+        projectSave(editor.generateProjectMessage());
     }
 
     document.getElementById("fileImport")!.onclick = () => {
@@ -223,7 +232,7 @@ function setup_events(editor: Editor) {
     }
 
     document.getElementById("addFrame")!.onclick = () => {
-        editor.addFrame(editor.getCurrentCanvas().getTemplate());
+        editor.addFrame(editor.getCurrentCanvas().getTemplate(), []);
     }
 
     document.getElementById("removeFrame")!.onclick = () => {

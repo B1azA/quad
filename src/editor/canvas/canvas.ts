@@ -1,3 +1,4 @@
+import { LayerMessage } from "../../tauri";
 import { showPromptDialog } from "../dialog";
 import { Steps } from "../steps/steps";
 import { Image } from "./image";
@@ -29,7 +30,7 @@ export class Canvas {
 
     private layerImagesSave: Image[] = [];
 
-    constructor(frameContainer: HTMLElement, size: { width: number, height: number }) {
+    constructor(frameContainer: HTMLElement, size: { width: number, height: number }, template: Layer, layers: LayerMessage[]) {
         let realHeight = (window.innerHeight / 2);
         let realWidth = realHeight * size.width / size.height;
         this.originalRealWidth = realWidth;
@@ -43,9 +44,63 @@ export class Canvas {
         frameContainer.appendChild(frame);
 
         this.frameCtx = frame.getContext("2d", { willReadFrequently: true })!;
+
+        this.layers.push(template);
+        for (let i = 0; i < layers.length; i++) {
+            let layerMessage = layers[i];
+            let layer = new Layer(layerMessage.name, 100, template.getSize(), template.getRealSize(), template.getPos(), false);
+            this.layers[i + 1] = layer;
+
+
+            let layerButton = document.createElement("button");
+            layerButton.id = (i + 1).toString();
+            layerButton.textContent = layer.getName();
+
+            // change the layer on click
+            layerButton.onclick = (e) => {
+                let target = <HTMLButtonElement>e.target;
+                let layer = parseInt(target.id);
+                this.setLayer(layer);
+            }
+
+            // rename on double click
+            layerButton.ondblclick = (e) => {
+                let target = <HTMLButtonElement>e.target;
+                let def = target.textContent;
+                if (def == null) def = "unnamed";
+
+                showPromptDialog("Rename layer", def, (value) => {
+                    let name = value.length > 0 ? value : "unnamed";
+                    target.textContent = name;
+                    layer.setName(name);
+                });
+            }
+
+            this.layerButtons.push(layerButton);
+
+            // set an opacity slider
+            let layerOpacityRange = document.createElement("input");
+            layerOpacityRange.type = "range";
+            layerOpacityRange.min = "0";
+            layerOpacityRange.max = "100";
+            layerOpacityRange.value = layer.getOpacity().toString();
+
+            layerOpacityRange.oninput = () => {
+                // + 0.2 so it can be always seen
+                layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
+                layer.setOpacity(parseInt(layerOpacityRange.value));
+            }
+
+            this.layerRanges.push(layerOpacityRange);
+
+            let imageData = new ImageData(32, 32);
+            imageData.data.set(layerMessage.data);
+            let saveImage = new Image(imageData);
+            this.layerImagesSave[i] = saveImage;
+        }
     }
 
-    // init the canvas after it was remove from the DOM
+    // init the canvas after it was removed from the DOM
     init(
         template: Layer,
         originalRealWidth: number,
@@ -74,6 +129,8 @@ export class Canvas {
                     this.layers[i].setImage(image);
                 }
             }
+            // let template = this.getTemplate();
+            // this.addCustomLayer(new Layer("lala", 100, { width: 32, height: 32 }, template.getRealSize(), template.getPos(), false));
         }
 
         this.setLayer(this.layer);

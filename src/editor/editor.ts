@@ -6,7 +6,7 @@ import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
 import { Square } from "./paintTool/square";
 import { Layer } from "./canvas/layer";
-import { ProjectMessage } from "../tauri";
+import { FrameMessage, LayerMessage, ProjectMessage } from "../tauri";
 
 export enum ColorState {
     PRIMARY,
@@ -69,10 +69,10 @@ export class Editor {
         // add frames
         if (projectMessage.frames.length != 0) {
             for (let frame of projectMessage.frames) {
-                this.addFrame(template);
+                this.addFrame(template, frame.layers);
             }
         } else { // add frame if there is none
-            this.addFrame(template);
+            this.addFrame(template, []);
         }
 
         let colors: [number, number, number, number][] = [
@@ -110,9 +110,39 @@ export class Editor {
         }
     }
 
+    generateProjectMessage() {
+        let frames: FrameMessage[] = [];
+        for (let canvas of this.canvases) {
+            let layers: LayerMessage[] = [];
+            for (let i = 1; i < canvas.getLayersLength(); i++) {
+                let layer = canvas.getLayerByIndex(i);
+                if (layer != null) {
+                    let layerMessage: LayerMessage = {
+                        name: layer.getName(),
+                        data: Array.from(layer.getImageData()),
+                    };
+                    layers.push(layerMessage);
+                }
+            }
+            let frameMessage: FrameMessage = {
+                layers,
+            };
+            frames.push(frameMessage);
+        }
+
+        let projectMessage: ProjectMessage = {
+            name: "NAME",
+            width: 32,
+            height: 32,
+            frames,
+        };
+
+        return projectMessage;
+    }
+
     /// add a frame to the editor and focus it, return it
-    addFrame(template: Layer) {
-        let canvas = new Canvas(this.framesContainer, template.getSize());
+    addFrame(template: Layer, layers: LayerMessage[]) {
+        let canvas = new Canvas(this.framesContainer, template.getSize(), template, layers);
         this.canvases.push(canvas);
 
         let oldCanvasIndex = this.canvasIndex;
@@ -127,8 +157,9 @@ export class Editor {
             this.updateFrameAndAnimationFrame();
         };
 
-
-        if (this.canvasIndex != null) {
+        // dont remove frame if it is the only one (first one added)
+        // it deletes its images
+        if (this.canvasIndex != null && this.canvases.length > 1) {
             this.getCurrentCanvas().remove();
         }
         this.canvasIndex = this.canvases.length - 1;
@@ -138,6 +169,8 @@ export class Editor {
         for (let i = 0; i < moveUp; i++) {
             this.moveFrameUp();
         }
+
+        this.updateFrame();
 
         return canvas;
     }
@@ -171,7 +204,7 @@ export class Editor {
 
     duplicateFrame() {
         let canvas = this.getCurrentCanvas();
-        let newCanvas = this.addFrame(canvas.getTemplate());
+        let newCanvas = this.addFrame(canvas.getTemplate(), []);
         let layersLength = canvas.getLayersLength();
 
         let firstLayer = canvas.getLayer(1);
@@ -191,7 +224,6 @@ export class Editor {
                     newLayer.setImage(layer.getImage());
                 }
             }
-
         }
 
         this.updateFrameAndAnimationFrame();

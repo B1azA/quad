@@ -31,7 +31,7 @@ export type FrameMessage = {
 }
 
 export type LayerMessage = {
-    name: String,
+    name: string,
     data: number[],
 }
 
