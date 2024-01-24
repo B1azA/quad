@@ -51,6 +51,8 @@ export class Editor {
     private animationInterval: NodeJS.Timeout | null = null;
     private animationFrameIndex = 0;
 
+    private name: string;
+
     constructor(projectMessage: ProjectMessage) {
         let size = { width: projectMessage.width, height: projectMessage.height };
         let height = (window.innerHeight / 2);
@@ -75,14 +77,7 @@ export class Editor {
             this.addFrame(template, []);
         }
 
-        let colors: [number, number, number, number][] = [
-            [128, 255, 255, 255],
-            [128, 128, 255, 255],
-            [128, 255, 128, 255],
-            [128, 128, 128, 255],
-            [255, 255, 255, 255],
-        ];
-        this.palette = new Palette(this, colors);
+        this.palette = new Palette(projectMessage.colors);
 
         this.animationFrame.width = size.width;
         this.animationFrame.height = size.height;
@@ -108,6 +103,8 @@ export class Editor {
                 this.updateFrameAndAnimationFrame();
             }
         }
+
+        this.name = projectMessage.name;
     }
 
     generateProjectMessage() {
@@ -130,11 +127,14 @@ export class Editor {
             frames.push(frameMessage);
         }
 
+        let size = this.getCurrentCanvas().getSize();
+
         let projectMessage: ProjectMessage = {
-            name: "NAME",
-            width: 32,
-            height: 32,
+            name: this.name,
+            width: size.width,
+            height: size.height,
             frames,
+            colors: this.palette.getColors(),
         };
 
         return projectMessage;

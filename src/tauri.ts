@@ -24,6 +24,7 @@ export type ProjectMessage = {
     width: number,
     height: number,
     frames: FrameMessage[],
+    colors: [number, number, number, number][],
 }
 
 export type FrameMessage = {

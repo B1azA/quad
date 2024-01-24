@@ -94,7 +94,7 @@
 		<form>
 			<p></p>
 			<input type="text" id="dialogInput"/>
-			<button value="confirm" formmethod="dialog">OK</button>
+			<button  value="confirm" formmethod="dialog">OK</button>
 			<button value="cancel" formmethod="dialog">Cancel</button>
 		</form>
 	</dialog>
@@ -102,8 +102,15 @@
     <dialog id="confirmDialog" class="dialog">
             <form>
                 <p></p>
-                <button value="confirm" formmethod="dialog">OK</button>
-                <button value="cancel" formmethod="dialog">Cancel</button>
+                <button id="confirmButton" value="confirm" formmethod="dialog">OK</button>
+                <button id="cancelButton" value="cancel" formmethod="dialog">Cancel</button>
+            </form>
+    </dialog>
+
+    <dialog id="messageDialog" class="dialog">
+            <form>
+                <p></p>
+                <button value="ok" formmethod="dialog">Ok</button>
             </form>
     </dialog>
 </body>

@@ -1,5 +1,4 @@
 import { TinyColor, fromRatio } from "@ctrl/tinycolor";
-import { Editor } from "./editor";
 
 export class Palette {
     private table = <HTMLTableElement>document.getElementById("paletteTable");
@@ -15,15 +14,12 @@ export class Palette {
     private secondaryButtonIndex: number = 1;
     private isColorPrimary: boolean = true;
 
-    constructor(editor: Editor, colors: [number, number, number, number][]) {
+    constructor(colors: [number, number, number, number][]) {
         this.colors = colors;
 
-        if (colors[0] == null && colors[1] == null) {
+        if (colors[0] == null) {
             colors[0] = [0, 0, 0, 255];
-            colors[1] = [0, 0, 0, 255];
-        } else if (colors[0] == null) {
-            colors[0] = [0, 0, 0, 255];
-        } else if (colors[1] == null) {
+        } if (colors[1] == null) {
             colors[1] = [255, 255, 255, 255];
         }
 
@@ -65,6 +61,10 @@ export class Palette {
         this.recreateButtonsTable();
     }
 
+    getColors() {
+        return this.colors;
+    }
+
     getButton(index: number) {
         return this.buttons[index];
     }
@@ -86,12 +86,16 @@ export class Palette {
         }).toHexString();
         this.primaryColorPicker.value = clr;
 
-        let button = this.primaryColorPicker.parentElement?.querySelector("button");
-        if (button != null) {
-            button.style.color = clr;
+        let btn = this.primaryColorPicker.parentElement?.querySelector("button");
+        if (btn != null) {
+            btn.style.color = clr;
         }
 
-        this.getPrimaryButton().style.backgroundColor = clr;
+        let button = this.getPrimaryButton();
+        button.style.backgroundColor = clr;
+        let index = this.buttons.indexOf(button);
+        this.colors[index] = color;
+        button.onmousedown = (event) => this.colorButtonOnMouseDown(event, button, color, index);
     }
 
     setSecondaryColor(color: [number, number, number, number]) {
@@ -103,12 +107,16 @@ export class Palette {
         }).toHexString();
         this.secondaryColorPicker.value = clr;
 
-        let button = this.secondaryColorPicker.parentElement?.querySelector("button");
-        if (button != null) {
-            button.style.color = clr;
+        let btn = this.secondaryColorPicker.parentElement?.querySelector("button");
+        if (btn != null) {
+            btn.style.color = clr;
         }
 
-        this.getSecondaryButton().style.backgroundColor = clr;
+        let button = this.getSecondaryButton();
+        button.style.backgroundColor = clr;
+        let index = this.buttons.indexOf(button);
+        this.colors[index] = color;
+        button.onmousedown = (event) => this.colorButtonOnMouseDown(event, button, color, index);
     }
 
     setColorToPrimary() {
@@ -141,7 +149,6 @@ export class Palette {
                 button.id = "normalColorButton";
                 this.buttons.push(button);
                 let color = new TinyColor();
-
 
                 color.r = this.colors[index][0];
                 color.g = this.colors[index][1];

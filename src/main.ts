@@ -6,49 +6,52 @@ import {
     fileImport,
     fileExport,
     ProjectMessage,
-    FrameMessage,
-    LayerMessage,
     projectSave,
     projectLoad,
 } from "./tauri";
 
 import Coloris from "@melloware/coloris";
 import { TinyColor } from "@ctrl/tinycolor";
-import { showPromptDialog, showConfirmDialog } from "./editor/dialog";
+import { showPromptDialog, showConfirmDialog, showMessageDialog } from "./editor/dialog";
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
 
-
-let layer: LayerMessage = {
-    name: "VRSTVA",
-    data: [],
-};
-
-let frame1: FrameMessage = {
-    layers: [layer],
-};
-
-let frame2: FrameMessage = {
-    layers: [],
-};
 
 let projectMessage: ProjectMessage = {
     name: "Project",
     width: 32,
     height: 32,
-    frames: [frame1, frame2, frame1],
+    frames: [],
+    colors: [],
 };
 
-projectLoad()
-    .then((message) => {
-        console.log(message);
-        let editor = new Editor(message);
-        run(editor);
-    })
-    .catch((error) => console.error(error));
+setupProject();
+
+// show prompt for project creation and loading
+function setupProject() {
+    showConfirmDialog("Do you want to create a new project or load an old one?", "New Project", "Load Project", (createNew) => {
+        if (createNew) {
+            let editor = new Editor(projectMessage);
+            run(editor);
+        } else {
+            projectLoad()
+                .then((message) => {
+                    let editor = new Editor(message);
+                    console.log("Project " + message.name + " loaded");
+                    run(editor);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    showMessageDialog("Failed to load the project!", () => {
+                        setupProject();
+                    })
+                });
+        }
+    });
+}
 
 function run(editor: Editor) {
-    setup_events(editor);
+    setupEvents(editor);
 
     // init coloris
     Coloris.init();
@@ -80,7 +83,7 @@ function run(editor: Editor) {
     });
 }
 
-function setup_events(editor: Editor) {
+function setupEvents(editor: Editor) {
     let editorContainer = document.getElementById("editorContainer")!;
 
     document.getElementById("fileNew")!.onclick = () => {
@@ -91,37 +94,19 @@ function setup_events(editor: Editor) {
     document.getElementById("fileLoad")!.onclick = () => {
         projectLoad()
             .then((message) => {
-                console.log(message.name);
+                console.log("Project " + message.name + " loaded");
             })
             .catch((error) => console.error(error));
     }
 
     document.getElementById("fileSaveAs")!.onclick = () => {
-        let data = Array.from(editor.getCurrentCanvas().getCurrentLayer().getImageData());
-
-        let layer: LayerMessage = {
-            name: "VRSTVA",
-            data: data,
-        }
-
-        let frame: FrameMessage = {
-            layers: [layer],
-        }
-
-        let projectMessage: ProjectMessage = {
-            name: "JMENO",
-            width: 32,
-            height: 32,
-            frames: [frame],
-        };
-
         projectSave(editor.generateProjectMessage());
     }
 
     document.getElementById("fileImport")!.onclick = () => {
         fileImport()
             .then((message) => {
-                showConfirmDialog("Are you sure? It will erase the current layer.", (confirmed) => {
+                showConfirmDialog("Are you sure? It will erase the current layer.", "Ok", "Cancel", (confirmed) => {
                     if (confirmed) {
                         // editor.getCurrentCanvas().removeLayers();
                         // editor = new Editor({ width: message.width, height: message.height });

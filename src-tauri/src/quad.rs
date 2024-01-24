@@ -76,6 +76,7 @@ pub struct ProjectMessage {
     width: u32,
     height: u32,
     frames: Vec<FrameMessage>,
+    colors: Vec<Vec<u32>>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -90,7 +91,7 @@ pub struct LayerMessage {
 }
 
 #[tauri::command]
-pub fn project_save(project_message: ProjectMessage) -> Result<(), String> {
+pub fn project_save(mut project_message: ProjectMessage) -> Result<(), String> {
     let file_path = match rfd::FileDialog::new()
         .set_file_name(&format!("{}.quad", &project_message.name))
         .save_file()
@@ -99,12 +100,21 @@ pub fn project_save(project_message: ProjectMessage) -> Result<(), String> {
         None => return Err(String::from("Failed to save the project")),
     };
 
-    let mut file = match std::fs::File::create(file_path) {
+    let mut file = match std::fs::File::create(file_path.clone()) {
         Ok(file) => file,
         Err(error) => {
             return Err(format!("Error: {}", error));
         }
     };
+
+    // set the project name to the file name
+    if let Some(name) = file_path.file_name() {
+        if let Some(nm) = name.to_str() {
+            let mut name = nm.to_string();
+            let _ = name.split_off(name.len() - 5);
+            project_message.name = name;
+        }
+    }
 
     let serialized = match bincode::serialize(&project_message) {
         Ok(ser) => ser,
