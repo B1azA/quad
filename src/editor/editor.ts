@@ -270,10 +270,10 @@ export class Editor {
             // remove the old canvas
             this.getCurrentCanvas().remove();
             // switch frames
-            let a = this.canvases[length - 1];
-            let b = this.canvases[length - 2];
-            this.canvases[length - 1] = b;
-            this.canvases[length - 2] = a;
+            let a = this.canvases[this.canvasIndex];
+            let b = this.canvases[this.canvasIndex + 1];
+            this.canvases[this.canvasIndex] = b;
+            this.canvases[this.canvasIndex + 1] = a;
 
             // remove all frames
             for (let canvas of this.canvases) {
