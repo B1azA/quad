@@ -94,7 +94,7 @@
 	<dialog id="promptDialog" class="dialog">
 		<form>
 			<p></p>
-			<input type="text" id="dialogInput"/>
+			<input type="text"/>
 			<button  value="confirm" formmethod="dialog">OK</button>
 			<button value="cancel" formmethod="dialog">Cancel</button>
 		</form>
@@ -112,6 +112,15 @@
             <form>
                 <p></p>
                 <button value="ok" formmethod="dialog">Ok</button>
+            </form>
+    </dialog>
+
+    <dialog id="sizeDialog" class="dialog">
+            <form>
+                <p></p>
+                <input type="number" id="sizeDialogWidthInput"/>
+                <input type="number" id="sizeDialogHeightInput"/>
+                <button value="confirm" formmethod="dialog">Ok</button>
             </form>
     </dialog>
 </body>

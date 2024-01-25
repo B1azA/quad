@@ -60,3 +60,27 @@ export function showMessageDialog(title: string, callback: () => void) {
         }
     }
 }
+
+export function showSizeDialog(title: string, defaultValue: { width: number, height: number }, callback: (confirmed: boolean, size: { width: number, height: number }) => void) {
+    let dialog = <HTMLDialogElement>document.getElementById("sizeDialog");
+    dialog.returnValue = "";
+    dialog.showModal();
+
+    let titleEl = <HTMLParagraphElement>dialog.querySelector("p");
+    titleEl.textContent = title;
+
+    let ret = defaultValue;
+    let inputWidth = <HTMLInputElement>document.getElementById("sizeDialogWidthInput");
+    inputWidth.value = defaultValue.width.toString();
+    let inputHeight = <HTMLInputElement>document.getElementById("sizeDialogHeightInput");
+    inputHeight.value = defaultValue.height.toString();
+
+    dialog.onclose = () => {
+        let confirmed = dialog.returnValue == "confirm";
+        let width = parseInt(inputWidth.value);
+        let height = parseInt(inputHeight.value);
+
+        ret = { width, height };
+        callback(confirmed, ret);
+    }
+}

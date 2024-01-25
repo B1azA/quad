@@ -12,7 +12,7 @@ import {
 
 import Coloris from "@melloware/coloris";
 import { TinyColor } from "@ctrl/tinycolor";
-import { showPromptDialog, showConfirmDialog, showMessageDialog } from "./editor/dialog";
+import { showPromptDialog, showConfirmDialog, showMessageDialog, showSizeDialog } from "./editor/dialog";
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
 
@@ -31,8 +31,19 @@ setupProject();
 function setupProject() {
     showConfirmDialog("Do you want to create a new project or load an old one?", "New Project", "Load Project", (createNew) => {
         if (createNew) {
-            let editor = new Editor(projectMessage);
-            run(editor);
+            showSizeDialog("Choose canvas size", { width: 32, height: 32 }, (confirmed, size) => {
+                console.log(confirmed, size);
+                if (confirmed) {
+                    projectMessage.width = size.width;
+                    projectMessage.height = size.height;
+                    let editor = new Editor(projectMessage);
+                    run(editor);
+                } else {
+                    showMessageDialog("Failed to create a new project!", () => {
+                        setupProject();
+                    })
+                }
+            });
         } else {
             projectLoad()
                 .then((message) => {
