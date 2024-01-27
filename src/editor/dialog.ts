@@ -76,7 +76,7 @@ export function showSizeDialog(title: string, defaultValue: { width: number, hei
     inputHeight.value = defaultValue.height.toString();
 
     dialog.onclose = () => {
-        let confirmed = dialog.returnValue == "confirm";
+        let confirmed = dialog.returnValue == "ok";
         let width = parseInt(inputWidth.value);
         let height = parseInt(inputHeight.value);
 
