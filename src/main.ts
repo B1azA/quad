@@ -6,6 +6,7 @@ import {
     fileImport,
     fileExport,
     ProjectMessage,
+    projectSaveAs,
     projectSave,
     projectLoad,
 } from "./tauri";
@@ -16,24 +17,23 @@ import { showPromptDialog, showConfirmDialog, showMessageDialog, showSizeDialog 
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
 
-
-let projectMessage: ProjectMessage = {
-    name: "Project",
-    width: 32,
-    height: 32,
-    frames: [],
-    colors: [],
-};
-
 setupProject();
 
-// show prompt for project creation and loading
+// show prompt for project creation and loading and then start editor
 function setupProject() {
+    let projectMessage: ProjectMessage = {
+        name: "Project",
+        width: 32,
+        height: 32,
+        frames: [],
+        colors: [],
+        path: "",
+    };
     showConfirmDialog("Do you want to create a new project or load an old one?", "New Project", "Load Project", (createNew) => {
         if (createNew) {
             showSizeDialog("Choose canvas size", { width: 32, height: 32 }, (confirmed, size) => {
-                console.log(confirmed, size);
                 if (confirmed) {
+                    console.log("New project created!")
                     projectMessage.width = size.width;
                     projectMessage.height = size.height;
                     let editor = new Editor(projectMessage);
@@ -98,20 +98,80 @@ function setupEvents(editor: Editor) {
     let editorContainer = document.getElementById("editorContainer")!;
 
     document.getElementById("fileNew")!.onclick = () => {
-        editor.getCurrentCanvas().clearAll();
-        editor.getCurrentCanvas().steps.clear();
+        let projectMessage: ProjectMessage = {
+            name: "Project",
+            width: 32,
+            height: 32,
+            frames: [],
+            colors: [],
+            path: "",
+        };
+        editor.remove();
+        let oldEditor = editor;
+        showSizeDialog("Choose canvas size", { width: 32, height: 32 }, (confirmed, size) => {
+            if (confirmed) {
+                console.log("New project created!")
+                projectMessage.width = size.width;
+                projectMessage.height = size.height;
+                let editor = new Editor(projectMessage);
+                oldEditor.remove();
+                run(editor);
+            } else {
+                showMessageDialog("Failed to create a new project!", () => {
+                });
+            }
+        });
     };
 
     document.getElementById("fileLoad")!.onclick = () => {
+        let oldEditor = editor;
         projectLoad()
             .then((message) => {
+                let editor = new Editor(message);
+                oldEditor.remove();
+                run(editor);
                 console.log("Project " + message.name + " loaded");
             })
-            .catch((error) => console.error(error));
+            .catch((error) => {
+                showMessageDialog("Failed to load the project!", () => { });
+                console.error(error);
+            });
     }
 
     document.getElementById("fileSaveAs")!.onclick = () => {
-        projectSave(editor.generateProjectMessage());
+        projectSaveAs(editor.generateProjectMessage())
+            .then((path) => {
+                showMessageDialog("Succesfully saved the project!", () => { });
+                editor.setPath(path);
+            })
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to save the project!", () => { });
+            });
+    }
+
+    document.getElementById("fileSave")!.onclick = () => {
+        let projectMessage = editor.generateProjectMessage();
+        if (projectMessage.path.length > 0) {
+            projectSave(editor.generateProjectMessage())
+                .then(() => {
+                    showMessageDialog("Succesfully saved the project!", () => { });
+                })
+                .catch((error) => {
+                    console.log(error);
+                    showMessageDialog("Failed to save the project!", () => { });
+                });
+        } else {
+            projectSaveAs(editor.generateProjectMessage())
+                .then((path) => {
+                    showMessageDialog("Succesfully saved the project!", () => { });
+                    editor.setPath(path);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    showMessageDialog("Failed to save the project!", () => { });
+                });
+        }
     }
 
     document.getElementById("fileImport")!.onclick = () => {
@@ -119,11 +179,7 @@ function setupEvents(editor: Editor) {
             .then((message) => {
                 showConfirmDialog("Are you sure? It will erase the current layer.", "Ok", "Cancel", (confirmed) => {
                     if (confirmed) {
-                        // editor.getCurrentCanvas().removeLayers();
-                        // editor = new Editor({ width: message.width, height: message.height });
                         let data = Uint8ClampedArray.from(message.data);
-                        // editor.getCurrentCanvas().getCurrentLayer().setImageData(data);
-                        // console.log(editor.getCurrentCanvas().getCurrentLayer().getImage());
                         let imageData = new ImageData(32, 32);
                         imageData.data.set(data);
                         let image = new Image(imageData);

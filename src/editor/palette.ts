@@ -57,8 +57,11 @@ export class Palette {
             child.remove();
         }
 
+        this.buttons = [];
+
         // add color buttons
         this.recreateButtonsTable();
+        this.updateColors();
     }
 
     getColors() {
@@ -114,6 +117,7 @@ export class Palette {
 
         let button = this.getSecondaryButton();
         button.style.backgroundColor = clr;
+        button.style.opacity = "50";
         let index = this.buttons.indexOf(button);
         this.colors[index] = color;
         button.onmousedown = (event) => this.colorButtonOnMouseDown(event, button, color, index);

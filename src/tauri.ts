@@ -25,6 +25,7 @@ export type ProjectMessage = {
     height: number,
     frames: FrameMessage[],
     colors: [number, number, number, number][],
+    path: string,
 }
 
 export type FrameMessage = {
@@ -36,12 +37,16 @@ export type LayerMessage = {
     data: number[],
 }
 
-export function projectSave(projectMessage: ProjectMessage) {
-    invoke("project_save", {
+export function projectSaveAs(projectMessage: ProjectMessage): Promise<string> {
+    return invoke("project_save_as", {
         projectMessage,
-    })
-        .then()
-        .catch((error) => console.error(error));
+    });
+}
+
+export function projectSave(projectMessage: ProjectMessage): Promise<unknown> {
+    return invoke("project_save", {
+        projectMessage,
+    });
 }
 
 export function projectLoad(): Promise<ProjectMessage> {

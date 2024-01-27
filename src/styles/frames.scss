@@ -30,7 +30,6 @@
 #animationFrame {
     position: absolute;
     z-index: 6;
-    width: 10em;
     height: 10em;
     right: 8px;
     top: 1.9em;
@@ -42,17 +41,14 @@
 
 #framesConfig {
     position: absolute;
-    top: 2em;
-    right: 12em;
-    list-style-type: none;
+    top: 15em;
+    right: 1em;
+    display: block;
     z-index: 6;
 
-    li button {
-        display: block;
-        width: 2em;
+    button {
         height: 2em;
-        padding: 4px;
-        margin: 4%;
+        width: 2em;
     }
 }
 

@@ -9,6 +9,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             quad::file_export,
             quad::file_import,
+            quad::project_save_as,
             quad::project_save,
             quad::project_load,
         ])

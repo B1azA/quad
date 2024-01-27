@@ -52,6 +52,7 @@ export class Editor {
     private animationFrameIndex = 0;
 
     private name: string;
+    private path: string;
 
     constructor(projectMessage: ProjectMessage) {
         let size = { width: projectMessage.width, height: projectMessage.height };
@@ -105,6 +106,7 @@ export class Editor {
         }
 
         this.name = projectMessage.name;
+        this.path = projectMessage.path;
     }
 
     generateProjectMessage() {
@@ -135,9 +137,22 @@ export class Editor {
             height: size.height,
             frames,
             colors: this.palette.getColors(),
+            path: this.path,
         };
 
         return projectMessage;
+    }
+
+    remove() {
+        this.getCurrentCanvas().getTemplate().getCanvasElement().remove();
+        this.canvases.forEach((canvas) => {
+            canvas.getFrame().remove();
+            canvas.remove();
+        });
+    }
+
+    setPath(path: string) {
+        this.path = path;
     }
 
     /// add a frame to the editor and focus it, return it

@@ -1,4 +1,4 @@
-use std::{fs, io::Write};
+use std::{fs, io::Write, path::Path};
 
 use image::RgbaImage;
 
@@ -77,6 +77,7 @@ pub struct ProjectMessage {
     height: u32,
     frames: Vec<FrameMessage>,
     colors: Vec<Vec<u32>>,
+    path: String,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -91,7 +92,7 @@ pub struct LayerMessage {
 }
 
 #[tauri::command]
-pub fn project_save(mut project_message: ProjectMessage) -> Result<(), String> {
+pub fn project_save_as(mut project_message: ProjectMessage) -> Result<String, String> {
     let file_path = match rfd::FileDialog::new()
         .set_file_name(&format!("{}.quad", &project_message.name))
         .save_file()
@@ -101,6 +102,44 @@ pub fn project_save(mut project_message: ProjectMessage) -> Result<(), String> {
     };
 
     let mut file = match std::fs::File::create(file_path.clone()) {
+        Ok(file) => file,
+        Err(error) => {
+            return Err(format!("Error: {}", error));
+        }
+    };
+
+    // set the project name to the file name
+    if let Some(name) = file_path.file_name() {
+        if let Some(nm) = name.to_str() {
+            let mut name = nm.to_string();
+            let _ = name.split_off(name.len() - 5);
+            project_message.name = name;
+        }
+    }
+
+    let serialized = match bincode::serialize(&project_message) {
+        Ok(ser) => ser,
+        Err(error) => {
+            return Err(format!("Error: {}", error));
+        }
+    };
+    match file.write_all(&serialized) {
+        Ok(_) => {}
+        Err(error) => {
+            return Err(format!("Error: {}", error));
+        }
+    };
+
+    let path_string = file_path.to_string_lossy().as_ref().to_string();
+
+    Ok(path_string)
+}
+
+#[tauri::command]
+pub fn project_save(mut project_message: ProjectMessage) -> Result<(), String> {
+    let file_path = Path::new(&project_message.path);
+
+    let mut file = match std::fs::File::create(file_path) {
         Ok(file) => file,
         Err(error) => {
             return Err(format!("Error: {}", error));
@@ -142,19 +181,22 @@ pub fn project_load() -> Result<ProjectMessage, String> {
         None => return Err(String::from("Failed to load the file")),
     };
 
-    let bytes = match fs::read(file_path) {
+    let bytes = match fs::read(file_path.clone()) {
         Ok(bytes) => bytes,
         Err(error) => {
             return Err(format!("Error2: {}", error));
         }
     };
 
-    let deserialized: ProjectMessage = match bincode::deserialize(&bytes) {
+    let mut deserialized: ProjectMessage = match bincode::deserialize(&bytes) {
         Ok(des) => des,
         Err(error) => {
             return Err(format!("Error3: {}", error));
         }
     };
+
+    // set the path of the project
+    deserialized.path = file_path.to_string_lossy().as_ref().to_string();
 
     Ok(deserialized)
 }

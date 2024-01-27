@@ -93,7 +93,7 @@ export class Canvas {
 
             this.layerRanges.push(layerOpacityRange);
 
-            let imageData = new ImageData(32, 32);
+            let imageData = new ImageData(size.width, size.height);
             imageData.data.set(layerMessage.data);
             let saveImage = new Image(imageData);
             this.layerImagesSave[i] = saveImage;
