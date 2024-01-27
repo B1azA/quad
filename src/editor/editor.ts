@@ -155,6 +155,14 @@ export class Editor {
         this.path = path;
     }
 
+    getName() {
+        return this.name;
+    }
+
+    getCanvasesLength() {
+        return this.canvases.length;
+    }
+
     /// add a frame to the editor and focus it, return it
     addFrame(template: Layer, layers: LayerMessage[]) {
         let canvas = new Canvas(this.framesContainer, template.getSize(), template, layers);
@@ -317,6 +325,14 @@ export class Editor {
 
     getCurrentCanvas() {
         return this.canvases[this.canvasIndex];
+    }
+
+    getCanvas(index: number) {
+        if (this.canvases.length > index) {
+            return this.canvases[index];
+        } else {
+            return null;
+        }
     }
 
     setCurrentCanvas(canvasIndex: number, template: Layer) {

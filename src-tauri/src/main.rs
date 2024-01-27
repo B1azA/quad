@@ -7,7 +7,8 @@ fn main() {
     // create_zip();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            quad::file_export,
+            quad::file_export_image,
+            quad::file_export_images,
             quad::file_import,
             quad::project_save_as,
             quad::project_save,

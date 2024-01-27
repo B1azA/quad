@@ -1,22 +1,33 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
-export type ExportMessage = {
+export type ImageMessage = {
     width: number,
     height: number,
     name: string,
     data: number[],
 }
 
-export function fileImport(): Promise<ExportMessage> {
+export function fileImport(): Promise<ImageMessage> {
     return invoke("file_import");
 }
 
-export function fileExport(exportMessage: ExportMessage) {
-    invoke("file_export", {
-        exportMessage,
-    })
-        .then(() => console.log("ok"))
-        .catch((error) => console.error(error));
+export function fileExportImage(imageMessage: ImageMessage): Promise<unknown> {
+    return invoke("file_export_image", {
+        imageMessage,
+    });
+}
+
+export type ImagesMessage = {
+    width: number,
+    height: number,
+    name: string,
+    data: number[][],
+}
+
+export function fileExportImages(imagesMessage: ImagesMessage): Promise<unknown> {
+    return invoke("file_export_images", {
+        imagesMessage,
+    });
 }
 
 export type ProjectMessage = {

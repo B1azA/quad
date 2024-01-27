@@ -2,10 +2,12 @@ import "@melloware/coloris/dist/coloris.css";
 import "./styles/styles.scss";
 import { Editor } from "./editor/editor";
 import {
-    ExportMessage,
-    fileImport,
-    fileExport,
+    ImageMessage,
+    ImagesMessage,
     ProjectMessage,
+    fileImport,
+    fileExportImage,
+    fileExportImages,
     projectSaveAs,
     projectSave,
     projectLoad,
@@ -190,17 +192,72 @@ function setupEvents(editor: Editor) {
             .catch((error) => console.error(error));
     }
 
-    document.getElementById("fileExport")!.onclick = () => {
+    document.getElementById("fileExportLayer")!.onclick = () => {
         let size = editor.getCurrentCanvas().getSize();
         let data = Array.from(editor.getCurrentCanvas().getCurrentLayer().getImageData());
 
-        let exportMessage: ExportMessage = {
+        let imageMessage: ImageMessage = {
             width: size.width,
             height: size.height,
-            name: "image",
+            name: editor.getName(),
             data: data,
         };
-        fileExport(exportMessage);
+        fileExportImage(imageMessage)
+            .then(() => {
+                showMessageDialog("Succesfully exported the layer!", () => { });
+            })
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to export the layer!", () => { });
+            });
+    }
+
+    document.getElementById("fileExportFrame")!.onclick = () => {
+        let size = editor.getCurrentCanvas().getSize();
+        let data = Array.from(editor.getCurrentCanvas().getLayersImageCombined().imageData.data);
+
+        let imageMessage: ImageMessage = {
+            width: size.width,
+            height: size.height,
+            name: editor.getName(),
+            data: data,
+        };
+        fileExportImage(imageMessage)
+            .then(() => {
+                showMessageDialog("Succesfully exported the frame!", () => { });
+            })
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to export the frame!", () => { });
+            });
+    }
+
+    document.getElementById("fileExportFrames")!.onclick = () => {
+        let size = editor.getCurrentCanvas().getSize();
+        let data = [];
+
+        for (let i = 0; i < editor.getCanvasesLength(); i++) {
+            let canvas = editor.getCanvas(i);
+            if (canvas != null) {
+                data.push(Array.from(canvas.getLayersImageCombined().imageData.data));
+            }
+        }
+
+        let imagesMessage: ImagesMessage = {
+            width: size.width,
+            height: size.height,
+            name: editor.getName(),
+            data: data,
+        };
+
+        fileExportImages(imagesMessage)
+            .then(() => {
+                showMessageDialog("Succesfully exported frames!", () => { });
+            })
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to export frames!", () => { });
+            });
     }
 
     document.getElementById("penTool")!.onclick = () => {

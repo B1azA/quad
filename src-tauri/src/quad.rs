@@ -3,7 +3,7 @@ use std::{fs, io::Write, path::Path};
 use image::RgbaImage;
 
 #[derive(serde::Serialize, serde::Deserialize)]
-pub struct ExportMessage {
+pub struct ImageMessage {
     width: u32,
     height: u32,
     name: String,
@@ -11,32 +11,75 @@ pub struct ExportMessage {
 }
 
 #[tauri::command]
-pub fn file_export(export_message: ExportMessage) -> Result<(), String> {
+pub fn file_export_image(image_message: ImageMessage) -> Result<(), String> {
     let image: RgbaImage = match image::ImageBuffer::from_raw(
-        export_message.width,
-        export_message.height,
-        export_message.data,
+        image_message.width,
+        image_message.height,
+        image_message.data,
     ) {
         Some(image) => image,
-        None => return Err(String::from("Failed to save the file")),
+        None => return Err(String::from("Failed to export the file")),
     };
 
     let file = match rfd::FileDialog::new()
-        .set_file_name(&format!("{}.png", &export_message.name))
+        .set_file_name(&format!("{}.png", &image_message.name))
         .save_file()
     {
         Some(file) => file,
-        None => return Err(String::from("Failed to save the file")),
+        None => return Err(String::from("Failed to export the file")),
     };
 
     if image.save(file).is_err() {
-        return Err(String::from("Failed to save the file"));
+        return Err(String::from("Failed to export the file"));
     }
     Ok(())
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct ImagesMessage {
+    width: u32,
+    height: u32,
+    name: String,
+    data: Vec<Vec<u8>>,
+}
+
 #[tauri::command]
-pub fn file_import() -> Result<ExportMessage, String> {
+pub fn file_export_images(images_message: ImagesMessage) -> Result<(), String> {
+    let mut images = vec![];
+
+    for data in images_message.data {
+        let image: RgbaImage =
+            match image::ImageBuffer::from_raw(images_message.width, images_message.height, data) {
+                Some(image) => image,
+                None => return Err(String::from("Failed to export the file")),
+            };
+        images.push(image);
+    }
+
+    let folder = match rfd::FileDialog::new()
+        .set_file_name(&images_message.name)
+        .pick_folder()
+    {
+        Some(folder) => folder,
+        None => return Err(String::from("Failed to export the file")),
+    };
+
+    let folder_string = folder.to_string_lossy().as_ref().to_string();
+
+    for (i, image) in images.iter().enumerate() {
+        let path_string = format!("{}/{}-{}.png", folder_string, images_message.name, i);
+        let path = Path::new(&path_string);
+
+        if image.save(path).is_err() {
+            return Err(String::from("Failed to export the file"));
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn file_import() -> Result<ImageMessage, String> {
     let file = match rfd::FileDialog::new()
         .add_filter("Image", &["png", "jpg"])
         .pick_file()
@@ -61,7 +104,7 @@ pub fn file_import() -> Result<ExportMessage, String> {
         Ok(image) => image,
         Err(_) => return Err(String::from("Failed to load the file")),
     };
-    let export_response = ExportMessage {
+    let export_response = ImageMessage {
         width: image.width(),
         height: image.height(),
         name: file_name,

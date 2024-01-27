@@ -71,8 +71,12 @@ export function showSizeDialog(title: string, defaultValue: { width: number, hei
 
     let ret = defaultValue;
     let inputWidth = <HTMLInputElement>document.getElementById("sizeDialogWidthInput");
+    inputWidth.min = "1";
+    inputWidth.max = "512";
     inputWidth.value = defaultValue.width.toString();
     let inputHeight = <HTMLInputElement>document.getElementById("sizeDialogHeightInput");
+    inputHeight.min = "1";
+    inputHeight.max = "512";
     inputHeight.value = defaultValue.height.toString();
 
     dialog.onclose = () => {
