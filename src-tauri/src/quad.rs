@@ -79,7 +79,7 @@ pub fn file_export_images(images_message: ImagesMessage) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn file_import() -> Result<ImageMessage, String> {
+pub fn file_import_image() -> Result<ImageMessage, String> {
     let file = match rfd::FileDialog::new()
         .add_filter("Image", &["png", "jpg"])
         .pick_file()

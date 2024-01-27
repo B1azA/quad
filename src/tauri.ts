@@ -7,8 +7,8 @@ export type ImageMessage = {
     data: number[],
 }
 
-export function fileImport(): Promise<ImageMessage> {
-    return invoke("file_import");
+export function fileImportImage(): Promise<ImageMessage> {
+    return invoke("file_import_image");
 }
 
 export function fileExportImage(imageMessage: ImageMessage): Promise<unknown> {

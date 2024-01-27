@@ -5,7 +5,7 @@ import {
     ImageMessage,
     ImagesMessage,
     ProjectMessage,
-    fileImport,
+    fileImportImage,
     fileExportImage,
     fileExportImages,
     projectSaveAs,
@@ -176,21 +176,40 @@ function setupEvents(editor: Editor) {
         }
     }
 
-    document.getElementById("fileImport")!.onclick = () => {
-        fileImport()
+    document.getElementById("fileImportLayer")!.onclick = () => {
+        fileImportImage()
             .then((message) => {
-                showConfirmDialog("Are you sure? It will erase the current layer.", "Ok", "Cancel", (confirmed) => {
-                    if (confirmed) {
-                        let data = Uint8ClampedArray.from(message.data);
-                        let imageData = new ImageData(32, 32);
-                        imageData.data.set(data);
-                        let image = new Image(imageData);
-                        editor.getCurrentCanvas().getCurrentLayer().setImage(image);
-                    }
-                });
+                let data = Uint8ClampedArray.from(message.data);
+                let imageData = new ImageData(32, 32);
+                imageData.data.set(data);
+                let image = new Image(imageData);
+                editor.getCurrentCanvas().addLayer("imported");
+                editor.getCurrentCanvas().getCurrentLayer().setImage(image);
+                editor.updateFrameAndAnimationFrame();
             })
-            .catch((error) => console.error(error));
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to import the image.", () => { })
+            });
     }
+
+    document.getElementById("fileImportFrame")!.onclick = () => {
+        fileImportImage()
+            .then((message) => {
+                let data = Uint8ClampedArray.from(message.data);
+                let imageData = new ImageData(32, 32);
+                imageData.data.set(data);
+                let image = new Image(imageData);
+                editor.addFrame(editor.getCurrentCanvas().getTemplate(), []);
+                editor.getCurrentCanvas().getCurrentLayer().setImage(image);
+                editor.updateFrameAndAnimationFrame();
+            })
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to import the image.", () => { })
+            });
+    }
+
 
     document.getElementById("fileExportLayer")!.onclick = () => {
         let size = editor.getCurrentCanvas().getSize();
