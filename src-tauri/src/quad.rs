@@ -78,8 +78,14 @@ pub fn file_export_images(images_message: ImagesMessage) -> Result<(), String> {
     Ok(())
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct ImageSize {
+    width: u32,
+    height: u32,
+}
+
 #[tauri::command]
-pub fn file_import_image() -> Result<ImageMessage, String> {
+pub fn file_import_image(image_size: ImageSize) -> Result<ImageMessage, String> {
     let file = match rfd::FileDialog::new()
         .add_filter("Image", &["png", "jpg"])
         .pick_file()
@@ -104,6 +110,13 @@ pub fn file_import_image() -> Result<ImageMessage, String> {
         Ok(image) => image,
         Err(_) => return Err(String::from("Failed to load the file")),
     };
+
+    let image = image.resize_exact(
+        image_size.width,
+        image_size.height,
+        image::imageops::FilterType::Nearest,
+    );
+
     let export_response = ImageMessage {
         width: image.width(),
         height: image.height(),

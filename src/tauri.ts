@@ -7,8 +7,15 @@ export type ImageMessage = {
     data: number[],
 }
 
-export function fileImportImage(): Promise<ImageMessage> {
-    return invoke("file_import_image");
+export type ImageSize = {
+    width: number,
+    height: number,
+}
+
+export function fileImportImage(imageSize: ImageSize): Promise<ImageMessage> {
+    return invoke("file_import_image", {
+        imageSize,
+    });
 }
 
 export function fileExportImage(imageMessage: ImageMessage): Promise<unknown> {

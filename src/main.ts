@@ -5,6 +5,7 @@ import {
     ImageMessage,
     ImagesMessage,
     ProjectMessage,
+    ImageSize,
     fileImportImage,
     fileExportImage,
     fileExportImages,
@@ -33,7 +34,7 @@ function setupProject() {
     };
     showConfirmDialog("Do you want to create a new project or load an old one?", "New Project", "Load Project", (createNew) => {
         if (createNew) {
-            showSizeDialog("Choose canvas size", { width: 32, height: 32 }, (confirmed, size) => {
+            showSizeDialog("Choose a canvas size", { width: 32, height: 32 }, (confirmed, size) => {
                 if (confirmed) {
                     console.log("New project created!")
                     projectMessage.width = size.width;
@@ -100,26 +101,30 @@ function setupEvents(editor: Editor) {
     let editorContainer = document.getElementById("editorContainer")!;
 
     document.getElementById("fileNew")!.onclick = () => {
-        let projectMessage: ProjectMessage = {
-            name: "Project",
-            width: 32,
-            height: 32,
-            frames: [],
-            colors: [],
-            path: "",
-        };
-        editor.remove();
-        let oldEditor = editor;
-        showSizeDialog("Choose canvas size", { width: 32, height: 32 }, (confirmed, size) => {
+        showConfirmDialog("This will erase the current project, are you sure?", "Yes", "No", (confirmed) => {
             if (confirmed) {
-                console.log("New project created!")
-                projectMessage.width = size.width;
-                projectMessage.height = size.height;
-                let editor = new Editor(projectMessage);
-                oldEditor.remove();
-                run(editor);
-            } else {
-                showMessageDialog("Failed to create a new project!", () => {
+                let projectMessage: ProjectMessage = {
+                    name: "Project",
+                    width: 32,
+                    height: 32,
+                    frames: [],
+                    colors: [],
+                    path: "",
+                };
+
+                let oldEditor = editor;
+                showSizeDialog("Choose a canvas size", { width: 32, height: 32 }, (confirmed, size) => {
+                    if (confirmed) {
+                        console.log("New project created!")
+                        projectMessage.width = size.width;
+                        projectMessage.height = size.height;
+                        let editor = new Editor(projectMessage);
+                        oldEditor.remove();
+                        run(editor);
+                    } else {
+                        showMessageDialog("Failed to create a new project!", () => {
+                        });
+                    }
                 });
             }
         });
@@ -177,10 +182,15 @@ function setupEvents(editor: Editor) {
     }
 
     document.getElementById("fileImportLayer")!.onclick = () => {
-        fileImportImage()
+        let size = editor.getCurrentCanvas().getSize();
+        let imageSize = {
+            width: size.width,
+            height: size.height,
+        };
+        fileImportImage(imageSize)
             .then((message) => {
                 let data = Uint8ClampedArray.from(message.data);
-                let imageData = new ImageData(32, 32);
+                let imageData = new ImageData(size.width, size.height);
                 imageData.data.set(data);
                 let image = new Image(imageData);
                 editor.getCurrentCanvas().addLayer("imported");
@@ -194,10 +204,16 @@ function setupEvents(editor: Editor) {
     }
 
     document.getElementById("fileImportFrame")!.onclick = () => {
-        fileImportImage()
+        let size = editor.getCurrentCanvas().getSize();
+        let imageSize = {
+            width: size.width,
+            height: size.height,
+        };
+        fileImportImage(imageSize)
             .then((message) => {
+                console.log(message.data.length, message.width, message.height);
                 let data = Uint8ClampedArray.from(message.data);
-                let imageData = new ImageData(32, 32);
+                let imageData = new ImageData(size.width, size.height);
                 imageData.data.set(data);
                 let image = new Image(imageData);
                 editor.addFrame(editor.getCurrentCanvas().getTemplate(), []);
