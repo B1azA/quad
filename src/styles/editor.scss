@@ -1,5 +1,7 @@
+@use "colorScheme.scss" as *;
+
 #editorContainer {
-    background-color: white;
+    background-color: $background;
     width: 100vw;
     height: 100vh;
     z-index: -1;

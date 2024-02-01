@@ -1,6 +1,8 @@
+@use "colorScheme.scss" as *;
+
 #layerBar {
     position: absolute;
-    top: 18em;
+    top: 27em;
     right: 12em;
     list-style-type: none;
     z-index: 6;
@@ -15,18 +17,30 @@
             margin: 4px;
             margin-right: 0;
             overflow: hidden;
+            border: solid black;
+            border-radius: 8px;
+            background-color: $buttonColorLayerbar;
+        }
+
+        .currentLayerBtn {
+            border: solid $selected;
+        }
+
+        button:hover {
+            background-color: $buttonColorLayerbarHover;
+        }
+
+        button:active {
+            background-color: $buttonColorLayerbar;
         }
     }
 }
 
-.currentLayerBtn {
-    background: yellow;
-}
 
 #layerRangeBar {
     position: absolute;
-    top: 18em;
-    right: 17em;
+    top: 27em;
+    right: 18em;
     list-style-type: none;
     z-index: 6;
 
@@ -48,13 +62,25 @@
 
 #layersConfig {
     position: absolute;
-    top: 15em;
+    top: 24em;
     right: 12em;
     display: block;
     z-index: 6;
 
     button {
-        height: 2em;
-        width: 2em;
+        height: 2.5em;
+        width: 2.5em;
+        margin: 0.5px;
+        border: solid black;
+        border-radius: 8px;
+        background-color: $buttonColorLayers;
+    }
+
+    button:hover {
+        background-color: $buttonColorLayersHover;
+    }
+
+    button:active {
+        background-color: $buttonColorLayers;
     }
 }

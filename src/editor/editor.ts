@@ -377,10 +377,12 @@ export class Editor {
 
     // set the animation frame image to the image of the frame
     setAnimationFrame(frameIndex: number) {
-        let canvas = this.canvases[frameIndex];
-        let image = canvas.getLayersImageCombined();
+        let canvas = this.getCanvas(frameIndex);
 
-        this.animationFrameCtx.putImageData(image.imageData, 0, 0);
+        if (canvas != null) {
+            let image = canvas.getLayersImageCombined();
+            this.animationFrameCtx.putImageData(image.imageData, 0, 0);
+        }
     }
 
     undoStepOnCanvas() {

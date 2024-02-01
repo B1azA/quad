@@ -1,3 +1,5 @@
+@use "colorScheme.scss" as *;
+
 #color {
     position: absolute;
     left: 8em;
@@ -13,25 +15,35 @@
 
 .clr-picker {
     z-index: 50;
+    background-color: $background;
 }
 
 #pickerContainer {
     position: absolute;
-    bottom: 14em;
-    left: 1.25em;
+    bottom: 19em;
+    left: 1em;
     list-style-type: none;
-    background-color: grey;
     z-index: 6;
+    padding: 0;
 
     li {
         display: block;
-        margin: 4px;
+        font-size: 1.2em;
+        margin: 10px;
+    }
+
+    button {
+        width: 3em;
+        height: 3em;
+        border-radius: 4px;
+        box-shadow: none;
+        outline: none;
     }
 }
 
 #paletteTable {
     display: block;
-    height: 10.5em;
+    height: 14em;
     position: absolute;
     bottom: 0;
     left: 1em;
@@ -39,23 +51,35 @@
     z-index: 6;
 
     button {
-        width: 2.5em;
-        height: 2.5em;
+        width: 3em;
+        height: 3em;
         margin: 2px;
-        border-radius: 5px;
+        border-radius: 100%;
         background-color: white;
     }
 }
 
 #paletteConfig {
     position: absolute;
-    bottom: 11em;
-    left: 1.25em;
+    bottom: 14.5em;
+    left: 1.3em;
     z-index: 8;
 
     button {
-        width: 2.5em;
-        height: 2.5em;
+        border: solid black;
+        border-radius: 8px;
+        width: 3em;
+        height: 3em;
+        margin: 0.5px;
+        background-color: $buttonColorPalette;
+    }
+
+    button:hover {
+        background-color: $buttonColorPaletteHover;
+    }
+
+    button:active {
+        background-color: $buttonColorPalette;
     }
 }
 
@@ -64,9 +88,9 @@
 }
 
 #primaryColorButton {
-    border: solid red;
+    border: solid $selected;
 }
 
 #secondaryColorButton {
-    border: dotted red;
+    border: dotted $selected;
 }

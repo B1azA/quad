@@ -2,15 +2,34 @@
 
 #toolBar {
     position: absolute;
-    top: 13em;
+    top: 5em;
     left: 1em;
     list-style-type: none;
     z-index: 6;
 
     li button {
         display: block;
-        width: 92%;
-        padding: 4px;
-        margin: 4%;
+        width: 4em;
+        height: 4em;
+        margin: 2px;
+        border-radius: 8px;
+        box-shadow: none;
+        outline: none;
+        border: solid black;
+        overflow: hidden;
+        background-color: $buttonColorTools;
     }
+
+    li button:hover {
+        background-color: $buttonColorToolsHover;
+    }
+
+    li button:active {
+        background-color: $buttonColorTools;
+    }
+}
+
+#penTool {
+    background-image: url(images/pen.png);
+    background-size: cover;
 }

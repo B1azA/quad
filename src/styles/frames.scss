@@ -1,10 +1,12 @@
+@use "colorScheme.scss" as *;
+
 #frames {
     display: block;
     position: absolute;
     bottom: 0;
     right: 1em;
-    width: 8em;
-    height: calc(100vh - 18em);
+    width: 10em;
+    height: calc(100vh - 24em);
     overflow-y: scroll;
     z-index: 6;
 
@@ -16,61 +18,69 @@
 .normalFrame {
     position: relative;
     width: 90%;
-    left: 5%;
     border: solid black;
     border-radius: 5px;
-    background-color: white;
+    background-color: $background;
 }
 
 #currentFrame {
-    border: solid blue;
-    background-color: white;
+    border: solid $selected;
 }
 
 #animationFrame {
     position: absolute;
     z-index: 6;
-    height: 10em;
-    right: 8px;
-    top: 1.9em;
+    height: 15em;
+    right: 1em;
+    top: 1em;
     background-color: white;
     border: solid black;
     border-radius: 5px;
     image-rendering: pixelated;
+    background-color: $background;
 }
 
 #framesConfig {
     position: absolute;
-    top: 15em;
+    top: 20em;
     right: 1em;
     display: block;
     z-index: 6;
 
     button {
-        height: 2em;
-        width: 2em;
+        width: 3em;
+        height: 3em;
+        margin: 0.5px;
+        border: solid black;
+        border-radius: 8px;
+        background-color: $buttonColorFrames;
+    }
+
+    button:hover {
+        background-color: $buttonColorFramesHover;
+    }
+
+    button:active {
+        background-color: $buttonColorFrames;
     }
 }
 
 #fpsContainer {
     position: absolute;
-    top: 13em;
-    right: 2em;
+    top: 13.5em;
+    right: 1em;
     display: block;
     z-index: 6;
+    font-size: 1.3em;
 
     input {
-        width: 4em;
+        width: 6em;
         outline: none;
         opacity: 0.7;
     }
 
     input:hover {
         opacity: 1;
-    }
-
-    label {
-        top: 0;
     }
 
     #fpsValue {
