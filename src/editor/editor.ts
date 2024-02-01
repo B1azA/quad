@@ -48,7 +48,7 @@ export class Editor {
     private fpsRange = <HTMLInputElement>document.getElementById("fpsRange");
     private fpsValue = <HTMLLabelElement>document.getElementById("fpsValue");
     private fps = 0;
-    private animationInterval: NodeJS.Timeout | null = null;
+    private animationInterval: ReturnType<typeof setInterval> | null = null;
     private animationFrameIndex = 0;
 
     private name: string;
@@ -149,6 +149,15 @@ export class Editor {
             canvas.getFrame().remove();
             canvas.remove();
         });
+
+
+        // clear animationInterval
+        if (this.animationInterval != null)
+            clearInterval(this.animationInterval);
+
+        // set fps to 0
+        this.fpsRange.value = "0";
+        this.fpsValue.textContent = this.fpsRange.value;
     }
 
     setPath(path: string) {
