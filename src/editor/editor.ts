@@ -1,5 +1,6 @@
 import { Canvas } from "./canvas/canvas";
 import { Palette } from "./palette";
+import { Tools } from "./tools";
 import { PaintTool } from "./paintTool/paintTool";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
@@ -7,11 +8,6 @@ import { Compass } from "./paintTool/compass";
 import { Square } from "./paintTool/square";
 import { Layer } from "./canvas/layer";
 import { FrameMessage, LayerMessage, ProjectMessage } from "../tauri";
-
-export enum ColorState {
-    PRIMARY,
-    SECONDARY,
-}
 
 export class Editor {
     // pressed mouse buttons
@@ -30,11 +26,7 @@ export class Editor {
     private editorContainer = document.getElementById("editorContainer")!;
     private originalRealSize = { width: 0, height: 0 };
 
-    paintTool: PaintTool = new Pen;
-    penTool: PaintTool = new Pen;
-    rulerTool: PaintTool = new Ruler;
-    compassTool: PaintTool = new Compass;
-    squareTool: PaintTool = new Square;
+    tools: Tools = new Tools();
 
     private isMouseOnEditorContainer = false;
 
@@ -413,7 +405,7 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.paintTool.onMouseDown(
+                    this.tools.getPaintTool().onMouseDown(
                         this,
                         mouseCoords,
                         this.palette.getColor(),
@@ -430,7 +422,7 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.paintTool.onMouseDown(
+                    this.tools.getPaintTool().onMouseDown(
                         this,
                         mouseCoords,
                         this.palette.getColor(),
@@ -450,7 +442,7 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.paintTool.onMouseUp(
+                    this.tools.getPaintTool().onMouseUp(
                         this,
                         mouseCoords,
                         this.palette.getColor(),
@@ -471,7 +463,7 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.paintTool.onMouseUp(
+                    this.tools.getPaintTool().onMouseUp(
                         this,
                         mouseCoords,
                         this.palette.getColor(),
@@ -501,7 +493,7 @@ export class Editor {
                 };
                 this.getCurrentCanvas().move(moveDelta);
             } else if (this.isMouseOnEditorContainer) { // paint
-                this.paintTool.onMouseMove(
+                this.tools.getPaintTool().onMouseMove(
                     this,
                     mouseCoords,
                     this.palette.getColor(),

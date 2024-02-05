@@ -296,20 +296,19 @@ function setupEvents(editor: Editor) {
     }
 
     document.getElementById("penTool")!.onclick = () => {
-        editor.paintTool = editor.penTool;
+        editor.tools.choosePenTool();
     };
 
     document.getElementById("rulerTool")!.onclick = () => {
-        editor.paintTool = editor.rulerTool;
+        editor.tools.chooseRulerTool();
     };
 
     document.getElementById("compassTool")!.onclick = () => {
-        editor.paintTool = editor.compassTool;
+        editor.tools.chooseCompassTool();
     };
 
 
     document.getElementById("squareTool")!.onclick = () => {
-        editor.paintTool = editor.squareTool;
     };
 
     document.getElementById("undo")!.onclick = () => {

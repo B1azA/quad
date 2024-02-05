@@ -18,6 +18,7 @@
         border: solid black;
         overflow: hidden;
         background-color: $buttonColorTools;
+        image-rendering: pixelated;
     }
 
     li button:hover {
@@ -27,9 +28,23 @@
     li button:active {
         background-color: $buttonColorTools;
     }
+
+    .selectedTool {
+        border: solid $selected;
+    }
 }
 
 #penTool {
     background-image: url(images/pen.png);
+    background-size: cover;
+}
+
+#rulerTool {
+    background-image: url(images/ruler.png);
+    background-size: cover;
+}
+
+#compassTool {
+    background-image: url(images/compass.png);
     background-size: cover;
 }
