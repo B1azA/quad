@@ -288,6 +288,19 @@ export class Palette {
                 button.id = "primaryColorButton";
                 this.primaryButtonIndex = index;
                 this.setPrimaryColor(color);
+            } else {
+                for (let button of this.buttons) {
+                    if (button.id != "secondaryColorButton")
+                        button.id = "primaryColorButton";
+                }
+                button.id = "secondaryColorButton";
+                this.secondaryButtonIndex = this.primaryButtonIndex;
+                this.primaryButtonIndex = index;
+
+                this.setPrimaryColor(this.primaryColor);
+                this.setSecondaryColor(this.secondaryColor);
+
+                this.recreateButtonsTable();
             }
         } else if (event.button == 2) {
             if (button.id != "primaryColorButton") {
@@ -298,6 +311,19 @@ export class Palette {
                 button.id = "secondaryColorButton";
                 this.secondaryButtonIndex = index;
                 this.setSecondaryColor(color);
+            } else {
+                for (let button of this.buttons) {
+                    if (button.id != "primaryColorButton")
+                        button.id = "normalColorButton";
+                }
+                button.id = "secondaryColorButton";
+                this.primaryButtonIndex = this.secondaryButtonIndex;
+                this.secondaryButtonIndex = index;
+
+                this.setPrimaryColor(this.primaryColor);
+                this.setSecondaryColor(this.secondaryColor);
+
+                this.recreateButtonsTable();
             }
         }
     }
