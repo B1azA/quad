@@ -478,7 +478,7 @@ export class Editor {
 
     onMouseMove(event: MouseEvent) {
         let mouseCoords = this.getCurrentCanvas().getMouseCoords(event);
-        // mouse position realative to vieport, not the this
+        // mouse position realative to viewport
         let mouseGlobalPos = { x: event.clientX, y: event.clientY };
 
         // clear template layer
@@ -488,8 +488,8 @@ export class Editor {
             // if moving with the canvas
             if (this.drag) {
                 let moveDelta = {
-                    x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
-                    y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
+                    x: mouseGlobalPos.x - this.lastMouseGlobalPos.x,
+                    y: mouseGlobalPos.y - this.lastMouseGlobalPos.y
                 };
                 this.getCurrentCanvas().move(moveDelta);
             } else if (this.isMouseOnEditorContainer) { // paint
@@ -502,8 +502,8 @@ export class Editor {
             }
         } else if (this.mouseButtons[1]) {
             let moveDelta = {
-                x: this.lastMouseGlobalPos.x - mouseGlobalPos.x,
-                y: this.lastMouseGlobalPos.y - mouseGlobalPos.y
+                x: mouseGlobalPos.x - this.lastMouseGlobalPos.x,
+                y: mouseGlobalPos.y - this.lastMouseGlobalPos.y
             };
             this.getCurrentCanvas().move(moveDelta);
         }
@@ -519,7 +519,7 @@ export class Editor {
 
     onWheel(event: WheelEvent) {
         let zoom = Math.sign(-event.deltaY) * 0.1;
-        this.getCurrentCanvas().zoomIn(zoom);
+        this.getCurrentCanvas().zoomIn(zoom, this.lastMouseGlobalPos);
         this.onMouseMove(event);
     }
 

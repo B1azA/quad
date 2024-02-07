@@ -705,26 +705,33 @@ export class Canvas {
     }
 
     // scale the canvas, zoom out when input is negative
-    zoomIn(zoom_delta: number) {
+    zoomIn(zoomDelta: number, mousePos: { x: number, y: number }) {
         let center = this.getCenterPos();
 
-        this.zoom += zoom_delta;
+        // calculate how much to move the center so the mouse stays on the same place
+        let zoomChange = zoomDelta / this.zoom;
+        let newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
+        let newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
+
+        this.zoom += zoomDelta;
+
         if (this.zoom < 0.1) {
             this.zoom = 0.1;
         }
 
         let width = this.originalRealWidth * this.zoom;
         let height = this.originalRealHeight * this.zoom;
+
         this.setRealSize({ width, height });
 
-        this.moveCenterTo(center);
+        this.moveCenterTo({ x: mousePos.x + newMouseDistanceX, y: mousePos.y + newMouseDistanceY });
     }
 
     // move the canvas by delta
     move(moveDelta: { x: number, y: number }) {
         let pos = this.getPos();
-        let x = pos.x - moveDelta.x;
-        let y = pos.y - moveDelta.y;
+        let x = pos.x + moveDelta.x;
+        let y = pos.y + moveDelta.y;
 
         this.setPos({ x, y });
     }
