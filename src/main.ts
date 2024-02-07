@@ -32,7 +32,7 @@ function setupProject() {
         colors: [],
         path: "",
     };
-    showConfirmDialog("Do you want to create a new project or load an old one?", "New Project", "Load Project", (createNew) => {
+    showConfirmDialog("Do you want to create a new project or open an old one?", "New Project", "Open Project", (createNew) => {
         if (createNew) {
             showSizeDialog("Choose a canvas size", { width: 32, height: 32 }, (confirmed, size) => {
                 if (confirmed) {
@@ -56,7 +56,7 @@ function setupProject() {
                 })
                 .catch((error) => {
                     console.log(error);
-                    showMessageDialog("Failed to load the project!", () => {
+                    showMessageDialog("Failed to open the project!", () => {
                         setupProject();
                     })
                 });
@@ -101,8 +101,41 @@ function setupEvents(editor: Editor) {
     let editorContainer = document.getElementById("editorContainer")!;
 
     document.getElementById("fileNew")!.onclick = () => {
-        showConfirmDialog("This will erase the current project, are you sure?", "Yes", "No", (confirmed) => {
+        showConfirmDialog("This will erase the current project, do you want to save it?", "Yes", "No", (confirmed) => {
             if (confirmed) {
+                saveProject(editor, (succesful) => {
+                    if (succesful) {
+                        showMessageDialog("Succesfully saved the project!", () => {
+                            let projectMessage: ProjectMessage = {
+                                name: "Project",
+                                width: 32,
+                                height: 32,
+                                frames: [],
+                                colors: [],
+                                path: "",
+                            };
+
+                            let oldEditor = editor;
+                            showSizeDialog("Choose a canvas size", { width: 32, height: 32 }, (confirmed, size) => {
+                                if (confirmed) {
+                                    console.log("New project created!")
+                                    projectMessage.width = size.width;
+                                    projectMessage.height = size.height;
+                                    let editor = new Editor(projectMessage);
+                                    oldEditor.remove();
+                                    run(editor);
+                                } else {
+                                    showMessageDialog("Failed to create a new project!", () => {
+                                    });
+                                }
+                            });
+                        });
+                    } else {
+                        showMessageDialog("Failed to save the project!", () => { });
+                    }
+                });
+
+            } else {
                 let projectMessage: ProjectMessage = {
                     name: "Project",
                     width: 32,
@@ -131,18 +164,43 @@ function setupEvents(editor: Editor) {
     };
 
     document.getElementById("fileLoad")!.onclick = () => {
-        let oldEditor = editor;
-        projectLoad()
-            .then((message) => {
-                let editor = new Editor(message);
-                oldEditor.remove();
-                run(editor);
-                console.log("Project " + message.name + " loaded");
-            })
-            .catch((error) => {
-                showMessageDialog("Failed to load the project!", () => { });
-                console.error(error);
-            });
+        showConfirmDialog("This will erase the current project, do you want to save it?", "Yes", "No", (confirmed) => {
+            if (confirmed) {
+                saveProject(editor, (succesful) => {
+                    if (succesful) {
+                        showMessageDialog("Succesfully saved the project!", () => {
+                            let oldEditor = editor;
+                            projectLoad()
+                                .then((message) => {
+                                    let editor = new Editor(message);
+                                    oldEditor.remove();
+                                    run(editor);
+                                    console.log("Project " + message.name + " loaded");
+                                })
+                                .catch((error) => {
+                                    showMessageDialog("Failed to open the project!", () => { });
+                                    console.error(error);
+                                });
+                        });
+                    } else {
+                        showMessageDialog("Failed to save the project!", () => { });
+                    }
+                });
+            } else {
+                let oldEditor = editor;
+                projectLoad()
+                    .then((message) => {
+                        let editor = new Editor(message);
+                        oldEditor.remove();
+                        run(editor);
+                        console.log("Project " + message.name + " loaded");
+                    })
+                    .catch((error) => {
+                        showMessageDialog("Failed to open the project!", () => { });
+                        console.error(error);
+                    });
+            }
+        });
     }
 
     document.getElementById("fileSaveAs")!.onclick = () => {
@@ -158,27 +216,13 @@ function setupEvents(editor: Editor) {
     }
 
     document.getElementById("fileSave")!.onclick = () => {
-        let projectMessage = editor.generateProjectMessage();
-        if (projectMessage.path.length > 0) {
-            projectSave(editor.generateProjectMessage())
-                .then(() => {
-                    showMessageDialog("Succesfully saved the project!", () => { });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    showMessageDialog("Failed to save the project!", () => { });
-                });
-        } else {
-            projectSaveAs(editor.generateProjectMessage())
-                .then((path) => {
-                    showMessageDialog("Succesfully saved the project!", () => { });
-                    editor.setPath(path);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    showMessageDialog("Failed to save the project!", () => { });
-                });
-        }
+        saveProject(editor, (succesful) => {
+            if (succesful) {
+                showMessageDialog("Succesfully saved the project!", () => { });
+            } else {
+                showMessageDialog("Failed to save the project!", () => { });
+            }
+        });
     }
 
     document.getElementById("fileImportLayer")!.onclick = () => {
@@ -424,5 +468,29 @@ function setupEvents(editor: Editor) {
 
     editorContainer.onmouseleave = () => {
         editor.onMouseLeave();
+    }
+}
+
+function saveProject(editor: Editor, callback: (succesful: boolean) => void) {
+    let projectMessage = editor.generateProjectMessage();
+    if (projectMessage.path.length > 0) {
+        projectSave(projectMessage)
+            .then(() => {
+                callback(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                callback(false);
+            });
+    } else {
+        projectSaveAs(projectMessage)
+            .then((path) => {
+                editor.setPath(path);
+                callback(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                callback(false);
+            });
     }
 }
