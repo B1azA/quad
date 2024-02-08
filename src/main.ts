@@ -366,6 +366,15 @@ function setupEvents(editor: Editor) {
     document.getElementById("eraseTool")!.onclick = () => {
     };
 
+    document.getElementById("center")!.onclick = () => {
+        let canvas = editor.getCurrentCanvas();
+        canvas.setRealSize({ width: window.screen.height / 2, height: window.screen.height / 2 });
+        let canvasSize = canvas.getRealSize();
+        console.log(canvasSize);
+        let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
+        canvas.setPos(pos);
+    };
+
     document.getElementById("addLayer")!.onclick = () => {
         showPromptDialog("Add layer", "new", (value) => {
             let name = value.length > 0 ? value : "unnamed";
