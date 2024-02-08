@@ -713,10 +713,14 @@ export class Canvas {
         let newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
         let newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
 
+        let zoomBefore = this.zoom;
         this.zoom += zoomDelta;
 
-        if (this.zoom < 0.1) {
-            this.zoom = 0.1;
+        if (this.zoom < 0.5) {
+            this.zoom = 0.5;
+            zoomChange = (this.zoom - zoomBefore) / this.zoom;
+            newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
+            newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
         }
 
         let width = this.originalRealWidth * this.zoom;
