@@ -370,9 +370,9 @@ function setupEvents(editor: Editor) {
         let canvas = editor.getCurrentCanvas();
         canvas.setRealSize({ width: window.screen.height / 2, height: window.screen.height / 2 });
         let canvasSize = canvas.getRealSize();
-        console.log(canvasSize);
         let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
         canvas.setPos(pos);
+        canvas.setZoom(1);
     };
 
     document.getElementById("addLayer")!.onclick = () => {

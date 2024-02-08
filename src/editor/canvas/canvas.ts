@@ -156,6 +156,10 @@ export class Canvas {
         return this.getTemplate();
     }
 
+    setZoom(zoom: number) {
+        this.zoom = zoom;
+    }
+
     getFrame() {
         return this.frame;
     }
@@ -709,12 +713,12 @@ export class Canvas {
         let center = this.getCenterPos();
 
         // calculate how much to move the center so the mouse stays on the same place
-        let zoomChange = zoomDelta / this.zoom;
+        let zoomChange = (this.zoom * zoomDelta) / this.zoom;
         let newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
         let newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
 
         let zoomBefore = this.zoom;
-        this.zoom += zoomDelta;
+        this.zoom += this.zoom * zoomDelta;
 
         if (this.zoom < 0.5) {
             this.zoom = 0.5;
