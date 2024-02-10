@@ -79,6 +79,68 @@ pub fn file_export_images(images_message: ImagesMessage) -> Result<(), String> {
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
+pub struct ImagesMessageGif {
+    width: u32,
+    height: u32,
+    name: String,
+    data: Vec<Vec<u8>>,
+    fps: u32,
+}
+
+#[tauri::command]
+pub fn file_export_images_as_gif(images_message: ImagesMessageGif) -> Result<(), String> {
+    let mut images = vec![];
+
+    for data in images_message.data {
+        let image: RgbaImage =
+            match image::ImageBuffer::from_raw(images_message.width, images_message.height, data) {
+                Some(image) => image,
+                None => return Err(String::from("Failed to export the file")),
+            };
+        images.push(image);
+    }
+
+    let file_path = match rfd::FileDialog::new()
+        .set_file_name(&format!("{}.gif", &images_message.name))
+        .save_file()
+    {
+        Some(file) => file,
+        None => return Err(String::from("Failed to export the file")),
+    };
+
+    let file = match std::fs::File::create(file_path.clone()) {
+        Ok(file) => file,
+        Err(error) => {
+            return Err(format!("Error: {}", error));
+        }
+    };
+
+    let mut encoder = image::codecs::gif::GifEncoder::new(file);
+    if let Err(error) = encoder.set_repeat(image::codecs::gif::Repeat::Infinite) {
+        return Err(format!("Error: {}", error));
+    }
+
+    let mut frames = vec![];
+    let frame_delay = (1.0 / images_message.fps as f64 * 1000.0) as u32;
+
+    for image in images.drain(0..images.len()) {
+        let frame = image::Frame::from_parts(
+            image,
+            0,
+            0,
+            image::Delay::from_numer_denom_ms(frame_delay, 1),
+        );
+        frames.push(frame);
+    }
+
+    if let Err(error) = encoder.encode_frames(frames) {
+        return Err(format!("Error: {}", error));
+    }
+
+    Ok(())
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct ImageSize {
     width: u32,
     height: u32,

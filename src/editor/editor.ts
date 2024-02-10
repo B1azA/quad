@@ -92,13 +92,17 @@ export class Editor {
                         this.animationFrameIndex = 0;
                     }
                 }, 1 / this.fps * 1000);
-            } else {
-                this.updateFrameAndAnimationFrame();
             }
         }
 
         this.name = projectMessage.name;
         this.path = projectMessage.path;
+
+        this.updateFrameAndAnimationFrame();
+    }
+
+    getFps() {
+        return this.fps;
     }
 
     generateProjectMessage() {

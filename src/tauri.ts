@@ -37,6 +37,20 @@ export function fileExportImages(imagesMessage: ImagesMessage): Promise<unknown>
     });
 }
 
+export type ImagesMessageGif = {
+    width: number,
+    height: number,
+    name: string,
+    data: number[][],
+    fps: number,
+}
+
+export function fileExportImagesAsGif(imagesMessage: ImagesMessageGif): Promise<unknown> {
+    return invoke("file_export_images_as_gif", {
+        imagesMessage,
+    });
+}
+
 export type ProjectMessage = {
     name: string,
     width: number,

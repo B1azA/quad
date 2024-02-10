@@ -4,11 +4,12 @@ import { Editor } from "./editor/editor";
 import {
     ImageMessage,
     ImagesMessage,
+    ImagesMessageGif,
     ProjectMessage,
-    ImageSize,
     fileImportImage,
     fileExportImage,
     fileExportImages,
+    fileExportImagesAsGif,
     projectSaveAs,
     projectSave,
     projectLoad,
@@ -96,6 +97,13 @@ function run(editor: Editor) {
             editor.palette.setSecondaryColor([col.r, col.g, col.b, 255]);
         }
     });
+
+    let canvas = editor.getCurrentCanvas();
+    canvas.setRealSize({ width: window.screen.height / 2, height: window.screen.height / 2 });
+    let canvasSize = canvas.getRealSize();
+    let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
+    canvas.setPos(pos);
+    canvas.setZoom(1);
 }
 
 function setupEvents(editor: Editor) {
@@ -347,6 +355,35 @@ function setupEvents(editor: Editor) {
         };
 
         fileExportImages(imagesMessage)
+            .then(() => {
+                showMessageDialog("Succesfully exported frames!", () => { });
+            })
+            .catch((error) => {
+                console.log(error);
+                showMessageDialog("Failed to export frames!", () => { });
+            });
+    }
+
+    document.getElementById("fileExportFramesGif")!.onclick = () => {
+        let size = editor.getCurrentCanvas().getSize();
+        let data = [];
+
+        for (let i = 0; i < editor.getCanvasesLength(); i++) {
+            let canvas = editor.getCanvas(i);
+            if (canvas != null) {
+                data.push(Array.from(canvas.getLayersImageCombined().imageData.data));
+            }
+        }
+
+        let imagesMessage: ImagesMessageGif = {
+            width: size.width,
+            height: size.height,
+            name: editor.getName(),
+            data: data,
+            fps: editor.getFps(),
+        };
+
+        fileExportImagesAsGif(imagesMessage)
             .then(() => {
                 showMessageDialog("Succesfully exported frames!", () => { });
             })

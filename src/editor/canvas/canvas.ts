@@ -138,6 +138,7 @@ export class Canvas {
         }
 
         this.setLayer(this.layer);
+        this.updateFrameImage();
     }
 
     // remove itself from the DOM
