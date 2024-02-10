@@ -146,8 +146,8 @@ function setupEvents(editor: Editor) {
                                     console.log("New project created!")
                                     projectMessage.width = size.width;
                                     projectMessage.height = size.height;
-                                    let editor = new Editor(projectMessage);
                                     oldEditor.remove();
+                                    let editor = new Editor(projectMessage);
                                     run(editor);
                                 } else {
                                     showMessageDialog("Failed to create a new project!", () => {
@@ -176,8 +176,8 @@ function setupEvents(editor: Editor) {
                         console.log("New project created!")
                         projectMessage.width = size.width;
                         projectMessage.height = size.height;
-                        let editor = new Editor(projectMessage);
                         oldEditor.remove();
+                        let editor = new Editor(projectMessage);
                         run(editor);
                     } else {
                         showMessageDialog("Failed to create a new project!", () => {
@@ -188,7 +188,7 @@ function setupEvents(editor: Editor) {
         });
     };
 
-    document.getElementById("fileLoad")!.onclick = () => {
+    document.getElementById("fileOpen")!.onclick = () => {
         showConfirmDialog("This will erase the current project, do you want to save it?", "Yes", "No", (confirmed) => {
             if (confirmed) {
                 saveProject(editor, (succesful) => {
@@ -197,8 +197,8 @@ function setupEvents(editor: Editor) {
                             let oldEditor = editor;
                             projectLoad()
                                 .then((message) => {
-                                    let editor = new Editor(message);
                                     oldEditor.remove();
+                                    let editor = new Editor(message);
                                     run(editor);
                                     console.log("Project " + message.name + " loaded");
                                 })
@@ -215,8 +215,8 @@ function setupEvents(editor: Editor) {
                 let oldEditor = editor;
                 projectLoad()
                     .then((message) => {
-                        let editor = new Editor(message);
                         oldEditor.remove();
+                        let editor = new Editor(message);
                         run(editor);
                         console.log("Project " + message.name + " loaded");
                     })

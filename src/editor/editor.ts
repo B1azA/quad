@@ -146,7 +146,6 @@ export class Editor {
             canvas.remove();
         });
 
-
         // clear animationInterval
         if (this.animationInterval != null)
             clearInterval(this.animationInterval);
@@ -154,6 +153,9 @@ export class Editor {
         // set fps to 0
         this.fpsRange.value = "0";
         this.fpsValue.textContent = this.fpsRange.value;
+
+        // remove color palette colors
+        this.palette.remove();
     }
 
     setPath(path: string) {

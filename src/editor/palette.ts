@@ -64,6 +64,12 @@ export class Palette {
         this.updateColors();
     }
 
+    remove() {
+        for (let child of this.table.children) {
+            child.remove();
+        }
+    }
+
     getColors() {
         return this.colors;
     }
