@@ -1,6 +1,6 @@
 import { Canvas } from "./canvas/canvas";
 import { Palette } from "./palette";
-import { Tools } from "./tools";
+import { PaintTools } from "./paintTools";
 import { Layer } from "./canvas/layer";
 import { FrameMessage, LayerMessage, ProjectMessage } from "../tauri";
 
@@ -21,7 +21,7 @@ export class Editor {
     private editorContainer = document.getElementById("editorContainer")!;
     private originalRealSize = { width: 0, height: 0 };
 
-    tools: Tools = new Tools();
+    tools: PaintTools = new PaintTools();
 
     private isMouseOnEditorContainer = false;
 

@@ -27,7 +27,6 @@ export class Ruler implements PaintTool {
     ) {
         // draw line to layer
         this.drawLine(
-            editor,
             coords,
             this.lastCoords,
             color,
@@ -47,7 +46,6 @@ export class Ruler implements PaintTool {
     ) {
         // draw line to template
         this.drawLine(
-            editor,
             coords,
             this.lastCoords,
             color,
@@ -57,13 +55,12 @@ export class Ruler implements PaintTool {
 
     // draw a line from the point a to the point b
     drawLine(
-        editor: Editor,
         a: { x: number, y: number },
         b: { x: number, y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        let size = editor.getCurrentCanvas().getSize();
+        let size = layer.getSize();
 
         // difference
         let dx = b.x - a.x;

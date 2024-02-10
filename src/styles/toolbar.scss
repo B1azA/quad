@@ -7,7 +7,7 @@
     list-style-type: none;
     z-index: 6;
 
-    li button {
+    button {
         display: block;
         width: 4em;
         height: 4em;
@@ -21,11 +21,11 @@
         image-rendering: pixelated;
     }
 
-    li button:hover {
+    button:hover {
         background-color: $buttonColorToolsHover;
     }
 
-    li button:active {
+    button:active {
         background-color: $buttonColorTools;
     }
 
@@ -46,5 +46,20 @@
 
 #compassTool {
     background-image: url(images/compass.png);
+    background-size: cover;
+}
+
+#filledCircleTool {
+    background-image: url(images/filledCircle.png);
+    background-size: cover;
+}
+
+#squareTool {
+    background-image: url(images/square.png);
+    background-size: cover;
+}
+
+#filledSquareTool {
+    background-image: url(images/filledSquare.png);
     background-size: cover;
 }

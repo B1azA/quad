@@ -3,7 +3,7 @@ import { Editor } from "../editor";
 import { PaintStep, PaintMiniStep } from "../steps/paintStep";
 import { Layer } from "../canvas/layer";
 
-export class Compass implements PaintTool {
+export class FilledSquare implements PaintTool {
     lastCoords = { x: -1, y: -1 };
     step: PaintStep | null = null;
 
@@ -26,7 +26,7 @@ export class Compass implements PaintTool {
         layer: Layer,
     ) {
         // draw line to layer
-        this.drawCircle(
+        this.drawFilledSquare(
             this.lastCoords,
             coords,
             color,
@@ -45,7 +45,7 @@ export class Compass implements PaintTool {
         layer: Layer,
     ) {
         // draw line to template
-        this.drawCircle(
+        this.drawFilledSquare(
             this.lastCoords,
             coords,
             color,
@@ -53,7 +53,7 @@ export class Compass implements PaintTool {
         );
     }
 
-    drawCircle(
+    drawFilledSquare(
         center: { x: number, y: number },
         a: { x: number, y: number },
         color: [number, number, number, number],
@@ -67,20 +67,16 @@ export class Compass implements PaintTool {
         for (let x = center.x - radius; x <= center.x + radius; x++) {
             for (let y = center.y - radius; y <= center.y + radius; y++) {
                 let point = { x, y };
-                let distance = Math.sqrt((center.x - point.x) ** 2 + (center.y - point.y) ** 2);
 
-                // add 0.5 so the circle is nicer looking
-                if (distance <= radius + 0.5 && distance > radius - 0.5) {
-                    if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
-                        let pixelColor = image.getPixel(point);
+                if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
+                    let pixelColor = image.getPixel(point);
 
-                        if (!layer.isTemplate()) {
-                            let paintMinistep = new PaintMiniStep(point, pixelColor);
-                            this.step?.addMiniStep(paintMinistep)
-                        }
-
-                        image.putPixel(point, color);
+                    if (!layer.isTemplate()) {
+                        let paintMinistep = new PaintMiniStep(point, pixelColor);
+                        this.step?.addMiniStep(paintMinistep)
                     }
+
+                    image.putPixel(point, color);
                 }
             }
         }

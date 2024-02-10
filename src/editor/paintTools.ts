@@ -2,19 +2,19 @@ import { PaintTool } from "./paintTool/paintTool";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
+import { FilledCircle } from "./paintTool/filledCircle";
 import { Square } from "./paintTool/square";
+import { FilledSquare } from "./paintTool/filledSquare";
 
-export class Tools {
+export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
     private paintTool: PaintTool = new Pen;
     readonly penTool: PaintTool = new Pen;
     readonly rulerTool: PaintTool = new Ruler;
     readonly compassTool: PaintTool = new Compass;
+    readonly filledCircleTool: PaintTool = new FilledCircle;
     readonly squareTool: PaintTool = new Square;
-
-    constructor() {
-
-    }
+    readonly filledSquareTool: PaintTool = new FilledSquare;
 
     getPaintTool() {
         return this.paintTool;
@@ -51,12 +51,41 @@ export class Tools {
             compassButton.className = "selectedTool";
     }
 
+    chooseFilledCircleTool() {
+        this.paintTool = this.filledCircleTool;
+        let compassButton = document.getElementById("filledCircleTool");
+
+        this.setButtonsToNormal();
+
+        if (compassButton != null)
+            compassButton.className = "selectedTool";
+    }
+
+    chooseSquareTool() {
+        this.paintTool = this.squareTool;
+        let compassButton = document.getElementById("squareTool");
+
+        this.setButtonsToNormal();
+
+        if (compassButton != null)
+            compassButton.className = "selectedTool";
+    }
+
+    chooseFilledSquareTool() {
+        this.paintTool = this.filledSquareTool;
+        let compassButton = document.getElementById("filledSquareTool");
+
+        this.setButtonsToNormal();
+
+        if (compassButton != null)
+            compassButton.className = "selectedTool";
+    }
 
     private setButtonsToNormal() {
-        for (let child of this.toolBar.children) {
-            let button = child.querySelector("button");
-            if (button != null)
-                button.className = "";
+        let children = this.toolBar.querySelectorAll("button");
+
+        for (let button of children) {
+            button.className = "";
         }
     }
 }

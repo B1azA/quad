@@ -27,15 +27,43 @@
 
         <div id="center"></div>
 
-	<ul id="toolBar">
-		<li><button id="penTool" class="selectedTool"></button></li>
-		<li><button id="rulerTool"></button></li>
-		<li><button id="compassTool"></button></li>
-		<li><button id="squareTool">Square</button></li>
-		<li><button id="eraseTool">Erase</button></li>
-		<li><button id="undo">↶</button></li>
-		<li><button id="redo">↷</button></li>
-	</ul>
+	<table id="toolBar">
+            <tr>
+                <th>
+                    <button id="penTool" class="selectedTool"></button>
+                </th>
+                <th>
+                    <button id="rulerTool"></button>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <button id="compassTool"></button>
+                </th>
+                <th>
+                    <button id="filledCircleTool"></button>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <button id="squareTool"></button>
+                </th>
+                <th>
+                    <button id="filledSquareTool"></button>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <button id="undo">↶</button>
+                </th>
+                <th>
+                    <button id="redo">↷</button>
+                </th>
+            </tr>
+	</table>
     
 	<div id="framesConfig">
         <button id="addFrame">+</button>

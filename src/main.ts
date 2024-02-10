@@ -405,8 +405,16 @@ function setupEvents(editor: Editor) {
         editor.tools.chooseCompassTool();
     };
 
+    document.getElementById("filledCircleTool")!.onclick = () => {
+        editor.tools.chooseFilledCircleTool();
+    };
 
     document.getElementById("squareTool")!.onclick = () => {
+        editor.tools.chooseSquareTool();
+    };
+
+    document.getElementById("filledSquareTool")!.onclick = () => {
+        editor.tools.chooseFilledSquareTool();
     };
 
     document.getElementById("undo")!.onclick = () => {
@@ -416,9 +424,6 @@ function setupEvents(editor: Editor) {
     document.getElementById("redo")!.onclick = () => {
         editor.redoStepOnCanvas();
     }
-
-    document.getElementById("eraseTool")!.onclick = () => {
-    };
 
     document.getElementById("center")!.onclick = () => {
         let canvas = editor.getCurrentCanvas();
