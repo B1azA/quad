@@ -19,6 +19,7 @@ import { TinyColor } from "@ctrl/tinycolor";
 import { showPromptDialog, showConfirmDialog, showMessageDialog, showSizeDialog } from "./editor/dialog";
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
+import { appWindow } from "@tauri-apps/api/window";
 
 setupProject();
 
@@ -99,6 +100,22 @@ function run(editor: Editor) {
 
 function setupEvents(editor: Editor) {
     let editorContainer = document.getElementById("editorContainer")!;
+
+    appWindow.listen("tauri://close-requested", () => {
+        showConfirmDialog("Do you wish to save the project before exiting?", "Yes", "No", (confirmed) => {
+            if (confirmed) {
+                saveProject(editor, (succesful) => {
+                    if (succesful)
+                        appWindow.close();
+                    else {
+                        showMessageDialog("Failed to save the project!", () => { });
+                    }
+                });
+            } else {
+                appWindow.close();
+            }
+        });
+    });
 
     document.getElementById("fileNew")!.onclick = () => {
         showConfirmDialog("This will erase the current project, do you want to save it?", "Yes", "No", (confirmed) => {
