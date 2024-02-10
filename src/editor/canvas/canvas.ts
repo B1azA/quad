@@ -29,6 +29,8 @@ export class Canvas {
     private frameCtx: CanvasRenderingContext2D;
 
     private layerImagesSave: Image[] = [];
+    // cache image of all the layers combined
+    private frameImage: Image;
 
     constructor(frameContainer: HTMLElement, size: { width: number, height: number }, template: Layer, layers: LayerMessage[]) {
         let realHeight = (window.innerHeight / 2);
@@ -98,6 +100,8 @@ export class Canvas {
             let saveImage = new Image(imageData);
             this.layerImagesSave[i] = saveImage;
         }
+
+        this.frameImage = this.getLayersImageCombined();
     }
 
     // init the canvas after it was removed from the DOM
@@ -154,6 +158,14 @@ export class Canvas {
         }
 
         return this.getTemplate();
+    }
+
+    updateFrameImage() {
+        this.frameImage = this.getLayersImageCombined();
+    }
+
+    getFrameImage() {
+        return this.frameImage;
     }
 
     setZoom(zoom: number) {

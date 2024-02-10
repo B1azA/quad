@@ -351,7 +351,7 @@ export class Editor {
     // update the current frame and the animation frame if fps is 0
     updateFrameAndAnimationFrame() {
         let frameCtx = this.getCurrentCanvas().getFrameCtx();
-        let image = this.getCurrentCanvas().getLayersImageCombined();
+        let image = this.getCurrentCanvas().getFrameImage();
 
         frameCtx.putImageData(image.imageData, 0, 0);
 
@@ -372,7 +372,7 @@ export class Editor {
         let canvas = this.getCanvas(frameIndex);
 
         if (canvas != null) {
-            let image = canvas.getLayersImageCombined();
+            let image = canvas.getFrameImage();
             this.animationFrameCtx.putImageData(image.imageData, 0, 0);
         }
     }
@@ -396,7 +396,6 @@ export class Editor {
 
         // clear template layer
         this.getCurrentCanvas().getTemplate().clear();
-        this.updateFrameAndAnimationFrame();
 
         switch (event.button) {
             case 0:
@@ -449,7 +448,7 @@ export class Editor {
                         this.getCurrentCanvas().getCurrentLayer(),
                     );
 
-                    this.updateFrameAndAnimationFrame();
+                    this.getCurrentCanvas().updateFrameImage();
                 }
                 break;
 
@@ -470,10 +469,12 @@ export class Editor {
                         this.getCurrentCanvas().getCurrentLayer(),
                     );
 
-                    this.updateFrameAndAnimationFrame();
+                    this.getCurrentCanvas().updateFrameImage();
                 }
                 break;
         }
+
+        this.updateFrameAndAnimationFrame();
     }
 
     onMouseMove(event: MouseEvent) {
