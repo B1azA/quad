@@ -1,11 +1,6 @@
 import { Canvas } from "./canvas/canvas";
 import { Palette } from "./palette";
 import { Tools } from "./tools";
-import { PaintTool } from "./paintTool/paintTool";
-import { Pen } from "./paintTool/pen";
-import { Ruler } from "./paintTool/ruler";
-import { Compass } from "./paintTool/compass";
-import { Square } from "./paintTool/square";
 import { Layer } from "./canvas/layer";
 import { FrameMessage, LayerMessage, ProjectMessage } from "../tauri";
 
