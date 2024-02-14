@@ -7,7 +7,7 @@
     right: 1em;
     width: 10em;
     height: calc(100vh - 24em);
-    overflow-y: scroll;
+    overflow-y: auto;
     z-index: 6;
 
     canvas {

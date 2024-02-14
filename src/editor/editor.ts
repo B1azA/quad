@@ -251,6 +251,7 @@ export class Editor {
             }
         }
 
+        this.getCurrentCanvas().updateFrameImage();
         this.updateFrameAndAnimationFrame();
     }
 
