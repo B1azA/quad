@@ -21,6 +21,7 @@ import { showPromptDialog, showConfirmDialog, showMessageDialog, showSizeDialog 
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
 import { appWindow } from "@tauri-apps/api/window";
+import { EventCallback } from "@tauri-apps/api/event";
 
 setupProject();
 
@@ -53,7 +54,7 @@ function setupProject() {
             projectLoad()
                 .then((message) => {
                     let editor = new Editor(message);
-                    console.log("Project " + message.name + " loaded");
+                    console.log("Project " + message.name + " opened");
                     run(editor);
                 })
                 .catch((error) => {
@@ -106,24 +107,31 @@ function run(editor: Editor) {
     canvas.setZoom(1);
 }
 
+// globalEditor is used only for window exit so only one listener is needed
+let globalEditor: Editor;
+
+appWindow.listen("tauri://close-requested", () => {
+    console.log("TVL: ", globalEditor.getName());
+    showConfirmDialog("Do you wish to save the project before exiting?", "Yes", "No", (confirmed) => {
+        if (confirmed) {
+            saveProject(globalEditor, (succesful) => {
+                if (succesful)
+                    appWindow.close();
+                else {
+                    showMessageDialog("Failed to save the project!", () => { });
+                }
+            });
+        } else {
+            appWindow.close();
+        }
+    });
+});
+
+
 function setupEvents(editor: Editor) {
+    globalEditor = editor;
     let editorContainer = document.getElementById("editorContainer")!;
 
-    appWindow.listen("tauri://close-requested", () => {
-        showConfirmDialog("Do you wish to save the project before exiting?", "Yes", "No", (confirmed) => {
-            if (confirmed) {
-                saveProject(editor, (succesful) => {
-                    if (succesful)
-                        appWindow.close();
-                    else {
-                        showMessageDialog("Failed to save the project!", () => { });
-                    }
-                });
-            } else {
-                appWindow.close();
-            }
-        });
-    });
 
     document.getElementById("fileNew")!.onclick = () => {
         showConfirmDialog("This will erase the current project, do you want to save it?", "Yes", "No", (confirmed) => {
@@ -200,7 +208,7 @@ function setupEvents(editor: Editor) {
                                     oldEditor.remove();
                                     let editor = new Editor(message);
                                     run(editor);
-                                    console.log("Project " + message.name + " loaded");
+                                    console.log("Project " + message.path + " opened");
                                 })
                                 .catch((error) => {
                                     showMessageDialog("Failed to open the project!", () => { });
@@ -218,7 +226,7 @@ function setupEvents(editor: Editor) {
                         oldEditor.remove();
                         let editor = new Editor(message);
                         run(editor);
-                        console.log("Project " + message.name + " loaded");
+                        console.log("Project " + message.path + " opened");
                     })
                     .catch((error) => {
                         showMessageDialog("Failed to open the project!", () => { });
@@ -419,10 +427,14 @@ function setupEvents(editor: Editor) {
 
     document.getElementById("undo")!.onclick = () => {
         editor.undoStepOnCanvas();
+        editor.getCurrentCanvas().updateFrameImage();
+        editor.updateFrameAndAnimationFrame();
     }
 
     document.getElementById("redo")!.onclick = () => {
         editor.redoStepOnCanvas();
+        editor.getCurrentCanvas().updateFrameImage();
+        editor.updateFrameAndAnimationFrame();
     }
 
     document.getElementById("center")!.onclick = () => {
@@ -541,6 +553,7 @@ function setupEvents(editor: Editor) {
 
 function saveProject(editor: Editor, callback: (succesful: boolean) => void) {
     let projectMessage = editor.generateProjectMessage();
+    console.log(projectMessage.path);
     if (projectMessage.path.length > 0) {
         projectSave(projectMessage)
             .then(() => {

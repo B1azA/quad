@@ -122,6 +122,7 @@ export class Editor {
 
         let size = this.getCurrentCanvas().getSize();
 
+
         let projectMessage: ProjectMessage = {
             name: this.name,
             width: size.width,
@@ -131,6 +132,7 @@ export class Editor {
             path: this.path,
         };
 
+        console.log("PAth: ", projectMessage.path);
         return projectMessage;
     }
 
@@ -155,6 +157,10 @@ export class Editor {
 
     setPath(path: string) {
         this.path = path;
+    }
+
+    getPath() {
+        return this.path;
     }
 
     getName() {
