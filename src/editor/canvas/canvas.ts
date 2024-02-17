@@ -19,8 +19,6 @@ export class Canvas {
     private originalRealWidth: number;
     private originalRealHeight: number;
 
-    private zoom: number = 1;
-
     private layer: number = 1;
 
     steps: Steps = new Steps();
@@ -167,10 +165,6 @@ export class Canvas {
 
     getFrameImage() {
         return this.frameImage;
-    }
-
-    setZoom(zoom: number) {
-        this.zoom = zoom;
     }
 
     getFrame() {
@@ -722,30 +716,32 @@ export class Canvas {
     }
 
     // scale the canvas, zoom out when input is negative
-    zoomIn(zoomDelta: number, mousePos: { x: number, y: number }) {
+    zoomIn(zoom: number, zoomDelta: number, mousePos: { x: number, y: number }) {
         let center = this.getCenterPos();
 
         // calculate how much to move the center so the mouse stays on the same place
-        let zoomChange = (this.zoom * zoomDelta) / this.zoom;
+        let zoomChange = (zoom * zoomDelta) / zoom;
         let newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
         let newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
 
-        let zoomBefore = this.zoom;
-        this.zoom += this.zoom * zoomDelta;
+        let zoomBefore = zoom;
+        zoom += zoom * zoomDelta;
 
-        if (this.zoom < 0.5) {
-            this.zoom = 0.5;
-            zoomChange = (this.zoom - zoomBefore) / this.zoom;
+        if (zoom < 0.5) {
+            zoom = 0.5;
+            zoomChange = (zoom - zoomBefore) / zoom;
             newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
             newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
         }
 
-        let width = this.originalRealWidth * this.zoom;
-        let height = this.originalRealHeight * this.zoom;
+        let width = this.originalRealWidth * zoom;
+        let height = this.originalRealHeight * zoom;
 
         this.setRealSize({ width, height });
 
         this.moveCenterTo({ x: mousePos.x + newMouseDistanceX, y: mousePos.y + newMouseDistanceY });
+
+        return zoom;
     }
 
     // move the canvas by delta

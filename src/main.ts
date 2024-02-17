@@ -100,18 +100,23 @@ function run(editor: Editor) {
     });
 
     let canvas = editor.getCurrentCanvas();
-    canvas.setRealSize({ width: window.screen.height / 2, height: window.screen.height / 2 });
+    let height = window.screen.height / 2;
+    canvas.setRealSize(
+        {
+            width: height * canvas.getSize().width / canvas.getSize().height,
+            height: height,
+        });
     let canvasSize = canvas.getRealSize();
+    let zoom = editor.getZoom();
+    editor.setZoom(editor.getCurrentCanvas().zoomIn(zoom, 1 - zoom, { x: 0, y: 0 }));
     let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
     canvas.setPos(pos);
-    canvas.setZoom(1);
 }
 
 // globalEditor is used only for window exit so only one listener is needed
 let globalEditor: Editor;
 
 appWindow.listen("tauri://close-requested", () => {
-    console.log("TVL: ", globalEditor.getName());
     showConfirmDialog("Do you wish to save the project before exiting?", "Yes", "No", (confirmed) => {
         if (confirmed) {
             saveProject(globalEditor, (succesful) => {
@@ -288,7 +293,6 @@ function setupEvents(editor: Editor) {
         };
         fileImportImage(imageSize)
             .then((message) => {
-                console.log(message.data.length, message.width, message.height);
                 let data = Uint8ClampedArray.from(message.data);
                 let imageData = new ImageData(size.width, size.height);
                 imageData.data.set(data);
@@ -439,11 +443,17 @@ function setupEvents(editor: Editor) {
 
     document.getElementById("center")!.onclick = () => {
         let canvas = editor.getCurrentCanvas();
-        canvas.setRealSize({ width: window.screen.height / 2, height: window.screen.height / 2 });
+        let height = window.screen.height / 2;
+        canvas.setRealSize(
+            {
+                width: height * canvas.getSize().width / canvas.getSize().height,
+                height: height,
+            });
         let canvasSize = canvas.getRealSize();
+        let zoom = editor.getZoom();
+        editor.setZoom(editor.getCurrentCanvas().zoomIn(zoom, 1 - zoom, { x: 0, y: 0 }));
         let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
         canvas.setPos(pos);
-        canvas.setZoom(1);
     };
 
     document.getElementById("addLayer")!.onclick = () => {
@@ -553,7 +563,6 @@ function setupEvents(editor: Editor) {
 
 function saveProject(editor: Editor, callback: (succesful: boolean) => void) {
     let projectMessage = editor.generateProjectMessage();
-    console.log(projectMessage.path);
     if (projectMessage.path.length > 0) {
         projectSave(projectMessage)
             .then(() => {

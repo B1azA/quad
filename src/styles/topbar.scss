@@ -1,6 +1,6 @@
 @use "colorScheme.scss" as *;
 
-.dropdown {
+#files {
     float: left;
     overflow: hidden;
     text-align: center;
@@ -14,20 +14,21 @@
     background-size: cover;
     background-color: $buttonColorTopbar;
     image-rendering: pixelated;
+    z-index: 6;
 }
 
-.dropdown:hover {
+#files:hover {
     background-color: $buttonColorTopbarHover;
-    .dropdownContent {
+    #filesContent {
         display: block;
     }
 }
 
-.dropdown:active {
+#files:active {
     background-color: $buttonColorTopbar;
 }
 
-.dropdownContent {
+#filesContent {
     display: none;
     position: absolute;
     z-index: 100;

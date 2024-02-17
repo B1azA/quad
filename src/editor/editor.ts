@@ -41,6 +41,8 @@ export class Editor {
     private name: string;
     private path: string;
 
+    private zoom: number = 1;
+
     constructor(projectMessage: ProjectMessage) {
         let size = { width: projectMessage.width, height: projectMessage.height };
         let height = (window.innerHeight / 2);
@@ -94,6 +96,8 @@ export class Editor {
         this.path = projectMessage.path;
 
         this.updateFrameAndAnimationFrame();
+        this.getCurrentCanvas().setRealSize(realSize);
+        console.log(this.getCurrentCanvas().getRealSize());
     }
 
     getFps() {
@@ -356,6 +360,14 @@ export class Editor {
         canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
     }
 
+    getZoom() {
+        return this.zoom;
+    }
+
+    setZoom(zoom: number) {
+        this.zoom = zoom;
+    }
+
     // update the current frame and the animation frame if fps is 0
     updateFrameAndAnimationFrame() {
         let frameCtx = this.getCurrentCanvas().getFrameCtx();
@@ -527,8 +539,8 @@ export class Editor {
     }
 
     onWheel(event: WheelEvent) {
-        let zoom = Math.sign(-event.deltaY) * 0.1;
-        this.getCurrentCanvas().zoomIn(zoom, this.lastMouseGlobalPos);
+        let zoomDelta = Math.sign(-event.deltaY) * 0.1;
+        this.zoom = this.getCurrentCanvas().zoomIn(this.zoom, zoomDelta, this.lastMouseGlobalPos);
         this.onMouseMove(event);
     }
 
