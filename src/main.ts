@@ -42,6 +42,7 @@ function setupProject() {
                     projectMessage.width = size.width;
                     projectMessage.height = size.height;
                     let editor = new Editor(projectMessage);
+                    editor.tools.choosePenTool();
                     run(editor);
                 } else {
                     showMessageDialog("Failed to create a new project!", () => {
@@ -53,6 +54,7 @@ function setupProject() {
             projectLoad()
                 .then((message) => {
                     let editor = new Editor(message);
+                    editor.tools.choosePenTool();
                     console.log("Project " + message.name + " opened");
                     run(editor);
                 })
@@ -161,6 +163,7 @@ function setupEvents(editor: Editor) {
                                     projectMessage.height = size.height;
                                     oldEditor.remove();
                                     let editor = new Editor(projectMessage);
+                                    editor.tools.choosePenTool();
                                     run(editor);
                                 } else {
                                     showMessageDialog("Failed to create a new project!", () => {
@@ -191,6 +194,7 @@ function setupEvents(editor: Editor) {
                         projectMessage.height = size.height;
                         oldEditor.remove();
                         let editor = new Editor(projectMessage);
+                        editor.tools.choosePenTool();
                         run(editor);
                     } else {
                         showMessageDialog("Failed to create a new project!", () => {
@@ -212,6 +216,7 @@ function setupEvents(editor: Editor) {
                                 .then((message) => {
                                     oldEditor.remove();
                                     let editor = new Editor(message);
+                                    editor.tools.choosePenTool();
                                     run(editor);
                                     console.log("Project " + message.path + " opened");
                                 })
@@ -230,6 +235,7 @@ function setupEvents(editor: Editor) {
                     .then((message) => {
                         oldEditor.remove();
                         let editor = new Editor(message);
+                        editor.tools.choosePenTool();
                         run(editor);
                         console.log("Project " + message.path + " opened");
                     })
@@ -427,6 +433,14 @@ function setupEvents(editor: Editor) {
 
     document.getElementById("filledSquareTool")!.onclick = () => {
         editor.tools.chooseFilledSquareTool();
+    };
+
+    document.getElementById("eraserTool")!.onclick = () => {
+        editor.tools.chooseEraserTool();
+    };
+
+    document.getElementById("bucketTool")!.onclick = () => {
+
     };
 
     document.getElementById("undo")!.onclick = () => {

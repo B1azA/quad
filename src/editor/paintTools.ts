@@ -5,6 +5,7 @@ import { Compass } from "./paintTool/compass";
 import { FilledCircle } from "./paintTool/filledCircle";
 import { Square } from "./paintTool/square";
 import { FilledSquare } from "./paintTool/filledSquare";
+import { Eraser } from "./paintTool/eraser";
 
 export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
@@ -15,20 +16,27 @@ export class PaintTools {
     readonly filledCircleTool: PaintTool = new FilledCircle;
     readonly squareTool: PaintTool = new Square;
     readonly filledSquareTool: PaintTool = new FilledSquare;
+    readonly eraserTool: PaintTool = new Eraser;
+    private toolColor: [number, number, number, number] | null = null;
 
     getPaintTool() {
         return this.paintTool;
     }
 
+    getToolColor() {
+        return this.toolColor;
+    }
+
     choosePenTool() {
         this.paintTool = this.penTool;
         let penButton = document.getElementById("penTool");
-        console.log(penButton);
 
         this.setButtonsToNormal();
 
         if (penButton != null)
             penButton.className = "selectedTool";
+
+        this.toolColor = null;
     }
 
     chooseRulerTool() {
@@ -39,6 +47,8 @@ export class PaintTools {
 
         if (rulerButton != null)
             rulerButton.className = "selectedTool";
+
+        this.toolColor = null;
     }
 
     chooseCompassTool() {
@@ -49,6 +59,8 @@ export class PaintTools {
 
         if (compassButton != null)
             compassButton.className = "selectedTool";
+
+        this.toolColor = null;
     }
 
     chooseFilledCircleTool() {
@@ -59,6 +71,8 @@ export class PaintTools {
 
         if (compassButton != null)
             compassButton.className = "selectedTool";
+
+        this.toolColor = null;
     }
 
     chooseSquareTool() {
@@ -69,6 +83,8 @@ export class PaintTools {
 
         if (compassButton != null)
             compassButton.className = "selectedTool";
+
+        this.toolColor = null;
     }
 
     chooseFilledSquareTool() {
@@ -79,6 +95,20 @@ export class PaintTools {
 
         if (compassButton != null)
             compassButton.className = "selectedTool";
+
+        this.toolColor = null;
+    }
+
+    chooseEraserTool() {
+        this.paintTool = this.eraserTool;
+        let eraserButton = document.getElementById("eraserTool");
+
+        this.setButtonsToNormal();
+
+        if (eraserButton != null)
+            eraserButton.className = "selectedTool";
+
+        this.toolColor = [255, 200, 200, 80];
     }
 
     private setButtonsToNormal() {
