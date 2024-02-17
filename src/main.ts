@@ -21,7 +21,6 @@ import { showPromptDialog, showConfirmDialog, showMessageDialog, showSizeDialog 
 import { LayerAddedStep, LayerMovedDownStep, LayerMovedUpStep, LayerRemovedStep } from "./editor/steps/layerStep";
 import { Image } from "./editor/canvas/image";
 import { appWindow } from "@tauri-apps/api/window";
-import { EventCallback } from "@tauri-apps/api/event";
 
 setupProject();
 
@@ -99,6 +98,7 @@ function run(editor: Editor) {
         }
     });
 
+    // center the editor
     let canvas = editor.getCurrentCanvas();
     let height = window.screen.height / 2;
     canvas.setRealSize(
