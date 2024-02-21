@@ -6,6 +6,7 @@ import { FilledCircle } from "./paintTool/filledCircle";
 import { Square } from "./paintTool/square";
 import { FilledSquare } from "./paintTool/filledSquare";
 import { Eraser } from "./paintTool/eraser";
+import { Bucket } from "./paintTool/bucket";
 
 export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
@@ -17,6 +18,7 @@ export class PaintTools {
     readonly squareTool: PaintTool = new Square;
     readonly filledSquareTool: PaintTool = new FilledSquare;
     readonly eraserTool: PaintTool = new Eraser;
+    readonly bucketTool: PaintTool = new Bucket;
     private toolColor: [number, number, number, number] | null = null;
 
     getPaintTool() {
@@ -107,6 +109,18 @@ export class PaintTools {
 
         if (eraserButton != null)
             eraserButton.className = "selectedTool";
+
+        this.toolColor = [255, 200, 200, 80];
+    }
+
+    chooseBucketTool() {
+        this.paintTool = this.bucketTool;
+        let bucketButton = document.getElementById("bucketTool");
+
+        this.setButtonsToNormal();
+
+        if (bucketButton != null)
+            bucketButton.className = "selectedTool";
 
         this.toolColor = [255, 200, 200, 80];
     }

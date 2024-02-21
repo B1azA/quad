@@ -440,7 +440,7 @@ function setupEvents(editor: Editor) {
     };
 
     document.getElementById("bucketTool")!.onclick = () => {
-
+        editor.tools.chooseBucketTool();
     };
 
     document.getElementById("undo")!.onclick = () => {
