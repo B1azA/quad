@@ -20,6 +20,7 @@
             border: solid black;
             border-radius: 8px;
             background-color: $buttonColorLayerbar;
+            font-size: 1.1em;
         }
 
         .currentLayerBtn {
@@ -35,7 +36,6 @@
         }
     }
 }
-
 
 #layerRangeBar {
     position: absolute;

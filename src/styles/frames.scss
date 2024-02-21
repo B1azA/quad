@@ -67,11 +67,14 @@
 
 #fpsContainer {
     position: absolute;
-    top: 13.5em;
+    top: 17em;
     right: 1em;
     display: block;
     z-index: 6;
-    font-size: 1.3em;
+
+    label {
+        font-size: 1.6em;
+    }
 
     input {
         width: 6em;

@@ -9,11 +9,11 @@
     border: solid black;
     border-radius: 8px;
     padding: 4px;
-    font-size: 1.4em;
     background-color: $backgroundDialog;
 
     * {
         margin: 4px;
+        font-size: 1.2em;
     }
 
     button {
