@@ -370,10 +370,7 @@ export class Editor {
 
     // update the current frame and the animation frame if fps is 0
     updateFrameAndAnimationFrame() {
-        let frameCtx = this.getCurrentCanvas().getFrameCtx();
-        let image = this.getCurrentCanvas().getFrameImage();
-
-        frameCtx.putImageData(image.imageData, 0, 0);
+        let image = this.updateFrame();
 
         if (this.fps == 0) {
             this.animationFrameCtx.putImageData(image.imageData, 0, 0);
@@ -385,6 +382,8 @@ export class Editor {
         let image = this.getCurrentCanvas().getLayersImageCombined();
 
         frameCtx.putImageData(image.imageData, 0, 0);
+
+        return image;
     }
 
     // set the animation frame image to the image of the frame
