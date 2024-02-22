@@ -103,15 +103,16 @@ function run(editor: Editor) {
     // center the editor
     let canvas = editor.getCurrentCanvas();
     let height = window.screen.height / 2;
+
+    editor.setZoom(1);
     canvas.setRealSize(
         {
             width: height * canvas.getSize().width / canvas.getSize().height,
             height: height,
         });
+
     let canvasSize = canvas.getRealSize();
-    let zoom = editor.getZoom();
-    editor.setZoom(editor.getCurrentCanvas().zoomIn(zoom, 1 - zoom, { x: 0, y: 0 }));
-    let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
+    let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: height - canvasSize.height / 2 };
     canvas.setPos(pos);
 }
 
@@ -458,15 +459,16 @@ function setupEvents(editor: Editor) {
     document.getElementById("center")!.onclick = () => {
         let canvas = editor.getCurrentCanvas();
         let height = window.screen.height / 2;
+
+        editor.setZoom(1);
         canvas.setRealSize(
             {
                 width: height * canvas.getSize().width / canvas.getSize().height,
                 height: height,
             });
+
         let canvasSize = canvas.getRealSize();
-        let zoom = editor.getZoom();
-        editor.setZoom(editor.getCurrentCanvas().zoomIn(zoom, 1 - zoom, { x: 0, y: 0 }));
-        let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: window.screen.height / 2 - canvasSize.height / 2 };
+        let pos = { x: window.screen.width / 2 - canvasSize.width / 2, y: height - canvasSize.height / 2 };
         canvas.setPos(pos);
     };
 

@@ -122,7 +122,7 @@ export class PaintTools {
         if (bucketButton != null)
             bucketButton.className = "selectedTool";
 
-        this.toolColor = [255, 200, 200, 80];
+        this.toolColor = null;
     }
 
     private setButtonsToNormal() {
