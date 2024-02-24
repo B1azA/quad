@@ -428,6 +428,7 @@ export class Editor {
                         mouseCoords,
                         this.palette.getColor(),
                         this.getCurrentCanvas().getCurrentLayer(),
+                        0,
                     );
                 }
                 break;
@@ -445,6 +446,7 @@ export class Editor {
                         mouseCoords,
                         this.palette.getColor(),
                         this.getCurrentCanvas().getCurrentLayer(),
+                        2,
                     );
                 }
                 break;
@@ -492,6 +494,18 @@ export class Editor {
                 }
                 break;
         }
+
+        // show current pixel
+        let image = this.getCurrentCanvas().getTemplate().getImage();
+        let toolColor = this.tools.getToolColor();
+        let color = this.palette.getColor();
+
+        if (toolColor != null) {
+            color = toolColor;
+        }
+
+        image.putPixel(mouseCoords, color);
+        this.getCurrentCanvas().getTemplate().setImage(image);
 
         this.updateFrameAndAnimationFrame();
     }

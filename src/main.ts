@@ -444,6 +444,10 @@ function setupEvents(editor: Editor) {
         editor.tools.chooseBucketTool();
     };
 
+    document.getElementById("pickerTool")!.onclick = () => {
+        editor.tools.choosePickerTool();
+    };
+
     document.getElementById("undo")!.onclick = () => {
         editor.undoStepOnCanvas();
         editor.getCurrentCanvas().updateFrameImage();

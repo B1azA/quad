@@ -12,6 +12,7 @@ export class FilledCircle implements PaintTool {
         coords: { x: number, y: number },
         color: [number, number, number, number],
         layer: Layer,
+        button: number,
     ) {
         let layerID = layer.getID();
         this.step = new PaintStep(layerID);
