@@ -8,6 +8,7 @@ import { FilledSquare } from "./paintTool/filledSquare";
 import { Eraser } from "./paintTool/eraser";
 import { Bucket } from "./paintTool/bucket";
 import { Picker } from "./paintTool/picker";
+import { Select } from "./paintTool/select";
 
 export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
@@ -21,7 +22,9 @@ export class PaintTools {
     readonly eraserTool: PaintTool = new Eraser;
     readonly bucketTool: PaintTool = new Bucket;
     readonly pickerTool: PaintTool = new Picker;
+    readonly selectTool: PaintTool = new Select;
     private toolColor: [number, number, number, number] | null = null;
+    private selectColor: [number, number, number, number] = [200, 200, 255, 120];
 
     getPaintTool() {
         return this.paintTool;
@@ -29,6 +32,14 @@ export class PaintTools {
 
     getToolColor() {
         return this.toolColor;
+    }
+
+    setSelectColor(color: [number, number, number, number]) {
+        this.selectColor = color;
+    }
+
+    getSelectColor() {
+        return this.selectColor;
     }
 
     choosePenTool() {
@@ -112,7 +123,7 @@ export class PaintTools {
         if (eraserButton != null)
             eraserButton.className = "selectedTool";
 
-        this.toolColor = [255, 200, 200, 80];
+        this.toolColor = this.selectColor;
     }
 
     chooseBucketTool() {
@@ -137,6 +148,18 @@ export class PaintTools {
             pickerButton.className = "selectedTool";
 
         this.toolColor = null;
+    }
+
+    chooseSelectTool() {
+        this.paintTool = this.selectTool;
+        let selectButton = document.getElementById("selectTool");
+
+        this.setButtonsToNormal();
+
+        if (selectButton != null)
+            selectButton.className = "selectedTool";
+
+        this.toolColor = this.selectColor;
     }
 
     private setButtonsToNormal() {

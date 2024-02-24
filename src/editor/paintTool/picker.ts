@@ -3,7 +3,6 @@ import { Editor } from "../editor";
 import { Layer } from "../canvas/layer";
 
 export class Picker implements PaintTool {
-
     onMouseDown(
         editor: Editor,
         coords: { x: number, y: number },

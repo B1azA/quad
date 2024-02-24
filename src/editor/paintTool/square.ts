@@ -45,7 +45,6 @@ export class Square implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // draw line to template
         this.drawSquare(
             this.lastCoords,
             coords,

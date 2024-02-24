@@ -448,6 +448,10 @@ function setupEvents(editor: Editor) {
         editor.tools.choosePickerTool();
     };
 
+    document.getElementById("selectTool")!.onclick = () => {
+        editor.tools.chooseSelectTool();
+    };
+
     document.getElementById("undo")!.onclick = () => {
         editor.undoStepOnCanvas();
         editor.getCurrentCanvas().updateFrameImage();

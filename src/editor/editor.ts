@@ -413,7 +413,7 @@ export class Editor {
     onMouseDown(event: MouseEvent) {
         let mouseCoords = this.getCurrentCanvas().getMouseCoords(event);
 
-        // clear template layer
+        // clear the template layer
         this.getCurrentCanvas().getTemplate().clear();
 
         switch (event.button) {
@@ -495,7 +495,7 @@ export class Editor {
                 break;
         }
 
-        // show current pixel
+        // show the current pixel
         let image = this.getCurrentCanvas().getTemplate().getImage();
         let toolColor = this.tools.getToolColor();
         let color = this.palette.getColor();
@@ -512,10 +512,10 @@ export class Editor {
 
     onMouseMove(event: MouseEvent) {
         let mouseCoords = this.getCurrentCanvas().getMouseCoords(event);
-        // mouse position relative to viewport
+        // mouse position relative to the viewport
         let mouseGlobalPos = { x: event.clientX, y: event.clientY };
 
-        // clear template layer
+        // clear the template layer
         this.getCurrentCanvas().getTemplate().clear();
 
         if (this.mouseButtons[0] || this.mouseButtons[2]) {
@@ -542,7 +542,7 @@ export class Editor {
             this.getCurrentCanvas().move(moveDelta);
         }
 
-        // show current pixel
+        // show the current pixel
         let image = this.getCurrentCanvas().getTemplate().getImage();
         let toolColor = this.tools.getToolColor();
         let color = this.palette.getColor();
@@ -554,7 +554,7 @@ export class Editor {
         image.putPixel(mouseCoords, color);
         this.getCurrentCanvas().getTemplate().setImage(image);
 
-        // save mouse
+        // save the mouse
         this.lastMouseGlobalPos = mouseGlobalPos;
     }
 
