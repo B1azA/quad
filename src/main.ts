@@ -440,6 +440,10 @@ function setupEvents(editor: Editor) {
         editor.tools.chooseEraserTool();
     };
 
+    document.getElementById("rectangleEraserTool")!.onclick = () => {
+        editor.tools.chooseRectangleEraserTool();
+    };
+
     document.getElementById("bucketTool")!.onclick = () => {
         editor.tools.chooseBucketTool();
     };

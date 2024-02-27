@@ -123,7 +123,6 @@ export class Select implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        console.log(this.selected);
         if (!this.selected) {
             editor.getCurrentCanvas().getTemplate().clear();
             this.selectedRegion = this.drawBorder(

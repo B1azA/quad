@@ -6,6 +6,7 @@ import { FilledCircle } from "./paintTool/filledCircle";
 import { Square } from "./paintTool/square";
 import { FilledSquare } from "./paintTool/filledSquare";
 import { Eraser } from "./paintTool/eraser";
+import { RectangleEraser } from "./paintTool/rectangleEraser";
 import { Bucket } from "./paintTool/bucket";
 import { Picker } from "./paintTool/picker";
 import { Select } from "./paintTool/select";
@@ -20,6 +21,7 @@ export class PaintTools {
     readonly squareTool: PaintTool = new Square;
     readonly filledSquareTool: PaintTool = new FilledSquare;
     readonly eraserTool: PaintTool = new Eraser;
+    readonly rectangleEraserTool: PaintTool = new RectangleEraser;
     readonly bucketTool: PaintTool = new Bucket;
     readonly pickerTool: PaintTool = new Picker;
     readonly selectTool: PaintTool = new Select;
@@ -122,6 +124,18 @@ export class PaintTools {
 
         if (eraserButton != null)
             eraserButton.className = "selectedTool";
+
+        this.toolColor = this.selectColor;
+    }
+
+    chooseRectangleEraserTool() {
+        this.paintTool = this.rectangleEraserTool;
+        let rectangleEraserButton = document.getElementById("rectangleEraserTool");
+
+        this.setButtonsToNormal();
+
+        if (rectangleEraserButton != null)
+            rectangleEraserButton.className = "selectedTool";
 
         this.toolColor = this.selectColor;
     }
