@@ -27,35 +27,15 @@ export class Select implements PaintTool {
                 this.selected = false;
                 break;
             case 2:
-                this.selected = true;
-
-                // update the selected region
-                let image = layer.getImage();
                 let template = editor.getCurrentCanvas().getTemplate();
                 let templateImage = template.getImage();
-                let length = (this.selectedRegion.x2 - this.selectedRegion.x1 + 1) * (this.selectedRegion.y2 - this.selectedRegion.y1 + 1);
-                this.selectedRegionData = new Array(length)
-                    .fill([0, 0, 0, 255])
-                    .map(() =>
-                        new Array(length).fill([0, 0, 0, 255])
-                    );
-
-                let ministeps = [];
-
-                // fill the region data
                 for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
                     for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
-                        let point = { x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 };
-                        let clr = image.getPixel(point);
-                        image.putPixel(point, [0, 0, 0, 0]);
-                        templateImage.putPixel(point, clr);
-                        this.selectedRegionData[x][y] = clr;
-
-                        ministeps.push(new PaintMiniStep(point, clr));
+                        let clr = this.selectedRegionData[x][y];
+                        templateImage.putPixel({ x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 }, clr);
                     }
                 }
-                this.step.addMiniSteps(ministeps);
-                layer.setImage(image);
+
                 template.setImage(templateImage);
 
                 this.drawBorder(
@@ -92,6 +72,44 @@ export class Select implements PaintTool {
 
             this.step?.addMiniSteps(ministeps);
             layer.setImage(image);
+        } else {
+            this.selected = true;
+
+            // update the selected region
+            let image = layer.getImage();
+            let template = editor.getCurrentCanvas().getTemplate();
+            let templateImage = template.getImage();
+            let length = (this.selectedRegion.x2 - this.selectedRegion.x1 + 1) * (this.selectedRegion.y2 - this.selectedRegion.y1 + 1);
+            this.selectedRegionData = new Array(length)
+                .fill([0, 0, 0, 255])
+                .map(() =>
+                    new Array(length).fill([0, 0, 0, 255])
+                );
+
+            let ministeps = [];
+
+            // fill the region data
+            for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
+                for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
+                    let point = { x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 };
+                    let clr = image.getPixel(point);
+                    image.putPixel(point, [0, 0, 0, 0]);
+                    templateImage.putPixel(point, clr);
+                    this.selectedRegionData[x][y] = clr;
+
+                    ministeps.push(new PaintMiniStep(point, clr));
+                }
+            }
+            this.step?.addMiniSteps(ministeps);
+            layer.setImage(image);
+            template.setImage(templateImage);
+
+            this.drawBorder(
+                { x: this.selectedRegion.x1 - 1, y: this.selectedRegion.y1 - 1 },
+                { x: this.selectedRegion.x2 + 1, y: this.selectedRegion.y2 + 1 },
+                editor.tools.getSelectColor(),
+                editor.getCurrentCanvas().getTemplate(),
+            );
         }
 
         if (this.step != null && !this.step.isEmpty()) {
@@ -105,6 +123,7 @@ export class Select implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
+        console.log(this.selected);
         if (!this.selected) {
             editor.getCurrentCanvas().getTemplate().clear();
             this.selectedRegion = this.drawBorder(
