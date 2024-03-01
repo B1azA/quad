@@ -22,7 +22,8 @@ pub fn file_export_image(image_message: ImageMessage) -> Result<(), String> {
     };
 
     let file = match rfd::FileDialog::new()
-        .set_file_name(&format!("{}.png", &image_message.name))
+        .set_file_name(&format!("{}", &image_message.name))
+        .add_filter("Image", &["png"])
         .save_file()
     {
         Some(file) => file,
