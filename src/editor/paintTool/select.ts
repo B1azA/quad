@@ -8,11 +8,15 @@ export class Select implements PaintTool {
     step: PaintStep | null = null;
     selected = false;
     selectedRegion = { x1: 0, y1: 0, x2: 0, y2: 0 };
-    selectedRegionData: [number, number, number, number][][] = [[]];
+    selectedRegionData: [number, number, number, number][][] = new Array(
+        512 * 512,
+    )
+        .fill([0, 0, 0, 255])
+        .map(() => new Array(length).fill([0, 0, 0, 255]));
 
     onMouseDown(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
         button: number,
@@ -29,18 +33,38 @@ export class Select implements PaintTool {
             case 2:
                 let template = editor.getCurrentCanvas().getTemplate();
                 let templateImage = template.getImage();
-                for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
-                    for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
+                for (
+                    let x = 0;
+                    x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                    x++
+                ) {
+                    for (
+                        let y = 0;
+                        y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                        y++
+                    ) {
                         let clr = this.selectedRegionData[x][y];
-                        templateImage.putPixel({ x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 }, clr);
+                        templateImage.putPixel(
+                            {
+                                x: x + this.selectedRegion.x1,
+                                y: y + this.selectedRegion.y1,
+                            },
+                            clr,
+                        );
                     }
                 }
 
                 template.setImage(templateImage);
 
                 this.drawBorder(
-                    { x: this.selectedRegion.x1 - 1, y: this.selectedRegion.y1 - 1 },
-                    { x: this.selectedRegion.x2 + 1, y: this.selectedRegion.y2 + 1 },
+                    {
+                        x: this.selectedRegion.x1 - 1,
+                        y: this.selectedRegion.y1 - 1,
+                    },
+                    {
+                        x: this.selectedRegion.x2 + 1,
+                        y: this.selectedRegion.y2 + 1,
+                    },
                     editor.tools.getSelectColor(),
                     editor.getCurrentCanvas().getTemplate(),
                 );
@@ -50,18 +74,29 @@ export class Select implements PaintTool {
 
     onMouseUp(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
         if (this.selected) {
             let ministeps = [];
             let image = layer.getImage();
-            for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
-                for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
+            for (
+                let x = 0;
+                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                x++
+            ) {
+                for (
+                    let y = 0;
+                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                    y++
+                ) {
                     let clr = this.selectedRegionData[x][y];
                     if (clr[3] > 0) {
-                        let point = { x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 };
+                        let point = {
+                            x: x + this.selectedRegion.x1,
+                            y: y + this.selectedRegion.y1,
+                        };
                         let stepColor = image.getPixel(point);
                         image.putPixel(point, clr);
 
@@ -79,19 +114,23 @@ export class Select implements PaintTool {
             let image = layer.getImage();
             let template = editor.getCurrentCanvas().getTemplate();
             let templateImage = template.getImage();
-            let length = (this.selectedRegion.x2 - this.selectedRegion.x1 + 1) * (this.selectedRegion.y2 - this.selectedRegion.y1 + 1);
-            this.selectedRegionData = new Array(length)
-                .fill([0, 0, 0, 255])
-                .map(() =>
-                    new Array(length).fill([0, 0, 0, 255])
-                );
-
             let ministeps = [];
 
             // fill the region data
-            for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
-                for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
-                    let point = { x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 };
+            for (
+                let x = 0;
+                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                x++
+            ) {
+                for (
+                    let y = 0;
+                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                    y++
+                ) {
+                    let point = {
+                        x: x + this.selectedRegion.x1,
+                        y: y + this.selectedRegion.y1,
+                    };
                     let clr = image.getPixel(point);
                     image.putPixel(point, [0, 0, 0, 0]);
                     templateImage.putPixel(point, clr);
@@ -100,13 +139,20 @@ export class Select implements PaintTool {
                     ministeps.push(new PaintMiniStep(point, clr));
                 }
             }
+
             this.step?.addMiniSteps(ministeps);
             layer.setImage(image);
             template.setImage(templateImage);
 
             this.drawBorder(
-                { x: this.selectedRegion.x1 - 1, y: this.selectedRegion.y1 - 1 },
-                { x: this.selectedRegion.x2 + 1, y: this.selectedRegion.y2 + 1 },
+                {
+                    x: this.selectedRegion.x1 - 1,
+                    y: this.selectedRegion.y1 - 1,
+                },
+                {
+                    x: this.selectedRegion.x2 + 1,
+                    y: this.selectedRegion.y2 + 1,
+                },
                 editor.tools.getSelectColor(),
                 editor.getCurrentCanvas().getTemplate(),
             );
@@ -119,7 +165,7 @@ export class Select implements PaintTool {
 
     onMouseMove(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
@@ -144,18 +190,38 @@ export class Select implements PaintTool {
 
             let template = editor.getCurrentCanvas().getTemplate();
             let templateImage = template.getImage();
-            for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
-                for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
+            for (
+                let x = 0;
+                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                x++
+            ) {
+                for (
+                    let y = 0;
+                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                    y++
+                ) {
                     let clr = this.selectedRegionData[x][y];
-                    templateImage.putPixel({ x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 }, clr);
+                    templateImage.putPixel(
+                        {
+                            x: x + this.selectedRegion.x1,
+                            y: y + this.selectedRegion.y1,
+                        },
+                        clr,
+                    );
                 }
             }
 
             template.setImage(templateImage);
 
             this.drawBorder(
-                { x: this.selectedRegion.x1 - 1, y: this.selectedRegion.y1 - 1 },
-                { x: this.selectedRegion.x2 + 1, y: this.selectedRegion.y2 + 1 },
+                {
+                    x: this.selectedRegion.x1 - 1,
+                    y: this.selectedRegion.y1 - 1,
+                },
+                {
+                    x: this.selectedRegion.x2 + 1,
+                    y: this.selectedRegion.y2 + 1,
+                },
                 editor.tools.getSelectColor(),
                 editor.getCurrentCanvas().getTemplate(),
             );
@@ -163,8 +229,8 @@ export class Select implements PaintTool {
     }
 
     drawBorder(
-        a: { x: number, y: number },
-        b: { x: number, y: number },
+        a: { x: number; y: number },
+        b: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
@@ -214,6 +280,6 @@ export class Select implements PaintTool {
             y1: a2.y + 1,
             x2: b2.x - 1,
             y2: b2.y - 1,
-        }
+        };
     }
 }
