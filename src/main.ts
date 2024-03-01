@@ -541,6 +541,10 @@ function setupEvents(editor: Editor) {
         editor.tools.chooseSelectTool();
     };
 
+    document.getElementById("shadeTool")!.onclick = () => {
+        editor.tools.chooseShadeTool();
+    };
+
     document.getElementById("undo")!.onclick = () => {
         editor.undoStepOnCanvas();
         editor.getCurrentCanvas().updateFrameImage();

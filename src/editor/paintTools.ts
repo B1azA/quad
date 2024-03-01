@@ -10,23 +10,27 @@ import { RectangleEraser } from "./paintTool/rectangleEraser";
 import { Bucket } from "./paintTool/bucket";
 import { Picker } from "./paintTool/picker";
 import { Select } from "./paintTool/select";
+import { Shade } from "./paintTool/shade";
 
 export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
-    private paintTool: PaintTool = new Pen;
-    readonly penTool: PaintTool = new Pen;
-    readonly rulerTool: PaintTool = new Ruler;
-    readonly compassTool: PaintTool = new Compass;
-    readonly filledCircleTool: PaintTool = new FilledCircle;
-    readonly squareTool: PaintTool = new Square;
-    readonly filledSquareTool: PaintTool = new FilledSquare;
-    readonly eraserTool: PaintTool = new Eraser;
-    readonly rectangleEraserTool: PaintTool = new RectangleEraser;
-    readonly bucketTool: PaintTool = new Bucket;
-    readonly pickerTool: PaintTool = new Picker;
-    readonly selectTool: PaintTool = new Select;
+    private paintTool: PaintTool = new Pen();
+    readonly penTool: PaintTool = new Pen();
+    readonly rulerTool: PaintTool = new Ruler();
+    readonly compassTool: PaintTool = new Compass();
+    readonly filledCircleTool: PaintTool = new FilledCircle();
+    readonly squareTool: PaintTool = new Square();
+    readonly filledSquareTool: PaintTool = new FilledSquare();
+    readonly eraserTool: PaintTool = new Eraser();
+    readonly rectangleEraserTool: PaintTool = new RectangleEraser();
+    readonly bucketTool: PaintTool = new Bucket();
+    readonly pickerTool: PaintTool = new Picker();
+    readonly selectTool: PaintTool = new Select();
+    readonly shadeTool: PaintTool = new Shade();
     private toolColor: [number, number, number, number] | null = null;
-    private selectColor: [number, number, number, number] = [200, 200, 255, 120];
+    private selectColor: [number, number, number, number] = [
+        200, 200, 255, 120,
+    ];
 
     getPaintTool() {
         return this.paintTool;
@@ -50,8 +54,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (penButton != null)
-            penButton.className = "selectedTool";
+        if (penButton != null) penButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -62,8 +65,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (rulerButton != null)
-            rulerButton.className = "selectedTool";
+        if (rulerButton != null) rulerButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -74,8 +76,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (compassButton != null)
-            compassButton.className = "selectedTool";
+        if (compassButton != null) compassButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -86,8 +87,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (compassButton != null)
-            compassButton.className = "selectedTool";
+        if (compassButton != null) compassButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -98,8 +98,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (compassButton != null)
-            compassButton.className = "selectedTool";
+        if (compassButton != null) compassButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -110,8 +109,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (compassButton != null)
-            compassButton.className = "selectedTool";
+        if (compassButton != null) compassButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -122,15 +120,16 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (eraserButton != null)
-            eraserButton.className = "selectedTool";
+        if (eraserButton != null) eraserButton.className = "selectedTool";
 
         this.toolColor = this.selectColor;
     }
 
     chooseRectangleEraserTool() {
         this.paintTool = this.rectangleEraserTool;
-        let rectangleEraserButton = document.getElementById("rectangleEraserTool");
+        let rectangleEraserButton = document.getElementById(
+            "rectangleEraserTool",
+        );
 
         this.setButtonsToNormal();
 
@@ -146,8 +145,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (bucketButton != null)
-            bucketButton.className = "selectedTool";
+        if (bucketButton != null) bucketButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -158,8 +156,7 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (pickerButton != null)
-            pickerButton.className = "selectedTool";
+        if (pickerButton != null) pickerButton.className = "selectedTool";
 
         this.toolColor = null;
     }
@@ -170,8 +167,18 @@ export class PaintTools {
 
         this.setButtonsToNormal();
 
-        if (selectButton != null)
-            selectButton.className = "selectedTool";
+        if (selectButton != null) selectButton.className = "selectedTool";
+
+        this.toolColor = this.selectColor;
+    }
+
+    chooseShadeTool() {
+        this.paintTool = this.shadeTool;
+        let shadeButton = document.getElementById("shadeTool");
+
+        this.setButtonsToNormal();
+
+        if (shadeButton != null) shadeButton.className = "selectedTool";
 
         this.toolColor = this.selectColor;
     }
