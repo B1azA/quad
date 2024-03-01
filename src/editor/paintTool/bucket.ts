@@ -8,7 +8,7 @@ export class Bucket implements PaintTool {
 
     onMouseDown(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
         button: number,
@@ -20,7 +20,7 @@ export class Bucket implements PaintTool {
 
     onMouseUp(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
@@ -31,15 +31,14 @@ export class Bucket implements PaintTool {
 
     onMouseMove(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
-    ) {
-    }
+    ) {}
 
     // fill neighbours of the same color with a different color
     fill(
-        point: { x: number, y: number },
+        point: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
@@ -52,9 +51,9 @@ export class Bucket implements PaintTool {
             let pixelColor = image.getPixel(point);
 
             while (i < fillArray.length) {
-                image.putPixel(fillArray[i], color);
-                let paintMinistep = new PaintMiniStep(fillArray[i], pixelColor);
-                this.step?.addMiniStep(paintMinistep)
+                // image.putPixel(fillArray[i], color);
+                // let paintMinistep = new PaintMiniStep(fillArray[i], pixelColor);
+                // this.step?.addMiniStep(paintMinistep);
 
                 let left = { x: fillArray[i].x - 1, y: fillArray[i].y };
                 let right = { x: fillArray[i].x + 1, y: fillArray[i].y };
@@ -76,15 +75,10 @@ export class Bucket implements PaintTool {
                     left.y < size.height &&
                     left.y >= 0
                 ) {
-                    let contains = false;
-                    fillArray.forEach((p) => {
-                        if (p.x == left.x && p.y == left.y) {
-                            contains = true;
-                            return;
-                        }
-                    });
-                    if (!contains)
-                        fillArray.push(left);
+                    image.putPixel(left, color);
+                    let paintMinistep = new PaintMiniStep(left, pixelColor);
+                    this.step?.addMiniStep(paintMinistep);
+                    fillArray.push(left);
                 }
 
                 if (
@@ -97,15 +91,10 @@ export class Bucket implements PaintTool {
                     right.y < size.height &&
                     right.y >= 0
                 ) {
-                    let contains = false;
-                    fillArray.forEach((p) => {
-                        if (p.x == right.x && p.y == right.y) {
-                            contains = true;
-                            return;
-                        }
-                    });
-                    if (!contains)
-                        fillArray.push(right);
+                    image.putPixel(right, color);
+                    let paintMinistep = new PaintMiniStep(right, pixelColor);
+                    this.step?.addMiniStep(paintMinistep);
+                    fillArray.push(right);
                 }
 
                 if (
@@ -118,15 +107,10 @@ export class Bucket implements PaintTool {
                     top.y < size.height &&
                     top.y >= 0
                 ) {
-                    let contains = false;
-                    fillArray.forEach((p) => {
-                        if (p.x == top.x && p.y == top.y) {
-                            contains = true;
-                            return;
-                        }
-                    });
-                    if (!contains)
-                        fillArray.push(top);
+                    image.putPixel(top, color);
+                    let paintMinistep = new PaintMiniStep(top, pixelColor);
+                    this.step?.addMiniStep(paintMinistep);
+                    fillArray.push(top);
                 }
 
                 if (
@@ -139,15 +123,10 @@ export class Bucket implements PaintTool {
                     bottom.y < size.height &&
                     bottom.y >= 0
                 ) {
-                    let contains = false;
-                    fillArray.forEach((p) => {
-                        if (p.x == bottom.x && p.y == bottom.y) {
-                            contains = true;
-                            return;
-                        }
-                    });
-                    if (!contains)
-                        fillArray.push(bottom);
+                    image.putPixel(bottom, color);
+                    let paintMinistep = new PaintMiniStep(bottom, pixelColor);
+                    this.step?.addMiniStep(paintMinistep);
+                    fillArray.push(bottom);
                 }
 
                 i += 1;
