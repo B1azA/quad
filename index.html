@@ -1,33 +1,35 @@
 <!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <title>Quad</title>
+        <script type="module" src="/src/main.ts" defer></script>
+    </head>
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<title>Quad</title>
-	<script type="module" src="/src/main.ts" defer></script>
-</head>
-
-<!-- <body class="noselect" oncontextmenu="return false;"> -->
-<body class="noselect">
-		<div id="files">
-			<div id="filesContent">
-				<button id="fileNew">New</button>
+    <!-- <body class="noselect" oncontextmenu="return false;"> -->
+    <body class="noselect">
+        <div id="files">
+            <div id="filesContent">
+                <button id="fileNew">New</button>
                 <button id="fileOpen">Open</button>
                 <button id="fileSave">Save</button>
-				<button id="fileSaveAs">Save as</button>
-				<button id="fileImportLayer">Import Layer</button>
-				<button id="fileImportFrame">Import Frame</button>
-				<button id="fileExportLayer">Export Layer</button>
-				<button id="fileExportFrame">Export Frame</button>
-				<button id="fileExportFrames">Export Frames</button>
-				<button id="fileExportFramesGif">Export Frames as Gif</button>
-			</div>
-		</div>
+                <button id="fileSaveAs">Save as</button>
+                <button id="fileImportLayer">Import Layer</button>
+                <button id="fileImportFrame">Import Frame</button>
+                <button id="fileExportLayer">Export Layer</button>
+                <button id="fileExportFrame">Export Frame</button>
+                <button id="fileExportFrames">Export Frames</button>
+                <button id="fileExportFramesGif">Export Frames as Gif</button>
+            </div>
+        </div>
 
         <div id="center"></div>
 
-	<table id="toolBar">
+        <table id="toolBar">
             <tr>
                 <th>
                     <button id="penTool" class="selectedTool"></button>
@@ -87,87 +89,96 @@
                     <button id="redo">↷</button>
                 </th>
             </tr>
-	</table>
-    
-	<div id="framesConfig">
-        <button id="addFrame">+</button>
-        <button id="removeFrame">-</button>
-        <button id="duplicateFrame">d</button>
-        <button id="moveFrameUp">↑</button>
-        <button id="moveFrameDown">↓</button>
-	</div>
+        </table>
 
-	<div id="frames">
-	</div>
+        <div id="framesConfig">
+            <button id="addFrame">+</button>
+            <button id="removeFrame">-</button>
+            <button id="duplicateFrame">d</button>
+            <button id="moveFrameUp">↑</button>
+            <button id="moveFrameDown">↓</button>
+        </div>
 
-    <canvas id="animationFrame"></canvas>
-    <div id="fpsContainer">
-        <label>FPS:</label>
-        <label id="fpsValue">0</label>
-        <input type="range" id="fpsRange" name="FPS" min="0" max="60" value="0">
-    </div>
+        <div id="frames"></div>
 
-	<div id="layersConfig">
-		<button id="addLayer">+</button>
-		<button id="removeLayer">-</button>
-        <button id="moveLayerUp">↑</button>
-        <button id="moveLayerDown">↓</button>
-	</div>
+        <canvas id="animationFrame"></canvas>
+        <div id="fpsContainer">
+            <label>FPS:</label>
+            <label id="fpsValue">0</label>
+            <input
+                type="range"
+                id="fpsRange"
+                name="FPS"
+                min="0"
+                max="60"
+                value="0"
+            />
+        </div>
 
-	<ul id="layerBar"></ul>
-	<ul id="layerRangeBar"></ul>
+        <div id="layersConfig">
+            <button id="addLayer">+</button>
+            <button id="removeLayer">-</button>
+            <button id="moveLayerUp">↑</button>
+            <button id="moveLayerDown">↓</button>
+        </div>
 
-	<div id="pickerContainer">
-		<li>Primary</li>
-		<li><input id="picker1" type="text"/></li>
-		<li>Secondary</li>
-		<li><input id="picker2" type="text"/></li>
-	</div>
+        <ul id="layerBar"></ul>
+        <ul id="layerRangeBar"></ul>
 
-    <div id="paletteConfig">
-		<button id="addColor">+</button>
-		<button id="removeColor">-</button>
-        <button id="duplicateColor">d</button>
-        <button id="moveColorLeft">←</button>
-        <button id="moveColorRight">→</button>
-    </div>
+        <div id="pickerContainer">
+            <li>Primary</li>
+            <li><input id="picker1" type="text" /></li>
+            <li>Secondary</li>
+            <li><input id="picker2" type="text" /></li>
+        </div>
 
-    <table id="paletteTable" oncontextmenu="return false;"></table>
+        <div id="paletteConfig">
+            <button id="addColor">+</button>
+            <button id="removeColor">-</button>
+            <button id="duplicateColor">d</button>
+            <button id="moveColorLeft">←</button>
+            <button id="moveColorRight">→</button>
+        </div>
 
-	<div id="editorContainer" oncontextmenu="return false;">
-	</div>
+        <table id="paletteTable" oncontextmenu="return false;"></table>
 
-	<dialog id="promptDialog" class="dialog">
-		<form>
-			<p></p>
-			<input type="text"/>
-			<button  value="confirm" formmethod="dialog">OK</button>
-			<button value="cancel" formmethod="dialog">Cancel</button>
-		</form>
-	</dialog>
+        <div id="editorContainer" oncontextmenu="return false;"></div>
 
-    <dialog id="confirmDialog" class="dialog">
+        <dialog id="promptDialog" class="dialog">
             <form>
                 <p></p>
-                <button id="confirmButton" value="confirm" formmethod="dialog">OK</button>
-                <button id="cancelButton" value="cancel" formmethod="dialog">Cancel</button>
+                <input type="text" />
+                <button value="confirm" formmethod="dialog">OK</button>
+                <button value="cancel" formmethod="dialog">Cancel</button>
             </form>
-    </dialog>
+        </dialog>
 
-    <dialog id="messageDialog" class="dialog">
+        <dialog id="confirmDialog" class="dialog">
+            <form>
+                <p></p>
+                <button id="confirmButton" value="confirm" formmethod="dialog">
+                    OK
+                </button>
+                <button id="cancelButton" value="cancel" formmethod="dialog">
+                    Cancel
+                </button>
+            </form>
+        </dialog>
+
+        <dialog id="messageDialog" class="dialog">
             <form>
                 <p></p>
                 <button value="ok" formmethod="dialog">Ok</button>
             </form>
-    </dialog>
+        </dialog>
 
-    <dialog id="sizeDialog" class="dialog">
+        <dialog id="sizeDialog" class="dialog">
             <form>
                 <p></p>
-                <input type="number" id="sizeDialogWidthInput"/>
-                <input type="number" id="sizeDialogHeightInput"/>
+                <input type="number" id="sizeDialogWidthInput" />
+                <input type="number" id="sizeDialogHeightInput" />
                 <button value="ok" formmethod="dialog">Ok</button>
             </form>
-    </dialog>
-</body>
+        </dialog>
+    </body>
 </html>
