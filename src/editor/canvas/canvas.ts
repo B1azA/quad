@@ -30,9 +30,14 @@ export class Canvas {
     // cache image of all the layers combined
     private frameImage: Image;
 
-    constructor(frameContainer: HTMLElement, size: { width: number, height: number }, template: Layer, layers: LayerMessage[]) {
-        let realHeight = (window.innerHeight / 2);
-        let realWidth = realHeight * size.width / size.height;
+    constructor(
+        frameContainer: HTMLElement,
+        size: { width: number; height: number },
+        template: Layer,
+        layers: LayerMessage[],
+    ) {
+        let realHeight = window.innerHeight / 2;
+        let realWidth = (realHeight * size.width) / size.height;
         this.originalRealWidth = realWidth;
         this.originalRealHeight = realHeight;
 
@@ -48,9 +53,15 @@ export class Canvas {
         this.layers.push(template);
         for (let i = 0; i < layers.length; i++) {
             let layerMessage = layers[i];
-            let layer = new Layer(layerMessage.name, 100, template.getSize(), template.getRealSize(), template.getPos(), false);
+            let layer = new Layer(
+                layerMessage.name,
+                100,
+                template.getSize(),
+                template.getRealSize(),
+                template.getPos(),
+                false,
+            );
             this.layers[i + 1] = layer;
-
 
             let layerButton = document.createElement("button");
             layerButton.id = (i + 1).toString();
@@ -61,7 +72,7 @@ export class Canvas {
                 let target = <HTMLButtonElement>e.target;
                 let layer = parseInt(target.id);
                 this.setLayer(layer);
-            }
+            };
 
             // rename on double click
             layerButton.ondblclick = (e) => {
@@ -74,7 +85,7 @@ export class Canvas {
                     target.textContent = name;
                     layer.setName(name);
                 });
-            }
+            };
 
             this.layerButtons.push(layerButton);
 
@@ -87,9 +98,12 @@ export class Canvas {
 
             layerOpacityRange.oninput = () => {
                 // + 0.2 so it can be always seen
-                layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
+                layerButton.style.opacity = (
+                    parseInt(layerOpacityRange.value) / 100 +
+                    0.2
+                ).toString();
                 layer.setOpacity(parseInt(layerOpacityRange.value));
-            }
+            };
 
             this.layerRanges.push(layerOpacityRange);
 
@@ -141,9 +155,9 @@ export class Canvas {
 
     // remove itself from the DOM
     /**
-    * remove itself from the DOM
-    * remove everything except the frame
-    **/
+     * remove itself from the DOM
+     * remove everything except the frame
+     **/
     remove() {
         // save layer images
         this.layerImagesSave = [];
@@ -207,7 +221,7 @@ export class Canvas {
         return this.originalRealHeight;
     }
 
-    setSize(size: { width: number, height: number }) {
+    setSize(size: { width: number; height: number }) {
         for (let layer of this.layers) {
             layer.setSize(size);
         }
@@ -217,7 +231,7 @@ export class Canvas {
         return this.layers[0].getSize();
     }
 
-    setRealSize(size: { width: number, height: number }) {
+    setRealSize(size: { width: number; height: number }) {
         for (let layer of this.layers) {
             layer.setRealSize(size);
         }
@@ -227,7 +241,7 @@ export class Canvas {
         return this.layers[0].getRealSize();
     }
 
-    setPos(pos: { x: number, y: number }) {
+    setPos(pos: { x: number; y: number }) {
         for (let layer of this.layers) {
             layer.setPos(pos);
         }
@@ -253,7 +267,11 @@ export class Canvas {
         }
     }
 
-    getLayersButtonsRanges(): [Layer[], HTMLButtonElement[], HTMLInputElement[]] {
+    getLayersButtonsRanges(): [
+        Layer[],
+        HTMLButtonElement[],
+        HTMLInputElement[],
+    ] {
         let layers = this.layers;
         let layerButtons = this.layerButtons;
         let layerRanges = this.layerRanges;
@@ -261,7 +279,9 @@ export class Canvas {
         return [layers, layerButtons, layerRanges];
     }
 
-    setLayersButtonsRanges(layersButtonsRanges: [Layer[], HTMLButtonElement[], HTMLInputElement[]]) {
+    setLayersButtonsRanges(
+        layersButtonsRanges: [Layer[], HTMLButtonElement[], HTMLInputElement[]],
+    ) {
         this.layers = layersButtonsRanges[0];
         this.layerButtons = layersButtonsRanges[1];
         this.layerRanges = layersButtonsRanges[2];
@@ -280,18 +300,11 @@ export class Canvas {
     }
 
     addTemplate(
-        size: { width: number, height: number },
-        realSize: { width: number, height: number },
-        pos: { x: number, y: number },
+        size: { width: number; height: number },
+        realSize: { width: number; height: number },
+        pos: { x: number; y: number },
     ) {
-        this.layers.push(new Layer(
-            "template",
-            100,
-            size,
-            realSize,
-            pos,
-            true
-        ));
+        this.layers.push(new Layer("template", 100, size, realSize, pos, true));
     }
 
     addLayer(name: string) {
@@ -301,9 +314,9 @@ export class Canvas {
             this.getSize(),
             this.getRealSize(),
             this.getPos(),
-            false
+            false,
         );
-        this.addCustomLayer(layer)
+        this.addCustomLayer(layer);
     }
 
     addCustomLayer(layer: Layer) {
@@ -322,7 +335,7 @@ export class Canvas {
                 let target = <HTMLButtonElement>e.target;
                 let layer = parseInt(target.id);
                 this.setLayer(layer);
-            }
+            };
 
             // rename on double click
             layerButton.ondblclick = (e) => {
@@ -335,7 +348,7 @@ export class Canvas {
                     target.textContent = name;
                     layer.setName(name);
                 });
-            }
+            };
 
             li.appendChild(layerButton);
             this.layerBar.appendChild(li);
@@ -350,9 +363,12 @@ export class Canvas {
 
             layerOpacityRange.oninput = () => {
                 // + 0.2 so it can be always seen
-                layerButton.style.opacity = (parseInt(layerOpacityRange.value) / 100 + 0.2).toString();
+                layerButton.style.opacity = (
+                    parseInt(layerOpacityRange.value) / 100 +
+                    0.2
+                ).toString();
                 layer.setOpacity(parseInt(layerOpacityRange.value));
-            }
+            };
 
             let opacityLi = document.createElement("li");
             opacityLi.appendChild(layerOpacityRange);
@@ -539,9 +555,14 @@ export class Canvas {
                 // change oninput event so it changes opacity of the right layer
                 this.layerRanges[i].oninput = () => {
                     // + 0.2 so it can be always seen
-                    this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
-                    this.layers[i + 1].getCanvasElement().style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
-                }
+                    this.layerButtons[i].style.opacity = (
+                        parseInt(this.layerRanges[i].value) / 100 +
+                        0.2
+                    ).toString();
+                    this.layers[i + 1].getCanvasElement().style.opacity = (
+                        parseInt(this.layerRanges[i].value) / 100
+                    ).toString();
+                };
 
                 let liRange = document.createElement("li");
                 liRange.appendChild(this.layerRanges[i]);
@@ -604,9 +625,14 @@ export class Canvas {
                 // change oninput event so it changes opacity of the right layer
                 this.layerRanges[i].oninput = () => {
                     // + 0.2 so it can be always seen
-                    this.layerButtons[i].style.opacity = (parseInt(this.layerRanges[i].value) / 100 + 0.2).toString();
-                    this.layers[i + 1].getCanvasElement().style.opacity = (parseInt(this.layerRanges[i].value) / 100).toString();
-                }
+                    this.layerButtons[i].style.opacity = (
+                        parseInt(this.layerRanges[i].value) / 100 +
+                        0.2
+                    ).toString();
+                    this.layers[i + 1].getCanvasElement().style.opacity = (
+                        parseInt(this.layerRanges[i].value) / 100
+                    ).toString();
+                };
 
                 let liRange = document.createElement("li");
                 liRange.appendChild(this.layerRanges[i]);
@@ -669,8 +695,8 @@ export class Canvas {
         let x = event.clientX - rect.left;
         let y = event.clientY - rect.top;
         return {
-            'x': x,
-            'y': y,
+            x: x,
+            y: y,
         };
     }
 
@@ -680,12 +706,12 @@ export class Canvas {
         let size = this.getSize();
         let realSize = this.getRealSize();
 
-        let x = Math.ceil(size.width * mousePos.x / realSize.width) - 1;
-        let y = Math.ceil(size.height * mousePos.y / realSize.height) - 1;
+        let x = Math.ceil((size.width * mousePos.x) / realSize.width) - 1;
+        let y = Math.ceil((size.height * mousePos.y) / realSize.height) - 1;
 
         return {
-            'x': x,
-            'y': y,
+            x: x,
+            y: y,
         };
     }
 
@@ -693,7 +719,9 @@ export class Canvas {
     getLayerBytes(layer: number) {
         let size = this.getSize();
 
-        let imageData = this.layers[layer].getCtx().getImageData(0, 0, size.width, size.height);
+        let imageData = this.layers[layer]
+            .getCtx()
+            .getImageData(0, 0, size.width, size.height);
         let data: number[] = new Array(imageData.data.length);
 
         for (let i = 0; i < imageData.data.length; i++) {
@@ -709,14 +737,18 @@ export class Canvas {
         let realSize = this.getRealSize();
         let center = {
             x: pos.x + realSize.width / 2,
-            y: pos.y + realSize.height / 2
+            y: pos.y + realSize.height / 2,
         };
 
         return center;
     }
 
     // scale the canvas, zoom out when input is negative
-    zoomIn(zoom: number, zoomDelta: number, mousePos: { x: number, y: number }) {
+    zoomIn(
+        zoom: number,
+        zoomDelta: number,
+        mousePos: { x: number; y: number },
+    ) {
         let center = this.getCenterPos();
 
         // calculate how much to move the center so the mouse stays on the same place
@@ -732,6 +764,11 @@ export class Canvas {
             zoomChange = (zoom - zoomBefore) / zoom;
             newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
             newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
+        } else if (zoom > 20) {
+            zoom = 20;
+            zoomChange = (zoom - zoomBefore) / zoom;
+            newMouseDistanceX = (center.x - mousePos.x) * (1 + zoomChange);
+            newMouseDistanceY = (center.y - mousePos.y) * (1 + zoomChange);
         }
 
         let width = this.originalRealWidth * zoom;
@@ -739,13 +776,16 @@ export class Canvas {
 
         this.setRealSize({ width, height });
 
-        this.moveCenterTo({ x: mousePos.x + newMouseDistanceX, y: mousePos.y + newMouseDistanceY });
+        this.moveCenterTo({
+            x: mousePos.x + newMouseDistanceX,
+            y: mousePos.y + newMouseDistanceY,
+        });
 
         return zoom;
     }
 
     // move the canvas by delta
-    move(moveDelta: { x: number, y: number }) {
+    move(moveDelta: { x: number; y: number }) {
         let pos = this.getPos();
         let x = pos.x + moveDelta.x;
         let y = pos.y + moveDelta.y;
@@ -754,7 +794,7 @@ export class Canvas {
     }
 
     // move the canvas center to position
-    moveCenterTo(pos: { x: number, y: number }) {
+    moveCenterTo(pos: { x: number; y: number }) {
         let realSize = this.getRealSize();
 
         let x = pos.x - realSize.width / 2;
