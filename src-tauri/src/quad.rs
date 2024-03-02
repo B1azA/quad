@@ -1,6 +1,5 @@
-use std::{fs, io::Write, path::Path};
-
 use image::RgbaImage;
+use std::{fs, io::Write, path::Path};
 
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct ImageMessage {
@@ -21,7 +20,14 @@ pub fn file_export_image(image_message: ImageMessage) -> Result<(), String> {
         None => return Err(String::from("Failed to export the file")),
     };
 
+    let home = if let Some(home) = home::home_dir() {
+        home
+    } else {
+        return Err(String::from("Failed to fin the home directory"));
+    };
+
     let file = match rfd::FileDialog::new()
+        .set_directory(home)
         .set_file_name(&format!("{}", &image_message.name))
         .add_filter("Image", &["png"])
         .save_file()
@@ -57,7 +63,14 @@ pub fn file_export_images(images_message: ImagesMessage) -> Result<(), String> {
         images.push(image);
     }
 
+    let home = if let Some(home) = home::home_dir() {
+        home
+    } else {
+        return Err(String::from("Failed to fin the home directory"));
+    };
+
     let folder = match rfd::FileDialog::new()
+        .set_directory(home)
         .set_file_name(&images_message.name)
         .pick_folder()
     {
@@ -101,7 +114,14 @@ pub fn file_export_images_as_gif(images_message: ImagesMessageGif) -> Result<(),
         images.push(image);
     }
 
+    let home = if let Some(home) = home::home_dir() {
+        home
+    } else {
+        return Err(String::from("Failed to fin the home directory"));
+    };
+
     let file_path = match rfd::FileDialog::new()
+        .set_directory(home)
         .set_file_name(&format!("{}.gif", &images_message.name))
         .save_file()
     {
@@ -149,7 +169,14 @@ pub struct ImageSize {
 
 #[tauri::command]
 pub fn file_import_image(image_size: ImageSize) -> Result<ImageMessage, String> {
+    let home = if let Some(home) = home::home_dir() {
+        home
+    } else {
+        return Err(String::from("Failed to fin the home directory"));
+    };
+
     let file = match rfd::FileDialog::new()
+        .set_directory(home)
         .add_filter("Image", &["png", "jpg"])
         .pick_file()
     {
@@ -212,7 +239,14 @@ pub struct LayerMessage {
 
 #[tauri::command]
 pub fn project_save_as(mut project_message: ProjectMessage) -> Result<String, String> {
+    let home = if let Some(home) = home::home_dir() {
+        home
+    } else {
+        return Err(String::from("Failed to fin the home directory"));
+    };
+
     let file_path = match rfd::FileDialog::new()
+        .set_directory(home)
         .set_file_name(&format!("{}.quad", &project_message.name))
         .save_file()
     {
@@ -292,7 +326,14 @@ pub fn project_save(mut project_message: ProjectMessage) -> Result<(), String> {
 
 #[tauri::command]
 pub fn project_load() -> Result<ProjectMessage, String> {
+    let home = if let Some(home) = home::home_dir() {
+        home
+    } else {
+        return Err(String::from("Failed to fin the home directory"));
+    };
+
     let file_path = match rfd::FileDialog::new()
+        .set_directory(home)
         .add_filter("QUAD", &["quad"])
         .pick_file()
     {
