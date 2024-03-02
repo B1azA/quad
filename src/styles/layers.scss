@@ -2,16 +2,16 @@
 
 #layerBar {
     position: absolute;
-    top: 30em;
-    right: 15em;
+    top: 480px;
+    right: 240px;
     list-style-type: none;
     z-index: 6;
 
     li {
-        height: 2em;
+        height: 32px;
 
         button {
-            width: 5em;
+            width: 80px;
             display: block;
             padding: 4px;
             margin: 4px;
@@ -39,17 +39,17 @@
 
 #layerRangeBar {
     position: absolute;
-    top: 30em;
-    right: 21em;
+    top: 480px;
+    right: 336px;
     list-style-type: none;
     z-index: 6;
 
     li {
-        height: 2em;
+        height: 32px;
         margin: 4px;
 
         input {
-            width: 4em;
+            width: 64px;
             outline: none;
             opacity: 0.7;
         }
@@ -62,14 +62,14 @@
 
 #layersConfig {
     position: absolute;
-    top: 27em;
-    right: 15em;
+    top: 432px;
+    right: 240px;
     display: block;
     z-index: 6;
 
     button {
-        height: 2.5em;
-        width: 2.5em;
+        height: 40px;
+        width: 40px;
         margin: 0.5px;
         border: solid black;
         border-radius: 8px;

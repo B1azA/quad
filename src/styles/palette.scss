@@ -2,8 +2,8 @@
 
 #color {
     position: absolute;
-    left: 8em;
-    top: 10em;
+    left: 128px;
+    top: 160px;
     z-index: 15;
     width: 50px;
     height: 50px;
@@ -20,8 +20,8 @@
 
 #pickerContainer {
     position: absolute;
-    bottom: 19em;
-    left: 1em;
+    bottom: 304px;
+    left: 16px;
     list-style-type: none;
     z-index: 6;
     padding: 0;
@@ -33,8 +33,8 @@
     }
 
     button {
-        width: 3em;
-        height: 3em;
+        width: 48px;
+        height: 48px;
         border-radius: 4px;
         box-shadow: none;
         outline: none;
@@ -43,16 +43,16 @@
 
 #paletteTable {
     display: block;
-    height: 14em;
+    height: 224px;
     position: absolute;
     bottom: 0;
-    left: 1em;
+    left: 16px;
     overflow-y: auto;
     z-index: 6;
 
     button {
-        width: 3em;
-        height: 3em;
+        width: 48px;
+        height: 48px;
         margin: 2px;
         border-radius: 100%;
         background-color: white;
@@ -61,15 +61,15 @@
 
 #paletteConfig {
     position: absolute;
-    bottom: 14.5em;
-    left: 1.3em;
+    bottom: 232px;
+    left: 21px;
     z-index: 8;
 
     button {
         border: solid black;
         border-radius: 8px;
-        width: 3em;
-        height: 3em;
+        width: 48px;
+        height: 48px;
         margin: 0.5px;
         background-color: $buttonColorPalette;
     }
