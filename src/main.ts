@@ -59,7 +59,6 @@ function setupProject() {
                             projectMessage.width = size.width;
                             projectMessage.height = size.height;
                             let editor = new Editor(projectMessage);
-                            editor.tools.choosePenTool();
                             run(editor);
                         } else {
                             showMessageDialog(
@@ -75,7 +74,6 @@ function setupProject() {
                 projectLoad()
                     .then((message) => {
                         let editor = new Editor(message);
-                        editor.tools.choosePenTool();
                         console.log("Project " + message.name + " opened");
                         run(editor);
                     })
@@ -155,7 +153,7 @@ appWindow.listen("tauri://close-requested", () => {
                     else {
                         showMessageDialog(
                             "Failed to save the project!",
-                            () => {},
+                            () => { },
                         );
                     }
                 });
@@ -208,12 +206,11 @@ function setupEvents(editor: Editor) {
                                                 let editor = new Editor(
                                                     projectMessage,
                                                 );
-                                                editor.tools.choosePenTool();
                                                 run(editor);
                                             } else {
                                                 showMessageDialog(
                                                     "Failed to create a new project!",
-                                                    () => {},
+                                                    () => { },
                                                 );
                                             }
                                         },
@@ -223,7 +220,7 @@ function setupEvents(editor: Editor) {
                         } else {
                             showMessageDialog(
                                 "Failed to save the project!",
-                                () => {},
+                                () => { },
                             );
                         }
                     });
@@ -248,12 +245,11 @@ function setupEvents(editor: Editor) {
                                 projectMessage.height = size.height;
                                 oldEditor.remove();
                                 let editor = new Editor(projectMessage);
-                                editor.tools.choosePenTool();
                                 run(editor);
                             } else {
                                 showMessageDialog(
                                     "Failed to create a new project!",
-                                    () => {},
+                                    () => { },
                                 );
                             }
                         },
@@ -280,18 +276,17 @@ function setupEvents(editor: Editor) {
                                         .then((message) => {
                                             oldEditor.remove();
                                             let editor = new Editor(message);
-                                            editor.tools.choosePenTool();
                                             run(editor);
                                             console.log(
                                                 "Project " +
-                                                    message.path +
-                                                    " opened",
+                                                message.path +
+                                                " opened",
                                             );
                                         })
                                         .catch((error) => {
                                             showMessageDialog(
                                                 "Failed to open the project!",
-                                                () => {},
+                                                () => { },
                                             );
                                             console.error(error);
                                         });
@@ -300,7 +295,7 @@ function setupEvents(editor: Editor) {
                         } else {
                             showMessageDialog(
                                 "Failed to save the project!",
-                                () => {},
+                                () => { },
                             );
                         }
                     });
@@ -310,14 +305,13 @@ function setupEvents(editor: Editor) {
                         .then((message) => {
                             oldEditor.remove();
                             let editor = new Editor(message);
-                            editor.tools.choosePenTool();
                             run(editor);
                             console.log("Project " + message.path + " opened");
                         })
                         .catch((error) => {
                             showMessageDialog(
                                 "Failed to open the project!",
-                                () => {},
+                                () => { },
                             );
                             console.error(error);
                         });
@@ -329,21 +323,21 @@ function setupEvents(editor: Editor) {
     document.getElementById("fileSaveAs")!.onclick = () => {
         projectSaveAs(editor.generateProjectMessage())
             .then((path) => {
-                showMessageDialog("Succesfully saved the project!", () => {});
+                showMessageDialog("Succesfully saved the project!", () => { });
                 editor.setPath(path);
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to save the project!", () => {});
+                showMessageDialog("Failed to save the project!", () => { });
             });
     };
 
     document.getElementById("fileSave")!.onclick = () => {
         saveProject(editor, (succesful) => {
             if (succesful) {
-                showMessageDialog("Succesfully saved the project!", () => {});
+                showMessageDialog("Succesfully saved the project!", () => { });
             } else {
-                showMessageDialog("Failed to save the project!", () => {});
+                showMessageDialog("Failed to save the project!", () => { });
             }
         });
     };
@@ -366,7 +360,7 @@ function setupEvents(editor: Editor) {
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to import the image.", () => {});
+                showMessageDialog("Failed to import the image.", () => { });
             });
     };
 
@@ -388,7 +382,7 @@ function setupEvents(editor: Editor) {
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to import the image.", () => {});
+                showMessageDialog("Failed to import the image.", () => { });
             });
     };
 
@@ -406,11 +400,11 @@ function setupEvents(editor: Editor) {
         };
         fileExportImage(imageMessage)
             .then(() => {
-                showMessageDialog("Succesfully exported the layer!", () => {});
+                showMessageDialog("Succesfully exported the layer!", () => { });
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to export the layer!", () => {});
+                showMessageDialog("Failed to export the layer!", () => { });
             });
     };
 
@@ -428,11 +422,11 @@ function setupEvents(editor: Editor) {
         };
         fileExportImage(imageMessage)
             .then(() => {
-                showMessageDialog("Succesfully exported the frame!", () => {});
+                showMessageDialog("Succesfully exported the frame!", () => { });
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to export the frame!", () => {});
+                showMessageDialog("Failed to export the frame!", () => { });
             });
     };
 
@@ -458,11 +452,11 @@ function setupEvents(editor: Editor) {
 
         fileExportImages(imagesMessage)
             .then(() => {
-                showMessageDialog("Succesfully exported frames!", () => {});
+                showMessageDialog("Succesfully exported frames!", () => { });
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to export frames!", () => {});
+                showMessageDialog("Failed to export frames!", () => { });
             });
     };
 
@@ -489,11 +483,11 @@ function setupEvents(editor: Editor) {
 
         fileExportImagesAsGif(imagesMessage)
             .then(() => {
-                showMessageDialog("Succesfully exported frames!", () => {});
+                showMessageDialog("Succesfully exported frames!", () => { });
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to export frames!", () => {});
+                showMessageDialog("Failed to export frames!", () => { });
             });
     };
 
