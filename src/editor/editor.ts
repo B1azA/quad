@@ -89,6 +89,8 @@ export class Editor {
                         this.animationFrameIndex = 0;
                     }
                 }, 1 / this.fps * 1000);
+            } else {
+                this.setAnimationFrame(this.animationFrameIndex);
             }
         }
 
