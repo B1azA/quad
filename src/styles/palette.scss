@@ -29,7 +29,7 @@
 
     li {
         display: block;
-        font-size: 1.6em;
+        font-size: 2.5vh;
         margin: 1vh;
     }
 
@@ -44,10 +44,9 @@
 
 #paletteTable {
     display: block;
-    height: calc(100vh - ($toolBarBottom + 16px + 2 * 1.6em + 4vh + 2 * 48px + 4.5vh + 2px));
+    height: calc(100vh - ($toolBarBottom + 16px + 2 * 2.5vh + 4vh + 10vh + 4.5vh + 2px));
     position: absolute;
-    // bottom: 0;
-    top: calc($toolBarBottom + 16px + 2 * 1.6em + 4vh + 2 * 48px + 4.5vh + 2px);
+    top: calc($toolBarBottom + 16px + 2 * 2.5vh + 4vh + 10vh + 4.5vh + 2px);
     left: 16px;
     overflow-y: auto;
     z-index: 6;
@@ -63,8 +62,7 @@
 
 #paletteConfig {
     position: absolute;
-    // bottom: 232px;
-    top: calc($toolBarBottom + 16px + 2 * 1.6em + 4vh + 2 * 48px);
+    top: calc($toolBarBottom + 16px + 2 * 2.5vh + 4vh + 10vh);
     left: 21px;
     z-index: 8;
 
