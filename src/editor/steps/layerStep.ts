@@ -1,5 +1,4 @@
 import { Canvas } from "../canvas/canvas";
-import { Image } from "../canvas/image";
 import { Layer } from "../canvas/layer";
 import { Step } from "./step";
 

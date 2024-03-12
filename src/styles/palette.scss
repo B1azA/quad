@@ -1,4 +1,5 @@
 @use "colorScheme.scss" as *;
+@use "toolbar.scss" as *;
 
 #color {
     position: absolute;
@@ -20,7 +21,7 @@
 
 #pickerContainer {
     position: absolute;
-    bottom: 304px;
+    top: calc($toolBarBottom + 16px);
     left: 16px;
     list-style-type: none;
     z-index: 6;
@@ -29,7 +30,7 @@
     li {
         display: block;
         font-size: 1.6em;
-        margin: 10px;
+        margin: 1vh;
     }
 
     button {
@@ -43,16 +44,17 @@
 
 #paletteTable {
     display: block;
-    height: 224px;
+    height: calc(100vh - ($toolBarBottom + 16px + 2 * 1.6em + 4vh + 2 * 48px + 4.5vh + 2px));
     position: absolute;
-    bottom: 0;
+    // bottom: 0;
+    top: calc($toolBarBottom + 16px + 2 * 1.6em + 4vh + 2 * 48px + 4.5vh + 2px);
     left: 16px;
     overflow-y: auto;
     z-index: 6;
 
     button {
-        width: 48px;
-        height: 48px;
+        width: 4.5vh;
+        height: 4.5vh;
         margin: 2px;
         border-radius: 100%;
         background-color: white;
@@ -61,15 +63,16 @@
 
 #paletteConfig {
     position: absolute;
-    bottom: 232px;
+    // bottom: 232px;
+    top: calc($toolBarBottom + 16px + 2 * 1.6em + 4vh + 2 * 48px);
     left: 21px;
     z-index: 8;
 
     button {
         border: solid black;
         border-radius: 8px;
-        width: 48px;
-        height: 48px;
+        width: 4.5vh;
+        height: 4.5vh;
         margin: 0.5px;
         background-color: $buttonColorPalette;
     }

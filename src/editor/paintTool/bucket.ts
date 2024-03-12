@@ -34,7 +34,7 @@ export class Bucket implements PaintTool {
         coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
-    ) {}
+    ) { }
 
     // fill neighbours of the same color with a different color
     fill(
@@ -51,10 +51,6 @@ export class Bucket implements PaintTool {
             let pixelColor = image.getPixel(point);
 
             while (i < fillArray.length) {
-                // image.putPixel(fillArray[i], color);
-                // let paintMinistep = new PaintMiniStep(fillArray[i], pixelColor);
-                // this.step?.addMiniStep(paintMinistep);
-
                 let left = { x: fillArray[i].x - 1, y: fillArray[i].y };
                 let right = { x: fillArray[i].x + 1, y: fillArray[i].y };
                 let top = { x: fillArray[i].x, y: fillArray[i].y - 1 };

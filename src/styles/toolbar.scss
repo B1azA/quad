@@ -1,5 +1,7 @@
 @use "colorScheme.scss" as *;
 
+$toolBarBottom: calc(80px + 14 * 2px + 7 * 6vh);
+
 #toolBar {
     position: absolute;
     top: 80px;
@@ -9,10 +11,10 @@
 
     button {
         display: block;
-        width: 64px;
-        height: 64px;
+        width: 6vh;
+        height: 6vh;
         margin: 2px;
-        border-radius: 8px;
+        border-radius: 15%;
         box-shadow: none;
         outline: none;
         border: solid black;

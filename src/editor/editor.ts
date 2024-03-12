@@ -138,7 +138,7 @@ export class Editor {
             path: this.path,
         };
 
-        console.log("PAth: ", projectMessage.path);
+        console.log("Path: ", projectMessage.path);
         return projectMessage;
     }
 
