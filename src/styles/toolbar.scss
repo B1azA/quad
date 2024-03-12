@@ -1,5 +1,4 @@
 @use "colorScheme.scss" as *;
-
 $toolBarBottom: calc(80px + 14 * 2px + 7 * 6vh);
 
 #toolBar {
@@ -71,7 +70,27 @@ $toolBarBottom: calc(80px + 14 * 2px + 7 * 6vh);
     background-size: cover;
 }
 
+#rectangleEraserTool {
+    background-image: url(../../images/rectangleEraser.png);
+    background-size: cover;
+}
+
 #bucketTool {
     background-image: url(../../images/bucket.png);
+    background-size: cover;
+}
+
+#shadeTool {
+    background-image: url(../../images/shade.png);
+    background-size: cover;
+}
+
+#undo {
+    background-image: url(../../images/undo.png);
+    background-size: cover;
+}
+
+#redo {
+    background-image: url(../../images/redo.png);
     background-size: cover;
 }

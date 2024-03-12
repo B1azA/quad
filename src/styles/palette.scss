@@ -95,3 +95,29 @@
 #secondaryColorButton {
     border: dotted $selected;
 }
+
+#addColor {
+    background-image: url(../../images/add.png);
+    background-size: cover;
+}
+
+#removeColor {
+    background-image: url(../../images/remove.png);
+    background-size: cover;
+}
+
+
+#duplicateColor {
+    background-image: url(../../images/duplicate.png);
+    background-size: cover;
+}
+
+#moveColorLeft {
+    background-image: url(../../images/left.png);
+    background-size: cover;
+}
+
+#moveColorRight {
+    background-image: url(../../images/right.png);
+    background-size: cover;
+}
