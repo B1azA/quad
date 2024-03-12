@@ -23,7 +23,7 @@ export class Editor {
 
     tools: PaintTools = new PaintTools();
 
-    private isMouseOnEditorContainer = false;
+    private isMouseOnEditorContainer = true;
 
     drag: boolean = false;
 
@@ -99,7 +99,6 @@ export class Editor {
 
         this.updateFrameAndAnimationFrame();
         this.getCurrentCanvas().setRealSize(realSize);
-        this.tools.choosePenTool();
     }
 
     getFps() {
