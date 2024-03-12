@@ -50,6 +50,17 @@ export class Bucket implements PaintTool {
             let fillArray = [point];
             let pixelColor = image.getPixel(point);
 
+            if (
+                pixelColor[0] != color[0]
+                || pixelColor[1] != color[1]
+                || pixelColor[2] != color[2]
+                || pixelColor[3] != color[3]
+            ) {
+                image.putPixel(point, color);
+                let paintMinistep = new PaintMiniStep(point, pixelColor);
+                this.step?.addMiniStep(paintMinistep);
+            }
+
             while (i < fillArray.length) {
                 let left = { x: fillArray[i].x - 1, y: fillArray[i].y };
                 let right = { x: fillArray[i].x + 1, y: fillArray[i].y };
