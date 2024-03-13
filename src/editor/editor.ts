@@ -43,6 +43,8 @@ export class Editor {
 
     private zoom: number = 1;
 
+    private lastKey = "";
+
     constructor(projectMessage: ProjectMessage) {
         let size = { width: projectMessage.width, height: projectMessage.height };
         let height = (window.innerHeight / 2);
@@ -567,28 +569,115 @@ export class Editor {
 
     onKeyDown(event: KeyboardEvent) {
         let key = event.key;
+        let ctrl = event.ctrlKey;
 
-        switch (key) {
-            case "Control":
-                this.drag = true;
-                break;
-            case "f":
-                this.tools.useVerticalFlipTool(this);
-                break;
-            case "F":
-                this.tools.useHorizontalFlipTool(this);
-                break;
+        if (ctrl) {
+            switch (key) {
+                case "n":
+                    document.getElementById("fileNew")?.click();
+                    break;
+                case "o":
+                    document.getElementById("fileOpen")?.click();
+                    break;
+                case "S":
+                    document.getElementById("fileSaveAs")?.click();
+                    break;
+                case "s":
+                    document.getElementById("fileSave")?.click();
+                    break;
+                case "l":
+                    if (this.lastKey == "i")
+                        document.getElementById("fileImportLayer")?.click();
+                    else if (this.lastKey == "e")
+                        document.getElementById("fileExportLayer")?.click();
+                    break;
+                case "f":
+                    if (this.lastKey == "i")
+                        document.getElementById("fileImportFrame")?.click();
+                    else if (this.lastKey == "e")
+                        document.getElementById("fileExportFrame")?.click();
+                    break;
+                case "a":
+                    if (this.lastKey == "e")
+                        document.getElementById("fileExportFrames")?.click();
+                    break;
+                case "g":
+                    if (this.lastKey == "e")
+                        document.getElementById("fileExportFramesGif")?.click();
+                    break;
+                case "c":
+                    document.getElementById("center")?.click();
+                    break;
+                case "z":
+                    document.getElementById("undo")?.click();
+                    break;
+                case "y":
+                    document.getElementById("redo")?.click();
+                    break;
+            }
+        } else {
+            switch (key) {
+                case " ":
+                    this.drag = true;
+                    break;
+                case "f":
+                    this.tools.useVerticalFlipTool(this);
+                    break;
+                case "F":
+                    this.tools.useHorizontalFlipTool(this);
+                    break;
+                case "p":
+                    this.tools.choosePenTool();
+                    break;
+                case "r":
+                    this.tools.chooseRulerTool();
+                    break;
+                case "c":
+                    this.tools.chooseCompassTool();
+                    break;
+                case "C":
+                    this.tools.chooseFilledCircleTool();
+                    break;
+                case "s":
+                    this.tools.chooseSquareTool();
+                    break;
+                case "S":
+                    this.tools.chooseFilledSquareTool();
+                    break;
+                case "e":
+                    this.tools.chooseEraserTool();
+                    break;
+                case "E":
+                    this.tools.chooseRectangleEraserTool();
+                    break;
+                case "P":
+                    this.tools.choosePickerTool();
+                    break;
+                case "x":
+                    this.tools.chooseSelectTool();
+                    break;
+                case "b":
+                    this.tools.chooseBucketTool();
+                    break;
+                case "y":
+                    this.tools.chooseShadeTool();
+                    break;
+            }
         }
+
+
+        this.lastKey = key;
     }
 
     onKeyUp(event: KeyboardEvent) {
         let key = event.key;
 
         switch (key) {
-            case "Control":
+            case " ":
                 this.drag = false;
                 break;
         }
+        this.updateFrameAndAnimationFrame();
     }
 
     onMouseEnter() {

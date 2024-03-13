@@ -664,11 +664,11 @@ function setupEvents(editor: Editor) {
         editor.onWheel(e);
     };
 
-    document.onkeydown = (e) => {
+    window.onkeydown = (e) => {
         editor.onKeyDown(e);
     };
 
-    document.onkeyup = (e) => {
+    window.onkeyup = (e) => {
         editor.onKeyUp(e);
     };
 
