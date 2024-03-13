@@ -11,6 +11,10 @@ import { Bucket } from "./paintTool/bucket";
 import { Picker } from "./paintTool/picker";
 import { Select } from "./paintTool/select";
 import { Shade } from "./paintTool/shade";
+import { VerticalFlip } from "./frameTool/verticalFlip";
+import { FrameTool } from "./frameTool/frameTool";
+import { Editor } from "./editor";
+import { HorizontalFlip } from "./frameTool/horizontalFlip";
 
 export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
@@ -27,10 +31,14 @@ export class PaintTools {
     readonly pickerTool: PaintTool = new Picker();
     readonly selectTool: PaintTool = new Select();
     readonly shadeTool: PaintTool = new Shade();
+
     private toolColor: [number, number, number, number] | null = null;
     private selectColor: [number, number, number, number] = [
         200, 200, 255, 120,
     ];
+
+    private verticalFlipTool: FrameTool = new VerticalFlip();
+    private horizontalFlipTool: FrameTool = new HorizontalFlip();
 
     getPaintTool() {
         return this.paintTool;
@@ -181,6 +189,14 @@ export class PaintTools {
         if (shadeButton != null) shadeButton.className = "selectedTool";
 
         this.toolColor = this.selectColor;
+    }
+
+    useVerticalFlipTool(editor: Editor) {
+        this.verticalFlipTool.use(editor);
+    }
+
+    useHorizontalFlipTool(editor: Editor) {
+        this.horizontalFlipTool.use(editor);
     }
 
     private setButtonsToNormal() {

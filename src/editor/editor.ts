@@ -572,6 +572,12 @@ export class Editor {
             case "Control":
                 this.drag = true;
                 break;
+            case "f":
+                this.tools.useVerticalFlipTool(this);
+                break;
+            case "F":
+                this.tools.useHorizontalFlipTool(this);
+                break;
         }
     }
 
