@@ -75,6 +75,16 @@ $toolBarBottom: calc(80px + 14 * 2px + 7 * 6vh);
     background-size: cover;
 }
 
+#pickerTool {
+    background-image: url(../../images/picker.png);
+    background-size: cover;
+}
+
+#selectTool {
+    background-image: url(../../images/scissors.png);
+    background-size: cover;
+}
+
 #bucketTool {
     background-image: url(../../images/bucket.png);
     background-size: cover;
