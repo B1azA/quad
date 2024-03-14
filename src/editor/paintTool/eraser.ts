@@ -68,13 +68,15 @@ export class Eraser implements PaintTool {
         if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0 && !layer.isTemplate()) {
             let pixelColor = image.getPixel(point);
 
-            let paintMinistep = new PaintMiniStep(point, pixelColor);
-            this.step?.addMiniStep(paintMinistep)
+            if (!layer.isTemplate()) {
+                let paintMinistep = new PaintMiniStep(point, pixelColor);
+                this.step?.addMiniStep(paintMinistep)
+            }
+
+            image.putPixel(point, [0, 0, 0, 0]);
+            layer.setImage(image);
         }
 
-        image.putPixel(point, [0, 0, 0, 0]);
-
-        layer.setImage(image);
     }
 
     // draw a line from the point a to the point b

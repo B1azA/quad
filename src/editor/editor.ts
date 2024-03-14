@@ -617,7 +617,7 @@ export class Editor {
             }
         } else {
             switch (key) {
-                case " ":
+                case "Alt":
                     this.drag = true;
                     break;
                 case "f":
@@ -662,6 +662,12 @@ export class Editor {
                 case "y":
                     this.tools.chooseShadeTool();
                     break;
+                case "R":
+                    this.tools.useRightRotationTool(this);
+                    break;
+                case "m":
+                    this.tools.useLeftRotationTool(this);
+                    break;
             }
         }
 
@@ -673,7 +679,7 @@ export class Editor {
         let key = event.key;
 
         switch (key) {
-            case " ":
+            case "Alt":
                 this.drag = false;
                 break;
         }

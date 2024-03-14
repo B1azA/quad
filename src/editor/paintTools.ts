@@ -1,4 +1,6 @@
 import { PaintTool } from "./paintTool/paintTool";
+import { FrameTool } from "./frameTool/frameTool";
+import { Editor } from "./editor";
 import { Pen } from "./paintTool/pen";
 import { Ruler } from "./paintTool/ruler";
 import { Compass } from "./paintTool/compass";
@@ -12,9 +14,9 @@ import { Picker } from "./paintTool/picker";
 import { Select } from "./paintTool/select";
 import { Shade } from "./paintTool/shade";
 import { VerticalFlip } from "./frameTool/verticalFlip";
-import { FrameTool } from "./frameTool/frameTool";
-import { Editor } from "./editor";
 import { HorizontalFlip } from "./frameTool/horizontalFlip";
+import { LeftRotation } from "./frameTool/rightRotation";
+import { RightRotation } from "./frameTool/leftRotation";
 
 export class PaintTools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
@@ -39,6 +41,8 @@ export class PaintTools {
 
     private verticalFlipTool: FrameTool = new VerticalFlip();
     private horizontalFlipTool: FrameTool = new HorizontalFlip();
+    private leftRotationTool: FrameTool = new LeftRotation();
+    private rightRotationTool: FrameTool = new RightRotation();
 
     getPaintTool() {
         return this.paintTool;
@@ -197,6 +201,14 @@ export class PaintTools {
 
     useHorizontalFlipTool(editor: Editor) {
         this.horizontalFlipTool.use(editor);
+    }
+
+    useRightRotationTool(editor: Editor) {
+        this.rightRotationTool.use(editor);
+    }
+
+    useLeftRotationTool(editor: Editor) {
+        this.leftRotationTool.use(editor);
     }
 
     private setButtonsToNormal() {
