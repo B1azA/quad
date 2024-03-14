@@ -569,6 +569,26 @@ function setupEvents(editor: Editor) {
         canvas.setPos(pos);
     };
 
+    document.getElementById("verticalFlip")!.onclick = () => {
+        editor.tools.useVerticalFlipTool(editor);
+        editor.updateFrameAndAnimationFrame();
+    }
+
+    document.getElementById("horizontalFlip")!.onclick = () => {
+        editor.tools.useHorizontalFlipTool(editor);
+        editor.updateFrameAndAnimationFrame();
+    }
+
+    document.getElementById("leftRotation")!.onclick = () => {
+        editor.tools.useLeftRotationTool(editor);
+        editor.updateFrameAndAnimationFrame();
+    }
+
+    document.getElementById("rightRotation")!.onclick = () => {
+        editor.tools.useRightRotationTool(editor);
+        editor.updateFrameAndAnimationFrame();
+    }
+
     document.getElementById("addLayer")!.onclick = () => {
         showPromptDialog("Add layer", "new", (value) => {
             let name = value.length > 0 ? value : "unnamed";

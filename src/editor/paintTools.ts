@@ -18,7 +18,7 @@ import { HorizontalFlip } from "./frameTool/horizontalFlip";
 import { LeftRotation } from "./frameTool/rightRotation";
 import { RightRotation } from "./frameTool/leftRotation";
 
-export class PaintTools {
+export class Tools {
     private toolBar = <HTMLElement>document.getElementById("toolBar");
     private paintTool: PaintTool = new Pen();
     readonly penTool: PaintTool = new Pen();

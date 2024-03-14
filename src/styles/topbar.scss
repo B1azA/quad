@@ -9,7 +9,7 @@
     width: 32px;
     margin-top: 8px;
     margin-left: 8px;
-    border-radius: 4px; 
+    border-radius: 4px;
     border: solid black;
     background-image: url(../../images/files.png);
     background-size: cover;
@@ -20,6 +20,7 @@
 
 #files:hover {
     background-color: $buttonColorTopbarHover;
+
     #filesContent {
         display: block;
     }
@@ -65,7 +66,7 @@
     width: 32px;
     margin-top: 8px;
     margin-left: 8px;
-    border-radius: 4px; 
+    border-radius: 4px;
     border: solid black;
     background-image: url(../../images/center.png);
     background-size: cover;
@@ -78,5 +79,109 @@
 }
 
 #center:active {
+    background-color: $buttonColorTopbar;
+}
+
+#verticalFlip {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/center.png);
+    background-size: cover;
+    background-color: $buttonColorTopbar;
+    image-rendering: pixelated;
+}
+
+#verticalFlip:hover {
+    background-color: $buttonColorTopbarHover;
+}
+
+#verticalFlip:active {
+    background-color: $buttonColorTopbar;
+}
+
+#horizontalFlip {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/center.png);
+    background-size: cover;
+    background-color: $buttonColorTopbar;
+    image-rendering: pixelated;
+}
+
+#horizontalFlip:hover {
+    background-color: $buttonColorTopbarHover;
+}
+
+#horizontalFlip:active {
+    background-color: $buttonColorTopbar;
+}
+
+#leftRotation {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/rotateLeft.png);
+    background-size: cover;
+    background-color: $buttonColorTopbar;
+    image-rendering: pixelated;
+}
+
+#leftRotation:hover {
+    background-color: $buttonColorTopbarHover;
+}
+
+#leftRotation:active {
+    background-color: $buttonColorTopbar;
+}
+
+#rightRotation {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/rotateRight.png);
+    background-size: cover;
+    background-color: $buttonColorTopbar;
+    image-rendering: pixelated;
+}
+
+#rightRotation:hover {
+    background-color: $buttonColorTopbarHover;
+}
+
+#rightRotation:active {
     background-color: $buttonColorTopbar;
 }

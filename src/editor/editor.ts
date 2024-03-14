@@ -1,6 +1,6 @@
 import { Canvas } from "./canvas/canvas";
 import { Palette } from "./palette";
-import { PaintTools } from "./paintTools";
+import { Tools } from "./paintTools";
 import { Layer } from "./canvas/layer";
 import { FrameMessage, LayerMessage, ProjectMessage } from "../tauri";
 
@@ -21,7 +21,7 @@ export class Editor {
     private editorContainer = document.getElementById("editorContainer")!;
     private originalRealSize = { width: 0, height: 0 };
 
-    tools: PaintTools = new PaintTools();
+    tools: Tools = new Tools();
 
     private isMouseOnEditorContainer = true;
 
@@ -614,17 +614,23 @@ export class Editor {
                 case "y":
                     document.getElementById("redo")?.click();
                     break;
+                case "m":
+                    this.tools.useVerticalFlipTool(this);
+                    break;
+                case "M":
+                    this.tools.useHorizontalFlipTool(this);
+                    break;
+                case "R":
+                    this.tools.useRightRotationTool(this);
+                    break;
+                case "r":
+                    this.tools.useLeftRotationTool(this);
+                    break;
             }
         } else {
             switch (key) {
                 case "Alt":
                     this.drag = true;
-                    break;
-                case "f":
-                    this.tools.useVerticalFlipTool(this);
-                    break;
-                case "F":
-                    this.tools.useHorizontalFlipTool(this);
                     break;
                 case "p":
                     this.tools.choosePenTool();
@@ -661,12 +667,6 @@ export class Editor {
                     break;
                 case "y":
                     this.tools.chooseShadeTool();
-                    break;
-                case "R":
-                    this.tools.useRightRotationTool(this);
-                    break;
-                case "m":
-                    this.tools.useLeftRotationTool(this);
                     break;
             }
         }
