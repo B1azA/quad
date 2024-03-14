@@ -185,3 +185,55 @@
 #rightRotation:active {
     background-color: $buttonColorTopbar;
 }
+
+#undo {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/undo.png);
+    background-size: cover;
+    background-color: $buttonColorTopbar;
+    image-rendering: pixelated;
+}
+
+#undo:hover {
+    background-color: $buttonColorTopbarHover;
+}
+
+#undo:active {
+    background-color: $buttonColorTopbar;
+}
+
+#redo {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/redo.png);
+    background-size: cover;
+    background-color: $buttonColorTopbar;
+    image-rendering: pixelated;
+}
+
+#redo:hover {
+    background-color: $buttonColorTopbarHover;
+}
+
+#redo:active {
+    background-color: $buttonColorTopbar;
+}
