@@ -638,12 +638,23 @@ export class Editor {
                         document.getElementById("fileImportLayer")?.click();
                     else if (this.lastKey == "e")
                         document.getElementById("fileExportLayer")?.click();
+                    else if (this.lastKey == "a")
+                        document.getElementById("addLayer")?.click();
+                    else if (this.lastKey == "x")
+                        document.getElementById("removeLayer")?.click();
                     break;
                 case "f":
                     if (this.lastKey == "i")
                         document.getElementById("fileImportFrame")?.click();
                     else if (this.lastKey == "e")
                         document.getElementById("fileExportFrame")?.click();
+                    else if (this.lastKey == "a")
+                        this.addFrame(
+                            this.getCurrentCanvas().getTemplate(),
+                            [],
+                        );
+                    else if (this.lastKey == "x") this.removeFrame();
+                    else if (this.lastKey == "d") this.duplicateFrame();
                     break;
                 case "a":
                     if (this.lastKey == "e")
@@ -654,7 +665,10 @@ export class Editor {
                         document.getElementById("fileExportFramesGif")?.click();
                     break;
                 case "c":
-                    document.getElementById("center")?.click();
+                    if (this.lastKey == "a") this.palette.addColor();
+                    else if (this.lastKey == "x") this.palette.removeColor();
+                    else if (this.lastKey == "d") this.palette.duplicateColor();
+                    else document.getElementById("center")?.click();
                     break;
                 case "z":
                     document.getElementById("undo")?.click();

@@ -6,7 +6,7 @@ import { Layer } from "../canvas/layer";
 export class FilledCircle implements PaintTool {
     lastCoords = { x: -1, y: -1 };
     step: PaintStep | null = null;
-    downPressed = false;
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
@@ -19,7 +19,7 @@ export class FilledCircle implements PaintTool {
         this.step = new PaintStep(layerID);
 
         this.lastCoords = coords;
-        this.downPressed = true;
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
@@ -28,7 +28,7 @@ export class FilledCircle implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        if (this.downPressed) {
+        if (this.wasDownPressed) {
             // draw line to layer
             this.drawCircle(this.lastCoords, coords, color, layer);
 
@@ -36,7 +36,7 @@ export class FilledCircle implements PaintTool {
                 editor.getCurrentCanvas().steps.addStep(this.step);
             }
 
-            this.downPressed = false;
+            this.wasDownPressed = false;
         }
     }
 
@@ -46,7 +46,7 @@ export class FilledCircle implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        if (this.downPressed) {
+        if (this.wasDownPressed) {
             // draw line to template
             this.drawCircle(
                 this.lastCoords,
