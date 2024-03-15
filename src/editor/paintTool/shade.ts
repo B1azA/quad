@@ -6,8 +6,10 @@ import { Layer } from "../canvas/layer";
 export class Shade implements PaintTool {
     lastCoords = { x: -1, y: -1 };
     step: PaintStep | null = null;
+    pixels: { x: number; y: number }[] = [];
     button = 0;
     factor = 0.1;
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
@@ -16,13 +18,14 @@ export class Shade implements PaintTool {
         layer: Layer,
         button: number,
     ) {
+        this.pixels = [];
         let layerID = layer.getID();
         this.step = new PaintStep(layerID);
+        this.addPixel(coords, layer);
 
-        this.shadePixel(coords, layer);
         this.lastCoords = coords;
-
         this.button = button;
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
@@ -31,8 +34,14 @@ export class Shade implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        if (this.step != null && !this.step.isEmpty()) {
-            editor.getCurrentCanvas().steps.addStep(this.step);
+        if (this.wasDownPressed) {
+            this.shadeAndSavePixels(layer);
+
+            if (this.step != null && !this.step.isEmpty()) {
+                editor.getCurrentCanvas().steps.addStep(this.step);
+            }
+
+            this.wasDownPressed = false;
         }
     }
 
@@ -42,17 +51,21 @@ export class Shade implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // |AB| = sqrt((ax - bx) ** 2 + (ay - by) ** 2)
-        let distance = Math.sqrt(
-            (this.lastCoords.x - coords.x) ** 2 +
-                (this.lastCoords.y - coords.y) ** 2,
-        );
+        if (this.wasDownPressed) {
+            // |AB| = sqrt((ax - bx) ** 2 + (ay - by) ** 2)
+            let distance = Math.sqrt(
+                (this.lastCoords.x - coords.x) ** 2 +
+                    (this.lastCoords.y - coords.y) ** 2,
+            );
 
-        if (distance > 0) {
-            this.shadeLine(coords, this.lastCoords, color, layer);
+            if (distance > 0) {
+                this.addLinePixels(coords, this.lastCoords, layer);
+            }
+
+            this.shadePixels(layer, editor.getCurrentCanvas().getTemplate());
+
+            this.lastCoords = coords;
         }
-
-        this.lastCoords = coords;
     }
 
     darkenColor(color: [number, number, number, number]) {
@@ -81,36 +94,77 @@ export class Shade implements PaintTool {
         }
     }
 
-    // draw a pixel at the point with the selected color
-    shadePixel(point: { x: number; y: number }, layer: Layer) {
+    // shade pixels on the layer
+    shadePixels(layer: Layer, template: Layer) {
         let image = layer.getImage();
-        let size = layer.getSize();
-        if (
-            point.x < size.width &&
-            point.x >= 0 &&
-            point.y < size.height &&
-            point.y >= 0 &&
-            !layer.isTemplate()
-        ) {
-            let pixelColor = image.getPixel(point);
+        let templateImage = template.getImage();
 
-            let paintMinistep = new PaintMiniStep(point, pixelColor);
-            this.step?.addMiniStep(paintMinistep);
+        if (this.button == 0) {
+            for (let pixel of this.pixels) {
+                let clr = image.getPixel(pixel);
+                templateImage.putPixel(pixel, this.darkenColor(clr));
+            }
+        } else {
+            for (let pixel of this.pixels) {
+                let clr = image.getPixel(pixel);
+                templateImage.putPixel(pixel, this.lightenColor(clr));
+            }
+        }
 
-            if (this.button == 0)
-                image.putPixel(point, this.darkenColor(pixelColor));
-            else if (this.button == 2)
-                image.putPixel(point, this.lightenColor(pixelColor));
+        template.setImage(templateImage);
+    }
+
+    // shade pixels on the layer and add them to the step
+    shadeAndSavePixels(layer: Layer) {
+        let image = layer.getImage();
+
+        if (this.button == 0) {
+            for (let pixel of this.pixels) {
+                let clr = image.getPixel(pixel);
+                image.putPixel(pixel, this.darkenColor(clr));
+
+                if (!this.step?.contains(pixel))
+                    this.step?.addMiniStep(new PaintMiniStep(pixel, clr));
+            }
+        } else {
+            for (let pixel of this.pixels) {
+                let clr = image.getPixel(pixel);
+                image.putPixel(pixel, this.lightenColor(clr));
+
+                if (!this.step?.contains(pixel))
+                    this.step?.addMiniStep(new PaintMiniStep(pixel, clr));
+            }
         }
 
         layer.setImage(image);
     }
 
-    // draw a line from the point a to the point b
-    shadeLine(
+    // add a pixel to the pixels array
+    addPixel(point: { x: number; y: number }, layer: Layer) {
+        let size = layer.getSize();
+        if (
+            point.x < size.width &&
+            point.x >= 0 &&
+            point.y < size.height &&
+            point.y >= 0
+        ) {
+            let contains = false;
+
+            for (let pixel of this.pixels) {
+                if (pixel.x == point.x && pixel.y == point.y) {
+                    contains = true;
+                    break;
+                }
+            }
+
+            if (!contains) this.pixels.push(point);
+        }
+    }
+
+    // add pixels in a line to the pixels array
+    addLinePixels(
         a: { x: number; y: number },
         b: { x: number; y: number },
-        color: [number, number, number, number],
         layer: Layer,
     ) {
         let size = layer.getSize();
@@ -123,45 +177,36 @@ export class Shade implements PaintTool {
         let steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
 
         // increments
-        let xInc = dx / steps;
-        let yInc = dy / steps;
+        let incX = dx / steps;
+        let incY = dy / steps;
 
         let x = a.x;
         let y = a.y;
 
-        let image = layer.getImage();
-
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
 
-            // check if this step already exists
-            let exists = this.step?.contains(point);
-
-            // paint only if in the canvas and the step is not already in the steps
+            // add only if in the canvas and the step is not already in the steps
             if (
                 point.x < size.width &&
                 point.x >= 0 &&
                 point.y < size.height &&
-                point.y >= 0 &&
-                !exists
+                point.y >= 0
             ) {
-                let pixelColor = image.getPixel(point);
+                let contains = false;
 
-                if (!layer.isTemplate()) {
-                    let paintMinistep = new PaintMiniStep(point, pixelColor);
-                    this.step?.addMiniStep(paintMinistep);
+                for (let pixel of this.pixels) {
+                    if (pixel.x == point.x && pixel.y == point.y) {
+                        contains = true;
+                        break;
+                    }
                 }
 
-                if (this.button == 0)
-                    image.putPixel(point, this.darkenColor(pixelColor));
-                else if (this.button == 2)
-                    image.putPixel(point, this.lightenColor(pixelColor));
+                if (!contains) this.pixels.push(point);
             }
 
-            x += xInc;
-            y += yInc;
+            x += incX;
+            y += incY;
         }
-
-        layer.setImage(image);
     }
 }

@@ -7,6 +7,7 @@ export class Pen implements PaintTool {
     lastCoords = { x: -1, y: -1 };
     step: PaintStep | null = null;
     pixels: { x: number; y: number }[] = [];
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
@@ -18,9 +19,10 @@ export class Pen implements PaintTool {
         this.pixels = [];
         let layerID = layer.getID();
         this.step = new PaintStep(layerID);
-
         this.addPixel(coords, layer);
+
         this.lastCoords = coords;
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
@@ -29,10 +31,14 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        this.drawAndSavePixels(color, layer);
+        if (this.wasDownPressed) {
+            this.drawAndSavePixels(color, layer);
 
-        if (this.step != null && !this.step.isEmpty()) {
-            editor.getCurrentCanvas().steps.addStep(this.step);
+            if (this.step != null && !this.step.isEmpty()) {
+                editor.getCurrentCanvas().steps.addStep(this.step);
+            }
+
+            this.wasDownPressed = false;
         }
     }
 
@@ -42,19 +48,21 @@ export class Pen implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // |AB| = sqrt((ax - bx) ** 2 + (ay - by) ** 2)
-        let distance = Math.sqrt(
-            (this.lastCoords.x - coords.x) ** 2 +
-                (this.lastCoords.y - coords.y) ** 2,
-        );
+        if (this.wasDownPressed) {
+            // |AB| = sqrt((ax - bx) ** 2 + (ay - by) ** 2)
+            let distance = Math.sqrt(
+                (this.lastCoords.x - coords.x) ** 2 +
+                    (this.lastCoords.y - coords.y) ** 2,
+            );
 
-        if (distance > 0) {
-            this.addLinePixels(coords, this.lastCoords, layer);
+            if (distance > 0) {
+                this.addLinePixels(coords, this.lastCoords, layer);
+            }
+
+            this.drawPixels(color, editor.getCurrentCanvas().getTemplate());
+
+            this.lastCoords = coords;
         }
-
-        this.drawPixels(color, editor.getCurrentCanvas().getTemplate());
-
-        this.lastCoords = coords;
     }
 
     // draw pixels to the layer

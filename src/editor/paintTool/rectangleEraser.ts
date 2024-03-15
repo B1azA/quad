@@ -8,10 +8,11 @@ export class RectangleEraser implements PaintTool {
     step: PaintStep | null = null;
     selected = false;
     selectedRegion = { x1: 0, y1: 0, x2: 0, y2: 0 };
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
         button: number,
@@ -20,50 +21,68 @@ export class RectangleEraser implements PaintTool {
         this.step = new PaintStep(layerID);
 
         this.lastCoords = coords;
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        let ministeps = [];
-        let image = layer.getImage();
-        for (let x = 0; x <= this.selectedRegion.x2 - this.selectedRegion.x1; x++) {
-            for (let y = 0; y <= this.selectedRegion.y2 - this.selectedRegion.y1; y++) {
-                let point = { x: x + this.selectedRegion.x1, y: y + this.selectedRegion.y1 };
-                let stepColor = image.getPixel(point);
-                image.putPixel(point, [0, 0, 0, 0]);
+        if (this.wasDownPressed) {
+            let ministeps = [];
+            let image = layer.getImage();
+            for (
+                let x = 0;
+                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                x++
+            ) {
+                for (
+                    let y = 0;
+                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                    y++
+                ) {
+                    let point = {
+                        x: x + this.selectedRegion.x1,
+                        y: y + this.selectedRegion.y1,
+                    };
+                    let stepColor = image.getPixel(point);
+                    image.putPixel(point, [0, 0, 0, 0]);
 
-                ministeps.push(new PaintMiniStep(point, stepColor));
+                    ministeps.push(new PaintMiniStep(point, stepColor));
+                }
             }
-        }
 
-        this.step?.addMiniSteps(ministeps);
-        if (this.step != null)
-            editor.getCurrentCanvas().steps.addStep(this.step);
-        layer.setImage(image);
-        editor.getCurrentCanvas().getTemplate().clear();
+            this.step?.addMiniSteps(ministeps);
+            if (this.step != null)
+                editor.getCurrentCanvas().steps.addStep(this.step);
+            layer.setImage(image);
+            editor.getCurrentCanvas().getTemplate().clear();
+
+            this.wasDownPressed = false;
+        }
     }
 
     onMouseMove(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        this.selectedRegion = this.drawBorder(
-            this.lastCoords,
-            coords,
-            editor.tools.getSelectColor(),
-            editor.getCurrentCanvas().getTemplate(),
-        );
+        if (this.wasDownPressed) {
+            this.selectedRegion = this.drawBorder(
+                this.lastCoords,
+                coords,
+                editor.tools.getSelectColor(),
+                editor.getCurrentCanvas().getTemplate(),
+            );
+        }
     }
 
     drawBorder(
-        a: { x: number, y: number },
-        b: { x: number, y: number },
+        a: { x: number; y: number },
+        b: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
@@ -113,6 +132,6 @@ export class RectangleEraser implements PaintTool {
             y1: a2.y + 1,
             x2: b2.x - 1,
             y2: b2.y - 1,
-        }
+        };
     }
 }

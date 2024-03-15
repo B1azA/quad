@@ -6,10 +6,11 @@ import { Layer } from "../canvas/layer";
 export class FilledSquare implements PaintTool {
     lastCoords = { x: -1, y: -1 };
     step: PaintStep | null = null;
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
         button: number,
@@ -18,63 +19,75 @@ export class FilledSquare implements PaintTool {
         this.step = new PaintStep(layerID);
 
         this.lastCoords = coords;
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // draw line to layer
-        this.drawFilledSquare(
-            this.lastCoords,
-            coords,
-            color,
-            layer,
-        );
+        if (this.wasDownPressed) {
+            // draw line to layer
+            this.drawFilledSquare(this.lastCoords, coords, color, layer);
 
-        if (this.step != null && !this.step.isEmpty()) {
-            editor.getCurrentCanvas().steps.addStep(this.step);
+            if (this.step != null && !this.step.isEmpty()) {
+                editor.getCurrentCanvas().steps.addStep(this.step);
+            }
+
+            this.wasDownPressed = false;
         }
     }
 
     onMouseMove(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // draw line to template
-        this.drawFilledSquare(
-            this.lastCoords,
-            coords,
-            color,
-            editor.getCurrentCanvas().getTemplate(),
-        );
+        if (this.wasDownPressed) {
+            // draw line to template
+            this.drawFilledSquare(
+                this.lastCoords,
+                coords,
+                color,
+                editor.getCurrentCanvas().getTemplate(),
+            );
+        }
     }
 
     drawFilledSquare(
-        center: { x: number, y: number },
-        a: { x: number, y: number },
+        center: { x: number; y: number },
+        a: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
         let image = layer.getImage();
         let size = image.size;
 
-        let radius = Math.round(Math.sqrt((center.x - a.x) ** 2 + (center.y - a.y) ** 2));
+        let radius = Math.round(
+            Math.sqrt((center.x - a.x) ** 2 + (center.y - a.y) ** 2),
+        );
 
         for (let x = center.x - radius; x <= center.x + radius; x++) {
             for (let y = center.y - radius; y <= center.y + radius; y++) {
                 let point = { x, y };
 
-                if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
+                if (
+                    point.x < size.width &&
+                    point.x >= 0 &&
+                    point.y < size.height &&
+                    point.y >= 0
+                ) {
                     let pixelColor = image.getPixel(point);
 
                     if (!layer.isTemplate()) {
-                        let paintMinistep = new PaintMiniStep(point, pixelColor);
-                        this.step?.addMiniStep(paintMinistep)
+                        let paintMinistep = new PaintMiniStep(
+                            point,
+                            pixelColor,
+                        );
+                        this.step?.addMiniStep(paintMinistep);
                     }
 
                     image.putPixel(point, color);

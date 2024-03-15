@@ -13,6 +13,7 @@ export class Select implements PaintTool {
     )
         .fill([0, 0, 0, 255])
         .map(() => new Array(length).fill([0, 0, 0, 255]));
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
@@ -70,6 +71,8 @@ export class Select implements PaintTool {
                 );
                 break;
         }
+
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
@@ -78,88 +81,92 @@ export class Select implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        if (this.selected) {
-            let ministeps = [];
-            let image = layer.getImage();
-            for (
-                let x = 0;
-                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
-                x++
-            ) {
+        if (this.wasDownPressed) {
+            if (this.selected) {
+                let ministeps = [];
+                let image = layer.getImage();
                 for (
-                    let y = 0;
-                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
-                    y++
+                    let x = 0;
+                    x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                    x++
                 ) {
-                    let clr = this.selectedRegionData[x][y];
-                    if (clr[3] > 0) {
+                    for (
+                        let y = 0;
+                        y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                        y++
+                    ) {
+                        let clr = this.selectedRegionData[x][y];
+                        if (clr[3] > 0) {
+                            let point = {
+                                x: x + this.selectedRegion.x1,
+                                y: y + this.selectedRegion.y1,
+                            };
+                            let stepColor = image.getPixel(point);
+                            image.putPixel(point, clr);
+
+                            ministeps.push(new PaintMiniStep(point, stepColor));
+                        }
+                    }
+                }
+
+                this.step?.addMiniSteps(ministeps);
+                layer.setImage(image);
+            } else {
+                this.selected = true;
+
+                // update the selected region
+                let image = layer.getImage();
+                let template = editor.getCurrentCanvas().getTemplate();
+                let templateImage = template.getImage();
+                let ministeps = [];
+
+                // fill the region data
+                for (
+                    let x = 0;
+                    x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                    x++
+                ) {
+                    for (
+                        let y = 0;
+                        y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                        y++
+                    ) {
                         let point = {
                             x: x + this.selectedRegion.x1,
                             y: y + this.selectedRegion.y1,
                         };
-                        let stepColor = image.getPixel(point);
-                        image.putPixel(point, clr);
+                        let clr = image.getPixel(point);
+                        image.putPixel(point, [0, 0, 0, 0]);
+                        templateImage.putPixel(point, clr);
+                        this.selectedRegionData[x][y] = clr;
 
-                        ministeps.push(new PaintMiniStep(point, stepColor));
+                        ministeps.push(new PaintMiniStep(point, clr));
                     }
                 }
+
+                this.step?.addMiniSteps(ministeps);
+                layer.setImage(image);
+                template.setImage(templateImage);
+
+                this.drawBorder(
+                    {
+                        x: this.selectedRegion.x1 - 1,
+                        y: this.selectedRegion.y1 - 1,
+                    },
+                    {
+                        x: this.selectedRegion.x2 + 1,
+                        y: this.selectedRegion.y2 + 1,
+                    },
+                    editor.tools.getSelectColor(),
+                    editor.getCurrentCanvas().getTemplate(),
+                );
             }
 
-            this.step?.addMiniSteps(ministeps);
-            layer.setImage(image);
-        } else {
-            this.selected = true;
-
-            // update the selected region
-            let image = layer.getImage();
-            let template = editor.getCurrentCanvas().getTemplate();
-            let templateImage = template.getImage();
-            let ministeps = [];
-
-            // fill the region data
-            for (
-                let x = 0;
-                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
-                x++
-            ) {
-                for (
-                    let y = 0;
-                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
-                    y++
-                ) {
-                    let point = {
-                        x: x + this.selectedRegion.x1,
-                        y: y + this.selectedRegion.y1,
-                    };
-                    let clr = image.getPixel(point);
-                    image.putPixel(point, [0, 0, 0, 0]);
-                    templateImage.putPixel(point, clr);
-                    this.selectedRegionData[x][y] = clr;
-
-                    ministeps.push(new PaintMiniStep(point, clr));
-                }
+            if (this.step != null && !this.step.isEmpty()) {
+                editor.getCurrentCanvas().steps.addStep(this.step);
             }
 
-            this.step?.addMiniSteps(ministeps);
-            layer.setImage(image);
-            template.setImage(templateImage);
-
-            this.drawBorder(
-                {
-                    x: this.selectedRegion.x1 - 1,
-                    y: this.selectedRegion.y1 - 1,
-                },
-                {
-                    x: this.selectedRegion.x2 + 1,
-                    y: this.selectedRegion.y2 + 1,
-                },
-                editor.tools.getSelectColor(),
-                editor.getCurrentCanvas().getTemplate(),
-            );
-        }
-
-        if (this.step != null && !this.step.isEmpty()) {
-            editor.getCurrentCanvas().steps.addStep(this.step);
+            this.wasDownPressed = false;
         }
     }
 
@@ -169,62 +176,64 @@ export class Select implements PaintTool {
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        if (!this.selected) {
-            editor.getCurrentCanvas().getTemplate().clear();
-            this.selectedRegion = this.drawBorder(
-                this.lastCoords,
-                coords,
-                editor.tools.getSelectColor(),
-                editor.getCurrentCanvas().getTemplate(),
-            );
-        } else {
-            let deltaX = coords.x - this.lastCoords.x;
-            let deltaY = coords.y - this.lastCoords.y;
+        if (this.wasDownPressed) {
+            if (!this.selected) {
+                editor.getCurrentCanvas().getTemplate().clear();
+                this.selectedRegion = this.drawBorder(
+                    this.lastCoords,
+                    coords,
+                    editor.tools.getSelectColor(),
+                    editor.getCurrentCanvas().getTemplate(),
+                );
+            } else {
+                let deltaX = coords.x - this.lastCoords.x;
+                let deltaY = coords.y - this.lastCoords.y;
 
-            this.selectedRegion.x1 += deltaX;
-            this.selectedRegion.x2 += deltaX;
-            this.selectedRegion.y1 += deltaY;
-            this.selectedRegion.y2 += deltaY;
+                this.selectedRegion.x1 += deltaX;
+                this.selectedRegion.x2 += deltaX;
+                this.selectedRegion.y1 += deltaY;
+                this.selectedRegion.y2 += deltaY;
 
-            this.lastCoords = coords;
+                this.lastCoords = coords;
 
-            let template = editor.getCurrentCanvas().getTemplate();
-            let templateImage = template.getImage();
-            for (
-                let x = 0;
-                x <= this.selectedRegion.x2 - this.selectedRegion.x1;
-                x++
-            ) {
+                let template = editor.getCurrentCanvas().getTemplate();
+                let templateImage = template.getImage();
                 for (
-                    let y = 0;
-                    y <= this.selectedRegion.y2 - this.selectedRegion.y1;
-                    y++
+                    let x = 0;
+                    x <= this.selectedRegion.x2 - this.selectedRegion.x1;
+                    x++
                 ) {
-                    let clr = this.selectedRegionData[x][y];
-                    templateImage.putPixel(
-                        {
-                            x: x + this.selectedRegion.x1,
-                            y: y + this.selectedRegion.y1,
-                        },
-                        clr,
-                    );
+                    for (
+                        let y = 0;
+                        y <= this.selectedRegion.y2 - this.selectedRegion.y1;
+                        y++
+                    ) {
+                        let clr = this.selectedRegionData[x][y];
+                        templateImage.putPixel(
+                            {
+                                x: x + this.selectedRegion.x1,
+                                y: y + this.selectedRegion.y1,
+                            },
+                            clr,
+                        );
+                    }
                 }
+
+                template.setImage(templateImage);
+
+                this.drawBorder(
+                    {
+                        x: this.selectedRegion.x1 - 1,
+                        y: this.selectedRegion.y1 - 1,
+                    },
+                    {
+                        x: this.selectedRegion.x2 + 1,
+                        y: this.selectedRegion.y2 + 1,
+                    },
+                    editor.tools.getSelectColor(),
+                    editor.getCurrentCanvas().getTemplate(),
+                );
             }
-
-            template.setImage(templateImage);
-
-            this.drawBorder(
-                {
-                    x: this.selectedRegion.x1 - 1,
-                    y: this.selectedRegion.y1 - 1,
-                },
-                {
-                    x: this.selectedRegion.x2 + 1,
-                    y: this.selectedRegion.y2 + 1,
-                },
-                editor.tools.getSelectColor(),
-                editor.getCurrentCanvas().getTemplate(),
-            );
         }
     }
 

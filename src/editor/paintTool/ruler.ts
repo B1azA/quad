@@ -6,10 +6,11 @@ import { Layer } from "../canvas/layer";
 export class Ruler implements PaintTool {
     lastCoords = { x: -1, y: -1 };
     step: PaintStep | null = null;
+    wasDownPressed = false;
 
     onMouseDown(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
         button: number,
@@ -18,46 +19,48 @@ export class Ruler implements PaintTool {
         this.step = new PaintStep(layerID);
 
         this.lastCoords = coords;
+        this.wasDownPressed = true;
     }
 
     onMouseUp(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // draw line to layer
-        this.drawLine(
-            coords,
-            this.lastCoords,
-            color,
-            layer,
-        );
+        if (this.wasDownPressed) {
+            // draw line to layer
+            this.drawLine(coords, this.lastCoords, color, layer);
 
-        if (this.step != null && !this.step.isEmpty()) {
-            editor.getCurrentCanvas().steps.addStep(this.step);
+            if (this.step != null && !this.step.isEmpty()) {
+                editor.getCurrentCanvas().steps.addStep(this.step);
+            }
+
+            this.wasDownPressed = false;
         }
     }
 
     onMouseMove(
         editor: Editor,
-        coords: { x: number, y: number },
+        coords: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
-        // draw line to template
-        this.drawLine(
-            coords,
-            this.lastCoords,
-            color,
-            editor.getCurrentCanvas().getTemplate(),
-        );
+        if (this.wasDownPressed) {
+            // draw line to template
+            this.drawLine(
+                coords,
+                this.lastCoords,
+                color,
+                editor.getCurrentCanvas().getTemplate(),
+            );
+        }
     }
 
     // draw a line from the point a to the point b
     drawLine(
-        a: { x: number, y: number },
-        b: { x: number, y: number },
+        a: { x: number; y: number },
+        b: { x: number; y: number },
         color: [number, number, number, number],
         layer: Layer,
     ) {
@@ -83,12 +86,17 @@ export class Ruler implements PaintTool {
             let point = { x: Math.round(x), y: Math.round(y) };
 
             // paint only if in the canvas
-            if (point.x < size.width && point.x >= 0 && point.y < size.height && point.y >= 0) {
+            if (
+                point.x < size.width &&
+                point.x >= 0 &&
+                point.y < size.height &&
+                point.y >= 0
+            ) {
                 let pixelColor = image.getPixel(point);
 
                 if (!layer.isTemplate()) {
                     let paintMinistep = new PaintMiniStep(point, pixelColor);
-                    this.step?.addMiniStep(paintMinistep)
+                    this.step?.addMiniStep(paintMinistep);
                 }
 
                 image.putPixel(point, color);
@@ -98,9 +106,9 @@ export class Ruler implements PaintTool {
             y += yInc;
 
             // break if outside of the canvas
-            if ((x >= size.width && y >= size.height) && (x < 0 && y < 0)) {
+            if (x >= size.width && y >= size.height && x < 0 && y < 0) {
                 break;
-            };
+            }
         }
 
         layer.setImage(image);

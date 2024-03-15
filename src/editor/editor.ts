@@ -112,6 +112,7 @@ export class Editor {
 
         this.updateFrameAndAnimationFrame();
         this.getCurrentCanvas().setRealSize(realSize);
+        this.tools.choosePenTool();
     }
 
     getFps() {
