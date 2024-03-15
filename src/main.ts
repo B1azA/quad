@@ -51,7 +51,7 @@ function setupProject() {
         (createNew) => {
             if (createNew) {
                 showSizeDialog(
-                    "Choose a canvas size",
+                    "Choose a canvas size.",
                     { width: 32, height: 32 },
                     (confirmed, size) => {
                         if (confirmed) {
@@ -191,7 +191,7 @@ function setupEvents(editor: Editor) {
 
                                     let oldEditor = editor;
                                     showSizeDialog(
-                                        "Choose a canvas size",
+                                        "Choose a canvas size.",
                                         { width: 32, height: 32 },
                                         (confirmed, size) => {
                                             if (confirmed) {
@@ -236,7 +236,7 @@ function setupEvents(editor: Editor) {
 
                     let oldEditor = editor;
                     showSizeDialog(
-                        "Choose a canvas size",
+                        "Choose a canvas size.",
                         { width: 32, height: 32 },
                         (confirmed, size) => {
                             if (confirmed) {
@@ -360,7 +360,7 @@ function setupEvents(editor: Editor) {
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to import the image.", () => {});
+                showMessageDialog("Failed to import the image!", () => {});
             });
     };
 
@@ -382,7 +382,7 @@ function setupEvents(editor: Editor) {
             })
             .catch((error) => {
                 console.log(error);
-                showMessageDialog("Failed to import the image.", () => {});
+                showMessageDialog("Failed to import the image!", () => {});
             });
     };
 
@@ -590,7 +590,7 @@ function setupEvents(editor: Editor) {
     };
 
     document.getElementById("addLayer")!.onclick = () => {
-        showPromptDialog("Add layer", "new", (value) => {
+        showPromptDialog("Add layer.", "new", (value) => {
             let name = value.length > 0 ? value : "unnamed";
             editor.getCurrentCanvas().addLayer(name);
 
