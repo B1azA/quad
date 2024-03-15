@@ -9,8 +9,8 @@ export class Editor {
     private mouseButtons: [boolean, boolean, boolean] = [false, false, false];
 
     private lastMouseGlobalPos: {
-        x: number,
-        y: number,
+        x: number;
+        y: number;
     } = { x: 0, y: 0 };
 
     // index of the current canvas in the canvases
@@ -29,8 +29,12 @@ export class Editor {
 
     palette: Palette;
 
-    private animationFrame: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("animationFrame");
-    private animationFrameCtx = this.animationFrame.getContext("2d", { willReadFrequently: true })!
+    private animationFrame: HTMLCanvasElement = <HTMLCanvasElement>(
+        document.getElementById("animationFrame")
+    );
+    private animationFrameCtx = this.animationFrame.getContext("2d", {
+        willReadFrequently: true,
+    })!;
 
     private fpsRange = <HTMLInputElement>document.getElementById("fpsRange");
     private fpsValue = <HTMLLabelElement>document.getElementById("fpsValue");
@@ -46,13 +50,16 @@ export class Editor {
     private lastKey = "";
 
     constructor(projectMessage: ProjectMessage) {
-        let size = { width: projectMessage.width, height: projectMessage.height };
-        let height = (window.innerHeight / 2);
-        let width = height * size.width / size.height;
+        let size = {
+            width: projectMessage.width,
+            height: projectMessage.height,
+        };
+        let height = window.innerHeight / 2;
+        let width = (height * size.width) / size.height;
         let realSize = { width, height };
         let pos = {
             x: window.innerWidth / 2 - width / 2,
-            y: window.innerHeight / 2 - height / 2
+            y: window.innerHeight / 2 - height / 2,
         };
 
         this.originalRealSize = realSize;
@@ -65,7 +72,8 @@ export class Editor {
             for (let frame of projectMessage.frames) {
                 this.addFrame(template, frame.layers);
             }
-        } else { // add frame if there is none
+        } else {
+            // add frame if there is none
             this.addFrame(template, []);
         }
 
@@ -83,18 +91,21 @@ export class Editor {
                 clearInterval(this.animationInterval);
 
             if (this.fps != 0) {
-                this.animationInterval = setInterval(() => {
-                    this.setAnimationFrame(this.animationFrameIndex);
-                    this.animationFrameIndex += 1;
+                this.animationInterval = setInterval(
+                    () => {
+                        this.setAnimationFrame(this.animationFrameIndex);
+                        this.animationFrameIndex += 1;
 
-                    if (this.animationFrameIndex >= this.canvases.length) {
-                        this.animationFrameIndex = 0;
-                    }
-                }, 1 / this.fps * 1000);
+                        if (this.animationFrameIndex >= this.canvases.length) {
+                            this.animationFrameIndex = 0;
+                        }
+                    },
+                    (1 / this.fps) * 1000,
+                );
             } else {
                 this.setAnimationFrame(this.animationFrameIndex);
             }
-        }
+        };
 
         this.name = projectMessage.name;
         this.path = projectMessage.path;
@@ -128,7 +139,6 @@ export class Editor {
         }
 
         let size = this.getCurrentCanvas().getSize();
-
 
         let projectMessage: ProjectMessage = {
             name: this.name,
@@ -180,7 +190,12 @@ export class Editor {
 
     /// add a frame to the editor and focus it, return it
     addFrame(template: Layer, layers: LayerMessage[]) {
-        let canvas = new Canvas(this.framesContainer, template.getSize(), template, layers);
+        let canvas = new Canvas(
+            this.framesContainer,
+            template.getSize(),
+            template,
+            layers,
+        );
         this.canvases.push(canvas);
 
         let oldCanvasIndex = this.canvasIndex;
@@ -224,8 +239,7 @@ export class Editor {
             // set the new current canvas
             if (this.canvasIndex < this.canvases.length)
                 this.setCurrentCanvas(this.canvasIndex, template);
-            else
-                this.setCurrentCanvas(this.canvasIndex - 1, template);
+            else this.setCurrentCanvas(this.canvasIndex - 1, template);
 
             // set new indexes for each canvas
             for (let i = 0; i < this.canvases.length; i++) {
@@ -234,7 +248,7 @@ export class Editor {
                     this.getCurrentCanvas().remove();
 
                     this.setCurrentCanvas(i, template);
-                }
+                };
             }
             this.updateFrameAndAnimationFrame();
         }
@@ -291,13 +305,19 @@ export class Editor {
                     this.getCurrentCanvas().getFrame().id = "normalFrame";
                     this.getCurrentCanvas().remove();
 
-                    this.setCurrentCanvas(i, this.getCurrentCanvas().getTemplate());
-                }
+                    this.setCurrentCanvas(
+                        i,
+                        this.getCurrentCanvas().getTemplate(),
+                    );
+                };
 
                 this.framesContainer.appendChild(frame);
             }
 
-            this.setCurrentCanvas(this.canvasIndex - 1, this.getCurrentCanvas().getTemplate());
+            this.setCurrentCanvas(
+                this.canvasIndex - 1,
+                this.getCurrentCanvas().getTemplate(),
+            );
 
             this.updateFrameAndAnimationFrame();
         }
@@ -327,13 +347,19 @@ export class Editor {
                     this.getCurrentCanvas().getFrame().id = "normalFrame";
                     this.getCurrentCanvas().remove();
 
-                    this.setCurrentCanvas(i, this.getCurrentCanvas().getTemplate());
-                }
+                    this.setCurrentCanvas(
+                        i,
+                        this.getCurrentCanvas().getTemplate(),
+                    );
+                };
 
                 this.framesContainer.appendChild(frame);
             }
 
-            this.setCurrentCanvas(this.canvasIndex + 1, this.getCurrentCanvas().getTemplate());
+            this.setCurrentCanvas(
+                this.canvasIndex + 1,
+                this.getCurrentCanvas().getTemplate(),
+            );
 
             this.updateFrameAndAnimationFrame();
         }
@@ -360,7 +386,11 @@ export class Editor {
         let canvas = this.getCurrentCanvas();
 
         canvas.getFrame().id = "currentFrame";
-        canvas.init(template, this.originalRealSize.width, this.originalRealSize.height);
+        canvas.init(
+            template,
+            this.originalRealSize.width,
+            this.originalRealSize.height,
+        );
     }
 
     getZoom() {
@@ -426,31 +456,35 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.tools.getPaintTool().onMouseDown(
-                        this,
-                        mouseCoords,
-                        this.palette.getColor(),
-                        this.getCurrentCanvas().getCurrentLayer(),
-                        0,
-                    );
+                    this.tools
+                        .getPaintTool()
+                        .onMouseDown(
+                            this,
+                            mouseCoords,
+                            this.palette.getColor(),
+                            this.getCurrentCanvas().getCurrentLayer(),
+                            0,
+                        );
                 }
                 break;
             case 1:
                 this.mouseButtons[1] = true;
-                break
+                break;
             case 2:
                 this.mouseButtons[2] = true;
                 this.palette.setColorToSecondary();
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.tools.getPaintTool().onMouseDown(
-                        this,
-                        mouseCoords,
-                        this.palette.getColor(),
-                        this.getCurrentCanvas().getCurrentLayer(),
-                        2,
-                    );
+                    this.tools
+                        .getPaintTool()
+                        .onMouseDown(
+                            this,
+                            mouseCoords,
+                            this.palette.getColor(),
+                            this.getCurrentCanvas().getCurrentLayer(),
+                            2,
+                        );
                 }
                 break;
         }
@@ -465,12 +499,14 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.tools.getPaintTool().onMouseUp(
-                        this,
-                        mouseCoords,
-                        this.palette.getColor(),
-                        this.getCurrentCanvas().getCurrentLayer(),
-                    );
+                    this.tools
+                        .getPaintTool()
+                        .onMouseUp(
+                            this,
+                            mouseCoords,
+                            this.palette.getColor(),
+                            this.getCurrentCanvas().getCurrentLayer(),
+                        );
 
                     this.getCurrentCanvas().updateFrameImage();
                 }
@@ -478,7 +514,7 @@ export class Editor {
 
             case 1:
                 this.mouseButtons[1] = false;
-                break
+                break;
 
             case 2:
                 this.mouseButtons[2] = false;
@@ -486,12 +522,14 @@ export class Editor {
 
                 // if not moving with the canvas
                 if (!this.drag && this.isMouseOnEditorContainer) {
-                    this.tools.getPaintTool().onMouseUp(
-                        this,
-                        mouseCoords,
-                        this.palette.getColor(),
-                        this.getCurrentCanvas().getCurrentLayer(),
-                    );
+                    this.tools
+                        .getPaintTool()
+                        .onMouseUp(
+                            this,
+                            mouseCoords,
+                            this.palette.getColor(),
+                            this.getCurrentCanvas().getCurrentLayer(),
+                        );
 
                     this.getCurrentCanvas().updateFrameImage();
                 }
@@ -499,7 +537,9 @@ export class Editor {
         }
 
         // show the current pixel
-        let image = this.getCurrentCanvas().getTemplate().getImage();
+        let template = this.getCurrentCanvas().getTemplate();
+        template.clear();
+        let image = template.getImage();
         let toolColor = this.tools.getToolColor();
         let color = this.palette.getColor();
 
@@ -508,7 +548,7 @@ export class Editor {
         }
 
         image.putPixel(mouseCoords, color);
-        this.getCurrentCanvas().getTemplate().setImage(image);
+        template.setImage(image);
 
         this.updateFrameAndAnimationFrame();
     }
@@ -526,21 +566,24 @@ export class Editor {
             if (this.drag) {
                 let moveDelta = {
                     x: mouseGlobalPos.x - this.lastMouseGlobalPos.x,
-                    y: mouseGlobalPos.y - this.lastMouseGlobalPos.y
+                    y: mouseGlobalPos.y - this.lastMouseGlobalPos.y,
                 };
                 this.getCurrentCanvas().move(moveDelta);
-            } else if (this.isMouseOnEditorContainer) { // paint
-                this.tools.getPaintTool().onMouseMove(
-                    this,
-                    mouseCoords,
-                    this.palette.getColor(),
-                    this.getCurrentCanvas().getCurrentLayer(),
-                );
+            } else if (this.isMouseOnEditorContainer) {
+                // paint
+                this.tools
+                    .getPaintTool()
+                    .onMouseMove(
+                        this,
+                        mouseCoords,
+                        this.palette.getColor(),
+                        this.getCurrentCanvas().getCurrentLayer(),
+                    );
             }
         } else if (this.mouseButtons[1]) {
             let moveDelta = {
                 x: mouseGlobalPos.x - this.lastMouseGlobalPos.x,
-                y: mouseGlobalPos.y - this.lastMouseGlobalPos.y
+                y: mouseGlobalPos.y - this.lastMouseGlobalPos.y,
             };
             this.getCurrentCanvas().move(moveDelta);
         }
@@ -563,7 +606,11 @@ export class Editor {
 
     onWheel(event: WheelEvent) {
         let zoomDelta = Math.sign(-event.deltaY) * 0.1;
-        this.zoom = this.getCurrentCanvas().zoomIn(this.zoom, zoomDelta, this.lastMouseGlobalPos);
+        this.zoom = this.getCurrentCanvas().zoomIn(
+            this.zoom,
+            zoomDelta,
+            this.lastMouseGlobalPos,
+        );
         this.onMouseMove(event);
     }
 
@@ -670,7 +717,6 @@ export class Editor {
                     break;
             }
         }
-
 
         this.lastKey = key;
     }
