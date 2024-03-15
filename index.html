@@ -144,7 +144,7 @@
 
         <div id="editorContainer" oncontextmenu="return false;"></div>
 
-        <dialog id="promptDialog" class="dialog">
+        <dialog id="promptDialog" class="dialog noselect">
             <form>
                 <p></p>
                 <input type="text" />
@@ -153,7 +153,7 @@
             </form>
         </dialog>
 
-        <dialog id="confirmDialog" class="dialog">
+        <dialog id="confirmDialog" class="dialog noselect">
             <form>
                 <p></p>
                 <button id="confirmButton" value="confirm" formmethod="dialog">
@@ -165,14 +165,14 @@
             </form>
         </dialog>
 
-        <dialog id="messageDialog" class="dialog">
+        <dialog id="messageDialog" class="dialog noselect">
             <form>
                 <p></p>
                 <button value="ok" formmethod="dialog">Ok</button>
             </form>
         </dialog>
 
-        <dialog id="sizeDialog" class="dialog">
+        <dialog id="sizeDialog" class="dialog noselect">
             <form>
                 <p></p>
                 <input type="number" id="sizeDialogWidthInput" />
