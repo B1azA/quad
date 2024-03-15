@@ -28,7 +28,7 @@ pub fn file_export_image(image_message: ImageMessage) -> Result<(), String> {
 
     let file = match rfd::FileDialog::new()
         .set_directory(home)
-        .set_file_name(&format!("{}", &image_message.name))
+        .set_file_name(&format!("{}.png", &image_message.name))
         .add_filter("Image", &["png"])
         .save_file()
     {
@@ -123,6 +123,7 @@ pub fn file_export_images_as_gif(images_message: ImagesMessageGif) -> Result<(),
     let file_path = match rfd::FileDialog::new()
         .set_directory(home)
         .set_file_name(&format!("{}.gif", &images_message.name))
+        .add_filter("GIF", &["gif"])
         .save_file()
     {
         Some(file) => file,
@@ -248,6 +249,7 @@ pub fn project_save_as(mut project_message: ProjectMessage) -> Result<String, St
     let file_path = match rfd::FileDialog::new()
         .set_directory(home)
         .set_file_name(&format!("{}.quad", &project_message.name))
+        .add_filter("QUAD", &["quad"])
         .save_file()
     {
         Some(file) => file,

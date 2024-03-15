@@ -1,16 +1,16 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
 export type ImageMessage = {
-    width: number,
-    height: number,
-    name: string,
-    data: number[],
-}
+    width: number;
+    height: number;
+    name: string;
+    data: number[];
+};
 
 export type ImageSize = {
-    width: number,
-    height: number,
-}
+    width: number;
+    height: number;
+};
 
 export function fileImportImage(imageSize: ImageSize): Promise<ImageMessage> {
     return invoke("file_import_image", {
@@ -25,49 +25,53 @@ export function fileExportImage(imageMessage: ImageMessage): Promise<unknown> {
 }
 
 export type ImagesMessage = {
-    width: number,
-    height: number,
-    name: string,
-    data: number[][],
-}
+    width: number;
+    height: number;
+    name: string;
+    data: number[][];
+};
 
-export function fileExportImages(imagesMessage: ImagesMessage): Promise<unknown> {
+export function fileExportImages(
+    imagesMessage: ImagesMessage,
+): Promise<unknown> {
     return invoke("file_export_images", {
         imagesMessage,
     });
 }
 
 export type ImagesMessageGif = {
-    width: number,
-    height: number,
-    name: string,
-    data: number[][],
-    fps: number,
-}
+    width: number;
+    height: number;
+    name: string;
+    data: number[][];
+    fps: number;
+};
 
-export function fileExportImagesAsGif(imagesMessage: ImagesMessageGif): Promise<unknown> {
+export function fileExportImagesAsGif(
+    imagesMessage: ImagesMessageGif,
+): Promise<unknown> {
     return invoke("file_export_images_as_gif", {
         imagesMessage,
     });
 }
 
 export type ProjectMessage = {
-    name: string,
-    width: number,
-    height: number,
-    frames: FrameMessage[],
-    colors: [number, number, number, number][],
-    path: string,
-}
+    name: string;
+    width: number;
+    height: number;
+    frames: FrameMessage[];
+    colors: [number, number, number, number][];
+    path: string;
+};
 
 export type FrameMessage = {
-    layers: LayerMessage[],
-}
+    layers: LayerMessage[];
+};
 
 export type LayerMessage = {
-    name: string,
-    data: number[],
-}
+    name: string;
+    data: number[];
+};
 
 export function projectSaveAs(projectMessage: ProjectMessage): Promise<string> {
     return invoke("project_save_as", {
