@@ -1,6 +1,6 @@
 import { Canvas } from "./canvas/canvas";
 import { Palette } from "./palette";
-import { Tools } from "./paintTools";
+import { Tools } from "./tools";
 import { Layer } from "./canvas/layer";
 import { FrameMessage, LayerMessage, ProjectMessage } from "../tauri";
 
@@ -674,6 +674,12 @@ export class Editor {
                 case "r":
                     this.tools.useLeftRotationTool(this);
                     break;
+                case "ArrowUp":
+                    document.getElementById("moveLayerUp")?.click();
+                    break;
+                case "ArrowDown":
+                    document.getElementById("moveLayerDown")?.click();
+                    break;
             }
         } else {
             switch (key) {
@@ -715,6 +721,18 @@ export class Editor {
                     break;
                 case "y":
                     this.tools.chooseShadeTool();
+                    break;
+                case "ArrowUp":
+                    this.moveFrameUp();
+                    break;
+                case "ArrowDown":
+                    this.moveFrameDown();
+                    break;
+                case "ArrowLeft":
+                    this.palette.moveColorLeft();
+                    break;
+                case "ArrowRight":
+                    this.palette.moveColorRight();
                     break;
             }
         }

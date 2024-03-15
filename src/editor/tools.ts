@@ -36,7 +36,8 @@ export class Tools {
 
     private toolColor: [number, number, number, number] | null = null;
     private selectColor: [number, number, number, number] = [
-        200, 200, 255, 120,
+        // 200, 200, 255, 120,
+        120, 100, 255, 100,
     ];
 
     private verticalFlipTool: FrameTool = new VerticalFlip();
@@ -170,7 +171,7 @@ export class Tools {
 
         if (pickerButton != null) pickerButton.className = "selectedTool";
 
-        this.toolColor = null;
+        this.toolColor = this.selectColor;
     }
 
     chooseSelectTool() {
