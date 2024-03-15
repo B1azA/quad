@@ -644,6 +644,7 @@ export class Editor {
                         document.getElementById("removeLayer")?.click();
                     break;
                 case "f":
+                    event.preventDefault();
                     if (this.lastKey == "i")
                         document.getElementById("fileImportFrame")?.click();
                     else if (this.lastKey == "e")
@@ -686,6 +687,7 @@ export class Editor {
                     this.tools.useRightRotationTool(this);
                     break;
                 case "r":
+                    event.preventDefault();
                     this.tools.useLeftRotationTool(this);
                     break;
                 case "ArrowUp":
@@ -693,6 +695,9 @@ export class Editor {
                     break;
                 case "ArrowDown":
                     document.getElementById("moveLayerDown")?.click();
+                    break;
+                case "F5":
+                    event.preventDefault();
                     break;
             }
         } else {
@@ -747,6 +752,9 @@ export class Editor {
                     break;
                 case "ArrowRight":
                     this.palette.moveColorRight();
+                    break;
+                case "F5":
+                    event.preventDefault();
                     break;
             }
         }

@@ -116,7 +116,9 @@ export class Canvas {
         this.frameImage = this.getLayersImageCombined();
     }
 
-    // init the canvas after it was removed from the DOM
+    /**
+     * init the canvas after it was removed from the DOM
+     **/
     init(
         template: Layer,
         originalRealWidth: number,
@@ -153,7 +155,6 @@ export class Canvas {
         this.updateFrameImage();
     }
 
-    // remove itself from the DOM
     /**
      * remove itself from the DOM
      * remove everything except the frame
