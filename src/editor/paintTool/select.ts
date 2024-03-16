@@ -27,6 +27,7 @@ export class Select implements PaintTool {
 
         this.lastCoords = coords;
 
+        // start selecting or paste the selection to the template
         switch (button) {
             case 0:
                 this.selected = false;
@@ -82,6 +83,7 @@ export class Select implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
+            // cut the selection from the layer or paste it to the layer
             if (this.selected) {
                 let ministeps = [];
                 let image = layer.getImage();
@@ -177,6 +179,7 @@ export class Select implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
+            // draw to the template or select the selection region
             if (!this.selected) {
                 editor.getCurrentCanvas().getTemplate().clear();
                 this.selectedRegion = this.drawBorder(

@@ -1,22 +1,29 @@
 export class Image {
     imageData: ImageData;
-    size: { width: number, height: number };
+    size: { width: number; height: number };
 
-    constructor(
-        imageData: ImageData,
-    ) {
+    constructor(imageData: ImageData) {
         this.imageData = imageData;
-        this.size = { width: this.imageData.width, height: this.imageData.height };
+        this.size = {
+            width: this.imageData.width,
+            height: this.imageData.height,
+        };
     }
 
-    // puts a pixel at the point with the selected color
+    /** Put a pixel at the point with the selected color. */
     putPixel(
-        point: { x: number, y: number },
-        color: [number, number, number, number]
+        point: { x: number; y: number },
+        color: [number, number, number, number],
     ) {
-        // return if outside of canvas
-        if (point.x >= this.size.width || point.x < 0 || point.y >= this.size.height || point.y < 0) return;
-        // 4 times to skip all color channels
+        // return if outside of the canvas
+        if (
+            point.x >= this.size.width ||
+            point.x < 0 ||
+            point.y >= this.size.height ||
+            point.y < 0
+        )
+            return;
+        // 4 times to skip all the color channels
         let index = 4 * (point.x + point.y * this.imageData.width);
         let pixels = this.imageData.data;
         pixels[index] = color[0];
@@ -25,7 +32,8 @@ export class Image {
         pixels[index + 3] = color[3];
     }
 
-    getPixel(point: { x: number, y: number }) {
+    /** Get the color on point. */
+    getPixel(point: { x: number; y: number }) {
         let color: [number, number, number, number] = [0, 0, 0, 0];
 
         // 4 times to skip all color channels

@@ -1,5 +1,9 @@
-// creates a dialog with a prompt and returns its value as a callback
-export function showPromptDialog(title: string, defaultValue: string, callback: (value: string) => void) {
+/** Create a prompt dialog with a prompt and return its value in a callback. */
+export function showPromptDialog(
+    title: string,
+    defaultValue: string,
+    callback: (value: string) => void,
+) {
     let dialog = <HTMLDialogElement>document.getElementById("promptDialog");
     dialog.returnValue = "";
     dialog.showModal();
@@ -16,14 +20,23 @@ export function showPromptDialog(title: string, defaultValue: string, callback: 
             ret = input.value;
             callback(ret);
         }
-    }
+    };
 }
 
-// creates a dialog with a confirmation and returns its value as a callback
-export function showConfirmDialog(title: string, confirmButtonText: string, cancelButtonText: string, callback: (confirmed: boolean) => void) {
+/** Create a confirmation dialog with a confirmation and return its value in a callback. */
+export function showConfirmDialog(
+    title: string,
+    confirmButtonText: string,
+    cancelButtonText: string,
+    callback: (confirmed: boolean) => void,
+) {
     let dialog = <HTMLDialogElement>document.getElementById("confirmDialog");
-    let confirmButton = <HTMLButtonElement>document.getElementById("confirmButton");
-    let cancelButton = <HTMLButtonElement>document.getElementById("cancelButton");
+    let confirmButton = <HTMLButtonElement>(
+        document.getElementById("confirmButton")
+    );
+    let cancelButton = <HTMLButtonElement>(
+        document.getElementById("cancelButton")
+    );
 
     confirmButton.textContent = confirmButtonText;
     cancelButton.textContent = cancelButtonText;
@@ -40,9 +53,10 @@ export function showConfirmDialog(title: string, confirmButtonText: string, canc
         } else {
             callback(false);
         }
-    }
+    };
 }
 
+/** Create a dialog with a message and call the callback when clicks on "ok". */
 export function showMessageDialog(title: string, callback: () => void) {
     let dialog = <HTMLDialogElement>document.getElementById("messageDialog");
 
@@ -58,10 +72,18 @@ export function showMessageDialog(title: string, callback: () => void) {
         } else {
             callback();
         }
-    }
+    };
 }
 
-export function showSizeDialog(title: string, defaultValue: { width: number, height: number }, callback: (confirmed: boolean, size: { width: number, height: number }) => void) {
+/** Create a size dialog with a confirmation and return its value in a callback. */
+export function showSizeDialog(
+    title: string,
+    defaultValue: { width: number; height: number },
+    callback: (
+        confirmed: boolean,
+        size: { width: number; height: number },
+    ) => void,
+) {
     let dialog = <HTMLDialogElement>document.getElementById("sizeDialog");
     dialog.returnValue = "";
     dialog.showModal();
@@ -70,11 +92,15 @@ export function showSizeDialog(title: string, defaultValue: { width: number, hei
     titleEl.textContent = title;
 
     let ret = defaultValue;
-    let inputWidth = <HTMLInputElement>document.getElementById("sizeDialogWidthInput");
+    let inputWidth = <HTMLInputElement>(
+        document.getElementById("sizeDialogWidthInput")
+    );
     inputWidth.min = "1";
     inputWidth.max = "512";
     inputWidth.value = defaultValue.width.toString();
-    let inputHeight = <HTMLInputElement>document.getElementById("sizeDialogHeightInput");
+    let inputHeight = <HTMLInputElement>(
+        document.getElementById("sizeDialogHeightInput")
+    );
     inputHeight.min = "1";
     inputHeight.max = "512";
     inputHeight.value = defaultValue.height.toString();
@@ -86,5 +112,5 @@ export function showSizeDialog(title: string, defaultValue: { width: number, hei
 
         ret = { width, height };
         callback(confirmed, ret);
-    }
+    };
 }

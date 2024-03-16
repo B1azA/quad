@@ -29,7 +29,6 @@ export class FilledSquare implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
-            // draw line to layer
             this.drawFilledSquare(this.lastCoords, coords, color, layer);
 
             if (this.step != null && !this.step.isEmpty()) {
@@ -47,7 +46,6 @@ export class FilledSquare implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
-            // draw line to template
             this.drawFilledSquare(
                 this.lastCoords,
                 coords,
@@ -66,6 +64,7 @@ export class FilledSquare implements PaintTool {
         let image = layer.getImage();
         let size = image.size;
 
+        // calculate the inscribed circle radius
         let radius = Math.round(
             Math.sqrt((center.x - a.x) ** 2 + (center.y - a.y) ** 2),
         );

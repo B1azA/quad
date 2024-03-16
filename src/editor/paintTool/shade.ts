@@ -94,7 +94,7 @@ export class Shade implements PaintTool {
         }
     }
 
-    // shade pixels on the layer
+    /** Shade pixels on the layer. */
     shadePixels(layer: Layer, template: Layer) {
         let image = layer.getImage();
         let templateImage = template.getImage();
@@ -114,7 +114,7 @@ export class Shade implements PaintTool {
         template.setImage(templateImage);
     }
 
-    // shade pixels on the layer and add them to the step
+    /** Shade pixels on the layer and add them to the step. */
     shadeAndSavePixels(layer: Layer) {
         let image = layer.getImage();
 
@@ -139,7 +139,7 @@ export class Shade implements PaintTool {
         layer.setImage(image);
     }
 
-    // add a pixel to the pixels array
+    /** Add a pixel to the pixels array. */
     addPixel(point: { x: number; y: number }, layer: Layer) {
         let size = layer.getSize();
         if (
@@ -161,7 +161,7 @@ export class Shade implements PaintTool {
         }
     }
 
-    // add pixels in a line to the pixels array
+    /** Add pixels in a line to the pixels array. */
     addLinePixels(
         a: { x: number; y: number },
         b: { x: number; y: number },
@@ -173,7 +173,7 @@ export class Shade implements PaintTool {
         let dx = b.x - a.x;
         let dy = b.y - a.y;
 
-        // number of steps to take, use bigger step
+        // the number of steps to take, use bigger step
         let steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
 
         // increments
@@ -186,7 +186,7 @@ export class Shade implements PaintTool {
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
 
-            // add only if in the canvas and the step is not already in the steps
+            // add only if the point is in the canvas and the step is not already in the steps
             if (
                 point.x < size.width &&
                 point.x >= 0 &&

@@ -29,7 +29,7 @@ export class Ruler implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
-            // draw line to layer
+            // draw a line to the layer
             this.drawLine(coords, this.lastCoords, color, layer);
 
             if (this.step != null && !this.step.isEmpty()) {
@@ -47,7 +47,7 @@ export class Ruler implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
-            // draw line to template
+            // draw a line to the template
             this.drawLine(
                 coords,
                 this.lastCoords,
@@ -57,7 +57,6 @@ export class Ruler implements PaintTool {
         }
     }
 
-    // draw a line from the point a to the point b
     drawLine(
         a: { x: number; y: number },
         b: { x: number; y: number },
@@ -70,7 +69,7 @@ export class Ruler implements PaintTool {
         let dx = b.x - a.x;
         let dy = b.y - a.y;
 
-        // number of steps to take, use bigger step
+        // the number of steps to take, use bigger step
         let steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
 
         // increments
@@ -85,7 +84,7 @@ export class Ruler implements PaintTool {
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
 
-            // paint only if in the canvas
+            // paint only if the point is in the canvas
             if (
                 point.x < size.width &&
                 point.x >= 0 &&
@@ -105,7 +104,7 @@ export class Ruler implements PaintTool {
             x += xInc;
             y += yInc;
 
-            // break if outside of the canvas
+            // break if it is outside of the canvas
             if (x >= size.width && y >= size.height && x < 0 && y < 0) {
                 break;
             }

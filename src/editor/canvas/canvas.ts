@@ -30,6 +30,10 @@ export class Canvas {
     // cache image of all the layers combined
     private frameImage: Image;
 
+    /**
+     * @param frameContainer - The container of frames
+     * @param layers - The aray of layers to add
+     */
     constructor(
         frameContainer: HTMLElement,
         size: { width: number; height: number },
@@ -97,7 +101,7 @@ export class Canvas {
             layerOpacityRange.value = layer.getOpacity().toString();
 
             layerOpacityRange.oninput = () => {
-                // + 0.2 so it can be always seen
+                // + 0.2 so it is always visible
                 layerButton.style.opacity = (
                     parseInt(layerOpacityRange.value) / 100 +
                     0.2
@@ -117,8 +121,11 @@ export class Canvas {
     }
 
     /**
-     * init the canvas after it was removed from the DOM
-     **/
+     * Init the canvas, after it was removed from the DOM.
+     *
+     * @param originalRealWidth - The actual width of the canvas / template in px.
+     * @param originalRealHeight - The actual height of the canvas / template in px.
+     */
     init(
         template: Layer,
         originalRealWidth: number,
@@ -135,8 +142,8 @@ export class Canvas {
         this.setRealSize(template.getRealSize());
         this.setPos(template.getPos());
 
-        // create a new layer if there is not one
-        // else add old layers and set saves to them
+        // create a new layer if there isn't one
+        // else add old layers and set image saves to them
         if (this.layers.length == 1) {
             this.addLayer("main");
         } else {
@@ -147,8 +154,6 @@ export class Canvas {
                     this.layers[i].setImage(image);
                 }
             }
-            // let template = this.getTemplate();
-            // this.addCustomLayer(new Layer("lala", 100, { width: 32, height: 32 }, template.getRealSize(), template.getPos(), false));
         }
 
         this.setLayer(this.layer);
@@ -156,9 +161,11 @@ export class Canvas {
     }
 
     /**
-     * remove itself from the DOM
-     * remove everything except the frame
-     **/
+     * Remove the canvas from the the DOM.
+     * Remove all children except the frame.
+     *
+     * @returns The template
+     */
     remove() {
         // save layer images
         this.layerImagesSave = [];
@@ -190,6 +197,9 @@ export class Canvas {
         return this.frameCtx;
     }
 
+    /**
+     *  @returns A combined image of all layers
+     */
     getLayersImageCombined() {
         let size = this.getSize();
         let id = new ImageData(size.width, size.height);
@@ -300,6 +310,9 @@ export class Canvas {
         return this.layers.length;
     }
 
+    /**
+     * Create a new template and add it to layers.
+     */
     addTemplate(
         size: { width: number; height: number },
         realSize: { width: number; height: number },
@@ -308,6 +321,9 @@ export class Canvas {
         this.layers.push(new Layer("template", 100, size, realSize, pos, true));
     }
 
+    /**
+     * Create a new layer and add it to layers.
+     */
     addLayer(name: string) {
         let layer = new Layer(
             name,
@@ -320,6 +336,9 @@ export class Canvas {
         this.addCustomLayer(layer);
     }
 
+    /**
+     * Add a layer to layers.
+     */
     addCustomLayer(layer: Layer) {
         if (this.getLayersLength() > 0) {
             this.layers.push(layer);
@@ -382,6 +401,10 @@ export class Canvas {
         }
     }
 
+    /**
+     * Init a saved layer.
+     * Append it's button and opacity range to the DOM.
+     */
     initLayer(layerIndex: number) {
         if (layerIndex > 0) {
             this.layers[layerIndex].init(this.editorContainer);
@@ -396,6 +419,9 @@ export class Canvas {
         }
     }
 
+    /**
+     * Add a layer and set it's index.
+     */
     addCustomLayerAtIndex(layer: Layer, layerIndex: number) {
         this.addCustomLayer(layer);
 
@@ -450,7 +476,7 @@ export class Canvas {
 
         // > 2 so at least one layer and the template exists
         if (layer > 0 && layer && this.layers.length > 2) {
-            // remove elements from DOM
+            // remove elements from the DOM
             let max = this.layerButtons.length;
             for (let i = 0; i < max; i++) {
                 this.layerButtons[i].parentElement?.remove();
@@ -504,6 +530,9 @@ export class Canvas {
         }
     }
 
+    /**
+     * Remove the currently selected layer.
+     */
     removeCurrentLayer() {
         this.removeLayer(this.layer);
     }
@@ -648,27 +677,30 @@ export class Canvas {
         return false;
     }
 
-    setLayer(layer: number) {
+    /**
+     * Select the layer at the number.
+     */
+    setLayer(layerIndex: number) {
         let length = this.layers.length;
 
-        // change layers zIndex so the template is on the current layer
-        if (length > layer) {
-            this.layer = layer;
+        // change the layers zIndex so the template is on the current layer
+        if (length > layerIndex) {
+            this.layer = layerIndex;
 
             // higher layers
-            for (let i = 1; i < layer; i++) {
+            for (let i = 1; i < layerIndex; i++) {
                 this.layers[i].getCanvasElement().style.zIndex = "4";
             }
 
-            // current layer
-            this.layers[layer].getCanvasElement().style.zIndex = "2";
+            // the current layer
+            this.layers[layerIndex].getCanvasElement().style.zIndex = "2";
 
             // lower layers
-            for (let i = layer + 1; i < length; i++) {
+            for (let i = layerIndex + 1; i < length; i++) {
                 this.layers[i].getCanvasElement().style.zIndex = "1";
             }
 
-            // remove and add layers so they are in corect order and therefor display correctly
+            // remove and add layers so they are in a corect order and therefor display correctly
             for (let i = length - 1; i > 0; i--) {
                 let l = this.layers[i];
                 l.getCanvasElement().remove();
@@ -679,18 +711,22 @@ export class Canvas {
             this.layerButtons.forEach((button) => {
                 button.classList.remove("currentLayerBtn");
             });
-            this.layerButtons[layer - 1].classList.add("currentLayerBtn");
+            this.layerButtons[layerIndex - 1].classList.add("currentLayerBtn");
         }
     }
 
-    // clear all layers
+    /**
+     * Clear all layers.
+     */
     clearAll() {
         for (let layer of this.layers) {
             layer.clear();
         }
     }
 
-    // mouse position relative to the canvas
+    /**
+     * @returns The mouse position relative to the canvas
+     */
     getMousePosition(event: MouseEvent) {
         let rect = this.getBoundingClientRect();
         let x = event.clientX - rect.left;
@@ -701,7 +737,9 @@ export class Canvas {
         };
     }
 
-    // mouse coordinates relative to the canvas (pixel coordinates)
+    /**
+     * @returns The mouse coordinates relative to the canvas (in pixels on canvas)
+     */
     getMouseCoords(event: MouseEvent) {
         let mousePos = this.getMousePosition(event);
         let size = this.getSize();
@@ -716,7 +754,9 @@ export class Canvas {
         };
     }
 
-    // imageData from the canvas
+    /**
+     * @returns The layer image data as bytes
+     */
     getLayerBytes(layer: number) {
         let size = this.getSize();
 
@@ -732,7 +772,6 @@ export class Canvas {
         return data;
     }
 
-    // center position of the canvas
     getCenterPos() {
         let pos = this.getPos();
         let realSize = this.getRealSize();
@@ -744,7 +783,14 @@ export class Canvas {
         return center;
     }
 
-    // scale the canvas, zoom out when input is negative
+    /**
+     * Scale the canvas.
+     *
+     * @param zoom - The absolute zoom value
+     * @param zoomDelta - Zoom out when it's negative.
+     *
+     * @returns New zoom value
+     */
     zoomIn(
         zoom: number,
         zoomDelta: number,
@@ -785,7 +831,7 @@ export class Canvas {
         return zoom;
     }
 
-    // move the canvas by delta
+    /** Move the canvas by delta. */
     move(moveDelta: { x: number; y: number }) {
         let pos = this.getPos();
         let x = pos.x + moveDelta.x;
@@ -794,7 +840,7 @@ export class Canvas {
         this.setPos({ x, y });
     }
 
-    // move the canvas center to position
+    /** Move the center of the canvas to the position. */
     moveCenterTo(pos: { x: number; y: number }) {
         let realSize = this.getRealSize();
 

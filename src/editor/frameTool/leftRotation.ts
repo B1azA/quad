@@ -4,16 +4,15 @@ import { Image } from "../canvas/image";
 import { PaintStep, PaintMiniStep } from "../steps/paintStep";
 
 export class RightRotation implements FrameTool {
-    use(
-        editor: Editor,
-    ) {
+    use(editor: Editor) {
         let canvas = editor.getCurrentCanvas();
         let layersLength = canvas.getLayersLength();
         let size = canvas.getSize();
 
-        // space between the width and the height of the canvas
+        // the space between the width and the height of the canvas
         let space = (size.height - size.width) / 2;
 
+        // get every column and rotate it by 90 degrees
         for (let i = 1; i < layersLength; i++) {
             let currentLayer = canvas.getLayer(i);
             if (currentLayer != null) {

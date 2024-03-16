@@ -34,7 +34,7 @@ import { appWindow } from "@tauri-apps/api/window";
 
 setupProject();
 
-// show prompt for project creation and loading and then start editor
+/** Show prompt for the project creation and its loading and then start the editor. */
 function setupProject() {
     let projectMessage: ProjectMessage = {
         name: "Project",
@@ -88,6 +88,7 @@ function setupProject() {
     );
 }
 
+/** Run the app. */
 function run(editor: Editor) {
     setupEvents(editor);
 

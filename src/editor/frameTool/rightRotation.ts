@@ -4,16 +4,15 @@ import { Image } from "../canvas/image";
 import { PaintStep, PaintMiniStep } from "../steps/paintStep";
 
 export class LeftRotation implements FrameTool {
-    use(
-        editor: Editor,
-    ) {
+    use(editor: Editor) {
         let canvas = editor.getCurrentCanvas();
         let layersLength = canvas.getLayersLength();
         let size = canvas.getSize();
 
-        // space between the width and the height of the canvas
+        // the space between the width and the height of the canvas
         let space = (size.height - size.width) / 2;
 
+        // get every column and rotate it by 90 degrees
         for (let i = 1; i < layersLength; i++) {
             let currentLayer = canvas.getLayer(i);
             if (currentLayer != null) {
@@ -38,7 +37,10 @@ export class LeftRotation implements FrameTool {
                         let clr = column.pop();
 
                         if (clr) {
-                            let point = { x: x1, y: size.height - 1 - x - space };
+                            let point = {
+                                x: x1,
+                                y: size.height - 1 - x - space,
+                            };
                             image.putPixel(point, clr);
                             let oldClr = imageSave.getPixel(point);
                             ministeps.push(new PaintMiniStep(point, oldClr));

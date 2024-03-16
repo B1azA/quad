@@ -7,12 +7,16 @@ export class Layer {
     private template: boolean = false;
     private name: string;
 
+    /**
+     * @param size - The resolution of the layer (32x32)
+     * @param realSize - The actual size of the layer (width and height of the element)
+     */
     constructor(
         name: string,
         opacity: number,
-        size: { width: number, height: number },
-        realSize: { width: number, height: number },
-        pos: { x: number, y: number },
+        size: { width: number; height: number },
+        realSize: { width: number; height: number },
+        pos: { x: number; y: number },
         template: boolean,
     ) {
         this.name = name;
@@ -24,7 +28,7 @@ export class Layer {
 
             this.template = true;
         } else {
-            // set id for the steps to recognize the layer
+            // set an id for the steps to recognize the layer
             Layer.maxLayerID += 1;
             canvasElement.id = Layer.maxLayerID.toString();
         }
@@ -42,7 +46,9 @@ export class Layer {
         canvasElement.style.top = pos.y + "px";
 
         this.canvasElement = canvasElement;
-        this.ctx = canvasElement.getContext("2d", { willReadFrequently: true })!;
+        this.ctx = canvasElement.getContext("2d", {
+            willReadFrequently: true,
+        })!;
 
         this.setOpacity(opacity);
     }
@@ -60,16 +66,19 @@ export class Layer {
         this.name = name;
     }
 
-    setSize(size: { width: number, height: number }) {
+    setSize(size: { width: number; height: number }) {
         this.canvasElement.width = size.width;
         this.canvasElement.height = size.height;
     }
 
     getSize() {
-        return { width: this.canvasElement.width, height: this.canvasElement.height };
+        return {
+            width: this.canvasElement.width,
+            height: this.canvasElement.height,
+        };
     }
 
-    setRealSize(size: { width: number, height: number }) {
+    setRealSize(size: { width: number; height: number }) {
         let width = size.width + "px";
         let height = size.height + "px";
 
@@ -78,10 +87,13 @@ export class Layer {
     }
 
     getRealSize() {
-        return { width: this.canvasElement.clientWidth, height: this.canvasElement.clientHeight };
+        return {
+            width: this.canvasElement.clientWidth,
+            height: this.canvasElement.clientHeight,
+        };
     }
 
-    setPos(pos: { x: number, y: number }) {
+    setPos(pos: { x: number; y: number }) {
         let x = pos.x + "px";
         let y = pos.y + "px";
 
@@ -90,7 +102,10 @@ export class Layer {
     }
 
     getPos() {
-        return { x: this.canvasElement.offsetLeft, y: this.canvasElement.offsetTop };
+        return {
+            x: this.canvasElement.offsetLeft,
+            y: this.canvasElement.offsetTop,
+        };
     }
 
     getBoundingClientRect() {
@@ -105,6 +120,7 @@ export class Layer {
         return this.ctx;
     }
 
+    /** Every layer has a unique ID.  */
     getID() {
         return this.canvasElement.id;
     }
@@ -134,6 +150,9 @@ export class Layer {
         return this.template;
     }
 
+    /**
+     * Clear the layer's image.
+     */
     clear() {
         let size = this.getSize();
         this.ctx.clearRect(0, 0, size.width, size.height);

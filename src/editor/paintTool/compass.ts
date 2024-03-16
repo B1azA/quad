@@ -29,7 +29,6 @@ export class Compass implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
-            // draw line to layer
             this.drawCircle(this.lastCoords, coords, color, layer);
 
             if (this.step != null && !this.step.isEmpty()) {
@@ -47,7 +46,6 @@ export class Compass implements PaintTool {
         layer: Layer,
     ) {
         if (this.wasDownPressed) {
-            // draw line to template
             this.drawCircle(
                 this.lastCoords,
                 coords,
@@ -66,10 +64,12 @@ export class Compass implements PaintTool {
         let image = layer.getImage();
         let size = image.size;
 
+        // calculate circle's radius
         let radius = Math.round(
             Math.sqrt((center.x - a.x) ** 2 + (center.y - a.y) ** 2),
         );
 
+        // check for every pixel in square if it's within the radius
         for (let x = center.x - radius; x <= center.x + radius; x++) {
             for (let y = center.y - radius; y <= center.y + radius; y++) {
                 let point = { x, y };

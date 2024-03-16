@@ -13,7 +13,7 @@ export class Editor {
         y: number;
     } = { x: 0, y: 0 };
 
-    // index of the current canvas in the canvases
+    // index of the current canvas in canvases
     private canvasIndex: number = 0;
 
     private canvases: Canvas[] = [];
@@ -73,12 +73,13 @@ export class Editor {
                 this.addFrame(template, frame.layers);
             }
         } else {
-            // add frame if there is none
+            // add a frame if there is none
             this.addFrame(template, []);
         }
 
         this.palette = new Palette(projectMessage.colors);
 
+        // the animation frame setup
         this.animationFrame.width = size.width;
         this.animationFrame.height = size.height;
 
@@ -86,7 +87,7 @@ export class Editor {
             this.fpsValue.textContent = this.fpsRange.value;
             this.fps = parseInt(this.fpsRange.value);
 
-            // clear animationInterval before creating another
+            // clear the animationInterval before creating another
             if (this.animationInterval != null)
                 clearInterval(this.animationInterval);
 
@@ -119,6 +120,7 @@ export class Editor {
         return this.fps;
     }
 
+    /** @returns The exported project as a ProjectMessage */
     generateProjectMessage() {
         let frames: FrameMessage[] = [];
         for (let canvas of this.canvases) {
@@ -154,6 +156,7 @@ export class Editor {
         return projectMessage;
     }
 
+    /** Remove from the DOM.  */
     remove() {
         this.getCurrentCanvas().getTemplate().getCanvasElement().remove();
         this.canvases.forEach((canvas) => {
@@ -161,11 +164,11 @@ export class Editor {
             canvas.remove();
         });
 
-        // clear animationInterval
+        // clear the animationInterval
         if (this.animationInterval != null)
             clearInterval(this.animationInterval);
 
-        // set fps to 0
+        // set the fps to 0
         this.fpsRange.value = "0";
         this.fpsValue.textContent = this.fpsRange.value;
 
@@ -189,7 +192,7 @@ export class Editor {
         return this.canvases.length;
     }
 
-    /// add a frame to the editor and focus it, return it
+    /** Add a frame to the editor and focus it, return it. */
     addFrame(template: Layer, layers: LayerMessage[]) {
         let canvas = new Canvas(
             this.framesContainer,
@@ -211,8 +214,8 @@ export class Editor {
             this.updateFrameAndAnimationFrame();
         };
 
-        // dont remove frame if it is the only one (first one added)
-        // it deletes its images
+        // dont remove the frame if it is the only one (first one added)
+        // delete its images
         if (this.canvasIndex != null && this.canvases.length > 1) {
             this.getCurrentCanvas().remove();
         }
@@ -231,7 +234,7 @@ export class Editor {
 
     removeFrame() {
         if (this.canvases.length >= 2) {
-            // remove the current canvas from the canvases
+            // remove the current canvas from canvases
             let template = this.getCurrentCanvas().getTemplate();
             this.getCurrentCanvas().remove();
             this.getCurrentCanvas().getFrame().remove();
@@ -402,7 +405,10 @@ export class Editor {
         this.zoom = zoom;
     }
 
-    // update the current frame and the animation frame if fps is 0
+    /**
+     * Update the current frame.
+     * Update the animation frame if the fps is 0.
+     */
     updateFrameAndAnimationFrame() {
         let image = this.updateFrame();
 
@@ -420,7 +426,9 @@ export class Editor {
         return image;
     }
 
-    // set the animation frame image to the image of the frame
+    /**
+     * Set the animation frame image as the image of the frame on the index.
+     */
     setAnimationFrame(frameIndex: number) {
         let canvas = this.getCanvas(frameIndex);
 
@@ -619,6 +627,7 @@ export class Editor {
         let key = event.key;
         let ctrl = event.ctrlKey;
 
+        // keybindings
         if (ctrl) {
             switch (key) {
                 case "n":

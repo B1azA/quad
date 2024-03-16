@@ -33,6 +33,8 @@ export class RectangleEraser implements PaintTool {
         if (this.wasDownPressed) {
             let ministeps = [];
             let image = layer.getImage();
+
+            // erase
             for (
                 let x = 0;
                 x <= this.selectedRegion.x2 - this.selectedRegion.x1;
@@ -92,6 +94,8 @@ export class RectangleEraser implements PaintTool {
         let a2 = { x: 0, y: 0 };
         let b2 = { x: 0, y: 0 };
 
+        // a2 has to be top left
+        // b2 has to be bottom right
         a2.x = Math.min(a.x, b.x);
         a2.y = Math.min(a.y, b.y);
         b2.x = Math.max(a.x, b.x);

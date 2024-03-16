@@ -13,6 +13,7 @@ export class Picker implements PaintTool {
         let image = layer.getImage();
         let clr = image.getPixel(coords);
 
+        // pick a color
         if (clr[3] == 255) {
             if (button == 0) {
                 editor.palette.setPrimaryColor(clr);

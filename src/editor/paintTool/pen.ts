@@ -65,7 +65,7 @@ export class Pen implements PaintTool {
         }
     }
 
-    // draw pixels to the layer
+    /** Draw pixels to the layer. */
     drawPixels(color: [number, number, number, number], layer: Layer) {
         let image = layer.getImage();
 
@@ -76,7 +76,7 @@ export class Pen implements PaintTool {
         layer.setImage(image);
     }
 
-    // draw pixels to the layer and add them to the step
+    /** Draw pixels to the layer and add them to the step. */
     drawAndSavePixels(color: [number, number, number, number], layer: Layer) {
         let image = layer.getImage();
 
@@ -90,7 +90,7 @@ export class Pen implements PaintTool {
         layer.setImage(image);
     }
 
-    // add a pixel to the pixels array
+    /** Add a pixel to the pixels array. */
     addPixel(point: { x: number; y: number }, layer: Layer) {
         let size = layer.getSize();
         if (
@@ -103,7 +103,7 @@ export class Pen implements PaintTool {
         }
     }
 
-    // add pixels in a line to the pixels array
+    /** Add pixels in a line to the pixels array. */
     addLinePixels(
         a: { x: number; y: number },
         b: { x: number; y: number },
@@ -115,7 +115,7 @@ export class Pen implements PaintTool {
         let dx = b.x - a.x;
         let dy = b.y - a.y;
 
-        // number of steps to take, use bigger step
+        // number of steps to take, use the bigger one
         let steps = Math.abs(dx) > Math.abs(dy) ? Math.abs(dx) : Math.abs(dy);
 
         // increments
@@ -128,7 +128,7 @@ export class Pen implements PaintTool {
         for (let i = 0; i <= steps; i++) {
             let point = { x: Math.round(x), y: Math.round(y) };
 
-            // add only if in the canvas and the step is not already in the steps
+            // add only if the point is in the canvas and the step is not already in the steps
             if (
                 point.x < size.width &&
                 point.x >= 0 &&
