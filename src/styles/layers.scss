@@ -8,6 +8,7 @@
     list-style-type: none;
     z-index: 6;
     overflow-y: auto;
+    overflow-x: hidden;
 
     li {
         height: 32px;
@@ -42,10 +43,11 @@
     position: absolute;
     top: 464px;
     height: calc(100vh - 464px);
-    right: 320px;
+    right: 330px;
     list-style-type: none;
     z-index: 6;
     overflow-y: hidden;
+    overflow-x: hidden;
 
     li {
         height: 32px;
