@@ -2,21 +2,22 @@
 
 #layerBar {
     position: absolute;
-    top: 480px;
-    right: 240px;
+    top: 464px;
+    height: calc(100vh - 464px);
+    right: 224px;
     list-style-type: none;
     z-index: 6;
+    overflow-y: auto;
 
     li {
         height: 32px;
 
         button {
-            width: 80px;
+            width: 90px;
             display: block;
             padding: 4px;
             margin: 4px;
             margin-right: 0;
-            overflow: hidden;
             border: solid black;
             border-radius: 8px;
             background-color: $buttonColorLayerbar;
@@ -39,10 +40,12 @@
 
 #layerRangeBar {
     position: absolute;
-    top: 480px;
-    right: 336px;
+    top: 464px;
+    height: calc(100vh - 464px);
+    right: 320px;
     list-style-type: none;
     z-index: 6;
+    overflow-y: hidden;
 
     li {
         height: 32px;
@@ -62,8 +65,8 @@
 
 #layersConfig {
     position: absolute;
-    top: 432px;
-    right: 240px;
+    top: 416px;
+    right: 224px;
     display: block;
     z-index: 6;
 

@@ -700,6 +700,13 @@ function setupEvents(editor: Editor) {
     editorContainer.onmouseleave = () => {
         editor.onMouseLeave();
     };
+
+    // scroll the layerRangeBar with the layerBar
+    let layerRangeBar = <HTMLElement>document.getElementById("layerRangeBar");
+    let layerBar = <HTMLElement>document.getElementById("layerBar");
+    layerBar.onscroll = () => {
+        layerRangeBar.scroll(0, layerBar.scrollTop);
+    };
 }
 
 function saveProject(editor: Editor, callback: (succesful: boolean) => void) {
