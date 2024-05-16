@@ -14,6 +14,7 @@ fn main() {
             quad::project_save_as,
             quad::project_save,
             quad::project_load,
+            quad::open_info,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

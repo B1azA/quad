@@ -88,3 +88,7 @@ export function projectSave(projectMessage: ProjectMessage): Promise<unknown> {
 export function projectLoad(): Promise<ProjectMessage> {
     return invoke("project_load");
 }
+
+export function openInfo(): Promise<unknown> {
+    return invoke("open_info");
+}

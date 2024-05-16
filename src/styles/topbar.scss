@@ -237,3 +237,29 @@
 #redo:active {
     background-color: $buttonColorTopbar;
 }
+
+#info {
+    position: relative;
+    z-index: 6;
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    margin-top: 8px;
+    margin-left: 32px;
+    border-radius: 4px;
+    border: solid black;
+    background-image: url(../../images/questionMark.png);
+    background-size: cover;
+    background-color: $buttonColorTools;
+    image-rendering: pixelated;
+}
+
+#info:hover {
+    background-color: $buttonColorToolsHover;
+}
+
+#info:active {
+    background-color: $buttonColorTools;
+}

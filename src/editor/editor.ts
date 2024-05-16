@@ -227,7 +227,7 @@ export class Editor {
             this.moveFrameUp();
         }
 
-        this.updateFrame();
+        this.updateFrameAndAnimationFrame();
 
         return canvas;
     }
@@ -313,6 +313,8 @@ export class Editor {
                         i,
                         this.getCurrentCanvas().getTemplate(),
                     );
+
+                    this.updateFrameAndAnimationFrame();
                 };
 
                 this.framesContainer.appendChild(frame);
@@ -355,6 +357,8 @@ export class Editor {
                         i,
                         this.getCurrentCanvas().getTemplate(),
                     );
+
+                    this.updateFrameAndAnimationFrame();
                 };
 
                 this.framesContainer.appendChild(frame);

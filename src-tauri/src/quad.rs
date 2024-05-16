@@ -362,3 +362,11 @@ pub fn project_load() -> Result<ProjectMessage, String> {
 
     Ok(deserialized)
 }
+
+#[tauri::command]
+pub fn open_info() -> Result<(), String> {
+    match open::that("https://github.com/B1azA/quad") {
+        Err(_) => return Err(String::from("Failed to open a browser")),
+        Ok(()) => return Ok(()),
+    }
+}

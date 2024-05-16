@@ -13,6 +13,7 @@ import {
     projectSaveAs,
     projectSave,
     projectLoad,
+    openInfo,
 } from "./tauri";
 
 import Coloris from "@melloware/coloris";
@@ -261,6 +262,7 @@ function setupEvents(editor: Editor) {
     };
 
     document.getElementById("fileOpen")!.onclick = () => {
+        openInfo();
         showConfirmDialog(
             "This will erase the current project, do you want to save it?",
             "Yes",
@@ -588,6 +590,10 @@ function setupEvents(editor: Editor) {
     document.getElementById("rightRotation")!.onclick = () => {
         editor.tools.useRightRotationTool(editor);
         editor.updateFrameAndAnimationFrame();
+    };
+
+    document.getElementById("info")!.onclick = () => {
+        openInfo();
     };
 
     document.getElementById("addLayer")!.onclick = () => {
