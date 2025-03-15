@@ -1,8 +1,6 @@
 # Quad
 
-![quad](https://github.com/B1azA/quad/blob/main/src-tauri/icons/icon.png?raw=true)
-
-[![Quad demo video](https://github.com/B1azA/quad/blob/main/src-tauri/icons/icon.png?raw=true)](https://raw.githubusercontent.com/B1azA/media/main/quad-demo.mp4)
+![Quad demo video](https://github.com/B1azA/quad/blob/main/quad-demo.gif)
 ## Introduction
 
 Quad is a simple program to create pixel art sprites and animations. Its main goal is to be simple, yet powerful and not overengineered. Quad was created using Rust, Tauri framework and TypeScript.
